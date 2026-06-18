@@ -201,6 +201,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 /* ═══ FORMS ═══ */
 .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;margin-bottom:10px}
 .pf-btn-grp{display:flex;gap:4px;flex-wrap:wrap}
+/* Grupos de botões de formulário */
+.obra-btns-group{display:flex;gap:7px;flex-wrap:wrap}
+.form-footer-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 0 4px;border-top:1px solid var(--border)}
+.form-btns-row{display:flex;gap:7px;flex-wrap:wrap}
 .fgg{display:flex;flex-direction:column;gap:4px}
 .fl{font-size:10.5px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase}
 .fl .req{color:var(--accent);margin-left:2px}
@@ -562,6 +566,15 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #nf-gen-val{width:100%!important;max-width:100%!important}
   .nf-add-row .btn-p{width:100%!important;justify-content:center!important}
   .nf-add-hint{display:none!important}
+  /* Grupos de botões — empilhar em coluna no mobile */
+  .obra-btns-group{flex-direction:column;gap:8px}
+  .obra-btns-group .btn{width:100%!important;justify-content:center;min-height:44px;font-size:14px}
+  .form-footer-bar{flex-direction:column;align-items:stretch;gap:8px}
+  .form-footer-bar>div{width:100%}
+  .form-footer-bar .btn-salvar-doc,.form-footer-bar #btn-salvar-nf{width:100%!important;justify-content:center!important;box-sizing:border-box}
+  .form-footer-bar>button{width:100%!important;justify-content:center!important}
+  .form-btns-row{flex-direction:column;gap:8px}
+  .form-btns-row .btn{width:100%!important;justify-content:center;min-height:44px}
   /* Pendências — filtros em grade 2×2 */
   .pend-filters{flex-wrap:wrap;gap:6px}
   .pf-btn-grp{display:grid!important;grid-template-columns:1fr 1fr;gap:6px;width:100%}
@@ -1148,7 +1161,7 @@ input,select,textarea{min-height:44px}
             <span class="nf-total-val" id="nf-total-val">R$ 0,00</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 0 4px;border-top:1px solid var(--border)">
+        <div class="form-footer-bar">
           <div style="display:flex;align-items:center;gap:8px">
             <label for="nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 14px">📎 Anexar NF</label>
             <input type="file" id="nf-comp" style="display:none" accept="image/*,application/pdf" onchange="onNFComp(event)">
@@ -1230,7 +1243,7 @@ input,select,textarea{min-height:44px}
       </div>
     </div>
     <div class="fgg" style="margin-bottom:10px"><label class="fl" for="p-dc">Descrição</label><textarea id="p-dc" placeholder="Detalhes da pendência..."></textarea></div>
-    <div style="display:flex;gap:7px"><button class="btn btn-p btn-sm" onclick="salvarP()">Salvar</button><button class="btn btn-sm" onclick="togPF()">Cancelar</button></div>
+    <div class="form-btns-row"><button class="btn btn-p btn-sm" onclick="salvarP()">Salvar</button><button class="btn btn-sm" onclick="togPF()">Cancelar</button></div>
   </div>
   <div class="card" id="rf-wrap" style="display:none;margin-bottom:14px">
     <div class="card-title" style="margin-bottom:12px">🔄 Pendência Periódica Mensal</div>
@@ -1241,7 +1254,7 @@ input,select,textarea{min-height:44px}
         <div class="sl-row"><span class="sl-lbl">Dia:</span><input type="range" id="r-sl" min="1" max="30" value="10" step="1" oninput="document.getElementById('r-sv').textContent=this.value" aria-label="Dia de vencimento"><span class="sl-val" id="r-sv">10</span></div>
       </div>
     </div>
-    <div style="display:flex;gap:7px"><button class="btn btn-p btn-sm" onclick="salvarR()">Salvar Periódica</button><button class="btn btn-sm" onclick="togRF()">Cancelar</button></div>
+    <div class="form-btns-row"><button class="btn btn-p btn-sm" onclick="salvarR()">Salvar Periódica</button><button class="btn btn-sm" onclick="togRF()">Cancelar</button></div>
   </div>
   <div class="card" id="rc-card" style="display:none;margin-bottom:14px"><div class="card-hdr"><div class="card-title">🔄 Periódicas Cadastradas</div></div><div id="rc-list"></div></div>
   <div class="card" style="margin-bottom:14px">
@@ -1321,13 +1334,13 @@ input,select,textarea{min-height:44px}
     </div>
 
     <!-- Upload + Salvar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 0 4px;border-top:1px solid var(--border)">
+    <div class="form-footer-bar">
       <div style="display:flex;align-items:center;gap:8px">
         <label for="d-file" id="doc-up" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 14px">📎 Anexar documento</label>
         <input type="file" id="d-file" style="display:none" accept="image/*,application/pdf" onchange="onDocF(event)">
         <span id="doc-fn" style="font-size:11.5px;color:var(--text2)"></span>
       </div>
-      <button onclick="salvarDoc()" aria-label="Salvar documento" style="height:36px;padding:0 24px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif">📤 Salvar Documento</button>
+      <button onclick="salvarDoc()" aria-label="Salvar documento" class="btn-salvar-doc" style="height:36px;padding:0 24px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif">📤 Salvar Documento</button>
     </div>
   </div>
 
@@ -1371,7 +1384,7 @@ input,select,textarea{min-height:44px}
       <div class="fgg"><label class="fl" for="cfg-soc">Responsável / Sócio</label><input type="text" id="cfg-soc" placeholder="Nome do responsável"></div>
     </div>
     <input type="hidden" id="cfg-id">
-    <div style="display:flex;gap:7px;flex-wrap:wrap">
+    <div class="obra-btns-group">
       <button class="btn btn-p" onclick="salvarO()" aria-label="Salvar obra">✓ Salvar Obra</button>
       <button class="btn" onclick="expJSON()" aria-label="Exportar backup">⬇ Backup JSON</button>
       <button class="btn btn-s" onclick="openImport()" aria-label="Importar backup">📥 Importar Backup</button>
