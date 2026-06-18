@@ -1,0 +1,26 @@
+{
+  "name": "LUPA Facilities",
+  "short_name": "LUPA",
+  "description": "Dashboard de controle de obras — Macaé/RJ",
+  "start_url": "/lupa-construcoes/",
+  "scope": "/lupa-construcoes/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1a1d2e",
+  "theme_color": "#2980B9",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
