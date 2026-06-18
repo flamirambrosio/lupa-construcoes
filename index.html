@@ -483,18 +483,64 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .pie-leg-pct{font-size:10px;color:var(--text3);flex-shrink:0}
 @media(max-width:900px){.chart-row{grid-template-columns:1fr}}
 /* ═══ RESPONSIVE ═══ */
+/* ═══ SIDEBAR OVERLAY (mobile) ═══ */
+.sidebar-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;backdrop-filter:blur(2px)}
+.sidebar-ov.open{display:block}
+
+/* ═══ RESPONSIVE 900px ═══ */
 @media(max-width:900px){
-  .sidebar{transform:translateX(-252px)}.sidebar.open{transform:translateX(0)}
+  .sidebar{transform:translateX(-252px);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+  .sidebar.open{transform:translateX(0)}
   .main-wrap{margin-left:0}.hamburger{display:flex!important}
-  .kpi-pill{display:none}.main-content{padding:12px 12px 80px}
-  .g4{grid-template-columns:repeat(2,1fr)}.topbar{padding:0 12px;height:58px}
+  .kpi-pill{display:none}.main-content{padding:12px 12px 76px}
+  .g4{grid-template-columns:repeat(2,1fr)}.topbar{padding:0 10px;height:56px}
   .tb-btns{display:none}.bottom-nav{display:block}
   .app{padding-bottom:0}
+  .tb-theme-mobile{display:flex!important}
+  #btn-sheets{display:flex!important}
+  .modal-box{margin:8px;max-height:calc(100dvh - 16px);border-radius:12px}
+  .tw table{min-width:560px}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px}
+  .obra-banner{padding:10px 12px;margin-bottom:12px}
+  .page-hdr{flex-wrap:wrap;gap:8px}
 }
+
+/* ═══ RESPONSIVE 480px ═══ */
 @media(max-width:480px){
   .g4,.g3,.g2{grid-template-columns:1fr}.obras-grid{grid-template-columns:1fr}
-  .doc-grid{grid-template-columns:repeat(2,1fr)}.tbl-filters{flex-direction:column}.tbl-filters-main{justify-content:flex-start}.tbl-filters-actions{border-left:none;border-top:1px solid var(--border2);padding-left:0;padding-top:8px}
+  .doc-grid-new{grid-template-columns:1fr!important}
+  .doc-grid{grid-template-columns:1fr}
+  .tbl-filters{flex-direction:column;gap:8px}
+  .tbl-filters-search{border-right:none;border-bottom:1px solid var(--border2);padding-right:0;padding-bottom:8px;width:100%}
+  .tbl-filters-search input{width:100%!important;max-width:100%!important}
+  .tbl-filters-main{width:100%;justify-content:flex-start}
   .tbl-filters input,.tbl-filters select{max-width:100%!important}
+  .cat-picker{grid-template-columns:repeat(2,1fr)!important}
+  .doc-cat-picker{grid-template-columns:repeat(2,1fr)!important}
+  .kpi-glob .kc{padding:10px}
+  .kpi-glob .kv{font-size:18px}
+  .card{padding:12px}
+  .login-box{padding:24px 20px}
+  .page-title{font-size:16px}
+  .page-sub{font-size:11px}
+  .nf-row{flex-wrap:wrap!important}
+  .nf-row>*{min-width:0;flex:1 1 120px}
+  .fgg textarea{min-height:60px}
+  .rel-grid{grid-template-columns:1fr}
+  .g5{grid-template-columns:repeat(2,1fr)!important}
+  .obras-kpis{grid-template-columns:repeat(2,1fr)!important}
+  .chart-row{gap:12px}
+  .period-bar{flex-wrap:wrap;gap:4px}
+  .period-bar .btn{font-size:11px;padding:4px 8px}
+  .obra-banner{font-size:12px}
+  .tbl-filters-main{flex-wrap:wrap}
+  .bottom-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  .bn-item{padding:6px 8px;min-width:52px}
+  .bn-item svg{width:22px;height:22px}
+  .bn-item span{font-size:9.5px}
+  .topbar{height:52px}
+  .tb-title{font-size:13px}
+  .tb-obra{font-size:10px}
 }
 /* ═══ LOGIN ═══ */
 .login-ov{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;transition:background .3s}
@@ -870,6 +916,9 @@ input,select,textarea{min-height:44px}
   </div>
 </aside>
 
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-ov" id="sidebar-ov" onclick="closeSidebar()"></div>
+
 <!-- ═══ MAIN ═══ -->
 <div class="main-wrap">
 <header class="topbar" role="banner">
@@ -884,9 +933,16 @@ input,select,textarea{min-height:44px}
     <div class="kpi-pill" id="pill-dias"><div class="kpi-pv" id="tb-dias">—</div><div class="kpi-pl">Dias</div></div>
     <div class="kpi-pill" id="pill-gasto"><div class="kpi-pv" id="tb-gasto">—</div><div class="kpi-pl">Gasto</div></div>
     <div class="kpi-pill" id="pill-pct"><div class="kpi-pv" id="tb-pct">—</div><div class="kpi-pl">Orçamento</div></div>
+    <!-- Botão tema mobile -->
+    <button class="tb-theme-mobile" onclick="toggleTheme()" aria-label="Alternar tema" style="display:none;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 9px;cursor:pointer;color:#fff;font-size:16px;line-height:1">
+      <span id="tb-theme-icon">🌙</span>
+    </button>
+    <button class="btn-conn gsync-btn" id="btn-sheets" onclick="openGM()" aria-label="Sincronizar Google Sheets" style="display:none">
+      <span class="gsync-dot"></span><span id="gsync-label">●</span>
+    </button>
     <div class="tb-btns">
-      <button class="btn-conn gsync-btn" id="btn-sheets" onclick="openGM()" aria-label="Sincronizar Google Sheets">
-        <span class="gsync-dot"></span><span id="gsync-label">Sheets</span>
+      <button class="btn-conn gsync-btn" id="btn-sheets-desk" onclick="openGM()" aria-label="Sincronizar Google Sheets">
+        <span class="gsync-dot"></span><span id="gsync-label-desk">Sheets</span>
       </button>
       <button class="btn-conn" onclick="gerarPDF()" aria-label="Gerar relatório PDF">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF
@@ -1571,45 +1627,37 @@ function toggleGoogleAuth(){
 function updGoogleUI(){
   const btn=document.getElementById('btn-sheets');
   const lbl=document.getElementById('gsync-label');
-  const connectBtn=document.getElementById('gm-connect-btn');
+  const btnDesk=document.getElementById('btn-sheets-desk');
+  const lblDesk=document.getElementById('gsync-label-desk');
   const connectLbl=document.getElementById('gm-connect-label');
   const statusDot=document.getElementById('gm-status-dot');
   const statusText=document.getElementById('gm-status-text');
   const lastSync=document.getElementById('gm-last-sync');
   const actions=document.getElementById('gm-sync-actions');
-  if(gToken){
-    if(btn){btn.className='btn-conn gsync-btn connected';if(lbl)lbl.textContent='Google ✓';}
-    if(connectLbl)connectLbl.textContent='Desconectar do Google';
-    if(statusDot)statusDot.style.background='var(--green)';
-    if(statusText)statusText.textContent='Conectado — Sheets + Drive';
-    if(actions)actions.style.display='block';
-    if(lastSync&&gLastSync)lastSync.textContent='Último sync: '+gLastSync;
-    // Mostrar link da pasta Drive
-    const driveLink=document.getElementById('gm-drive-link');
-    if(driveLink){
-      if(gDriveFolderId){
-        driveLink.innerHTML=`<a href="https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}" target="_blank" style="color:var(--brand3);font-size:11.5px">📁 Abrir pasta de arquivos no Drive ↗</a>`;
-      }
-    }
-  } else {
-    if(btn){btn.className='btn-conn gsync-btn';if(lbl)lbl.textContent='Sheets';}
-    if(connectLbl)connectLbl.textContent='Conectar com Google';
-    if(statusDot)statusDot.style.background='var(--text3)';
-    if(statusText)statusText.textContent='Não conectado';
-    if(actions)actions.style.display='none';
-    if(lastSync)lastSync.textContent='';
-    const driveLink=document.getElementById('gm-drive-link');
-    if(driveLink)driveLink.innerHTML='';
-  }
+  const cls=gToken?'btn-conn gsync-btn connected':'btn-conn gsync-btn';
+  const dotTxt=gToken?'●':'○';
+  if(btn){btn.className=cls;if(lbl)lbl.textContent=dotTxt;}
+  if(btnDesk){btnDesk.className=cls;if(lblDesk)lblDesk.textContent=gToken?'Google ✓':'Sheets';}
+  if(connectLbl)connectLbl.textContent=gToken?'Desconectar do Google':'Conectar com Google';
+  if(statusDot)statusDot.style.background=gToken?'var(--green)':'var(--text3)';
+  if(statusText)statusText.textContent=gToken?'Conectado — Sheets + Drive':'Não conectado';
+  if(actions)actions.style.display=gToken?'block':'none';
+  if(lastSync)lastSync.textContent=(gToken&&gLastSync)?'Último sync: '+gLastSync:'';
+  const driveLink=document.getElementById('gm-drive-link');
+  if(driveLink)driveLink.innerHTML=gToken?`<a href="https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}" target="_blank" style="color:var(--brand3);font-size:11.5px">📁 Abrir pasta de arquivos no Drive ↗</a>`:'';
 }
 
 function updSyncBtnState(state){
   const btn=document.getElementById('btn-sheets');
   const lbl=document.getElementById('gsync-label');
-  if(!btn)return;
-  if(state==='syncing'){btn.className='btn-conn gsync-btn syncing';if(lbl)lbl.textContent='Sincronizando...';}
-  else if(state==='error'){btn.className='btn-conn gsync-btn error';if(lbl)lbl.textContent='Erro sync';}
-  else{updGoogleUI();}
+  const btnDesk=document.getElementById('btn-sheets-desk');
+  const lblDesk=document.getElementById('gsync-label-desk');
+  const cls={'syncing':'btn-conn gsync-btn syncing','error':'btn-conn gsync-btn error'};
+  const txt={'syncing':'⟳','error':'!'};
+  if(state==='syncing'||state==='error'){
+    if(btn){btn.className=cls[state];if(lbl)lbl.textContent=txt[state];}
+    if(btnDesk){btnDesk.className=cls[state];if(lblDesk)lblDesk.textContent=state==='syncing'?'Sincronizando...':'Erro sync';}
+  } else {updGoogleUI();}
 }
 
 /* ══ DRIVE API ══ */
@@ -1842,14 +1890,23 @@ function showPage(id,el){
   localStorage.setItem('lupa_active_page',id);
 }
 function setBnActive(el){document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sidebar-ov');
+  sb.classList.toggle('open');
+  if(ov)ov.classList.toggle('open',sb.classList.contains('open'));
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  const ov=document.getElementById('sidebar-ov');if(ov)ov.classList.remove('open');
+}
 
 /* ══ THEME ══ */
 function toggleTheme(){
   const h=document.documentElement;const dk=h.dataset.theme==='dark';
   h.dataset.theme=dk?'light':'dark';
   document.getElementById('theme-lbl').textContent=dk?'☀️ Modo Claro':'🌙 Modo Escuro';
+  const icon=document.getElementById('tb-theme-icon');if(icon)icon.textContent=dk?'☀️':'🌙';
   localStorage.setItem('lupa_theme',h.dataset.theme);
   if(cPie||cLn||cBar||cObras)renderCharts();
 }
@@ -3280,6 +3337,7 @@ function initApp(){
   const theme=localStorage.getItem('lupa_theme')||'dark';
   document.documentElement.dataset.theme=theme;
   document.getElementById('theme-lbl').textContent=theme==='dark'?'🌙 Modo Escuro':'☀️ Modo Claro';
+  const tbIcon=document.getElementById('tb-theme-icon');if(tbIcon)tbIcon.textContent=theme==='dark'?'🌙':'☀️';
   const ll=document.getElementById('login-logo-wrap');
   if(ll){const img=document.createElement('img');img.src=LOGO_B64;img.alt='LUPA Facilities';ll.appendChild(img);}
   const stored=sessionStorage.getItem('lupa_user');
