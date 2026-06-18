@@ -544,12 +544,23 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* Obra banner compacto */
   .obra-banner{padding:8px 10px;gap:8px;font-size:11px}
   .obra-banner .obra-banner-nome{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+  /* Data — nunca ultrapassar container */
+  input[type="date"]{width:100%!important;max-width:100%!important;box-sizing:border-box}
   /* NF form mobile */
   .nf-cat-row{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:6px}
   .nf-cat-tile{padding:8px 6px!important;font-size:11px!important}
   .nf-items-list .nf-item-row{flex-direction:column;gap:4px}
-  #nf-mat-s,#nf-gen-desc{width:100%!important;max-width:100%!important}
-  #nf-mat-qty,#nf-mat-val,#nf-gen-val{max-width:100%!important;flex:1}
+  /* NF add row — material em cima, qty+un+val+btn embaixo */
+  .nf-add-row{flex-direction:column!important;gap:8px!important}
+  .nf-add-row>div[style*="position:relative"]{width:100%!important;flex:none!important;min-width:0!important}
+  .nf-add-row>div[style*="position:relative"] input{width:100%!important}
+  .nf-qty-row{display:flex;gap:6px;width:100%;align-items:center}
+  #nf-mat-qty{flex:1!important;max-width:none!important;min-width:0}
+  #nf-mat-un{flex:1!important;max-width:none!important;min-width:0}
+  #nf-mat-val{flex:2!important;max-width:none!important;min-width:0}
+  #nf-gen-val{width:100%!important;max-width:100%!important}
+  .nf-add-row .btn-p{width:100%!important;justify-content:center!important}
+  .nf-add-hint{display:none!important}
   /* Pendências */
   .pend-filters{flex-wrap:wrap;gap:6px}
   .pend-card{padding:10px 12px}
@@ -1106,9 +1117,11 @@ input,select,textarea{min-height:44px}
               <input type="text" id="nf-mat-s" placeholder="🔍 Material..." oninput="fNFMat()" onfocus="oNFMat()" autocomplete="off" onkeydown="if(event.key==='Enter'){document.getElementById('nf-mat-qty').focus();event.preventDefault();}">
               <div class="mat-dd" id="nf-mat-dd" role="listbox"></div>
             </div>
-            <input type="number" id="nf-mat-qty" placeholder="Qtd" min="0" step="any" style="max-width:80px" onkeydown="if(event.key==='Enter'){document.getElementById('nf-mat-val').focus();event.preventDefault();}">
-            <select id="nf-mat-un" style="max-width:82px"><option>un</option><option>kg</option><option>m</option><option>m²</option><option>m³</option><option>saco</option><option>caixa</option><option>litro</option><option>barra</option><option>rolo</option></select>
-            <input type="number" id="nf-mat-val" placeholder="R$ Valor" min="0" step="0.01" style="max-width:120px" onkeydown="if(event.key==='Enter'){addNFItem();event.preventDefault();}">
+            <div class="nf-qty-row">
+              <input type="number" id="nf-mat-qty" placeholder="Qtd" min="0" step="any" style="max-width:80px" onkeydown="if(event.key==='Enter'){document.getElementById('nf-mat-val').focus();event.preventDefault();}">
+              <select id="nf-mat-un" style="max-width:82px"><option>un</option><option>kg</option><option>m</option><option>m²</option><option>m³</option><option>saco</option><option>caixa</option><option>litro</option><option>barra</option><option>rolo</option></select>
+              <input type="number" id="nf-mat-val" placeholder="R$ Valor" min="0" step="0.01" style="max-width:120px" onkeydown="if(event.key==='Enter'){addNFItem();event.preventDefault();}">
+            </div>
             <button type="button" class="btn btn-p" onclick="addNFItem()" style="white-space:nowrap;height:38px">+ Adicionar</button>
           </div>
           <!-- Linha para outras categorias -->
@@ -1120,7 +1133,7 @@ input,select,textarea{min-height:44px}
             <input type="number" id="nf-gen-val" placeholder="R$ Valor" min="0" step="0.01" style="max-width:130px" onkeydown="if(event.key==='Enter'){addNFItem();event.preventDefault();}">
             <button type="button" class="btn btn-p" onclick="addNFItem()" style="white-space:nowrap;height:38px">+ Adicionar</button>
           </div>
-          <div class="nf-add-hint">⌨️ <strong>Enter</strong> avança entre campos · <strong>Enter</strong> no valor adiciona o item automaticamente</div>
+          <div class="nf-add-hint">⌨️ <strong>Enter</strong> avança entre campos · <strong>Enter</strong> no valor adiciona o item</div>
           <div id="nf-total-bar" style="display:none" class="nf-total-bar">
             <span class="nf-total-label" id="nf-count-label">0 itens</span>
             <span class="nf-total-val" id="nf-total-val">R$ 0,00</span>
