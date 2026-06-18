@@ -200,6 +200,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-a{background:rgba(230,126,34,.12);border-color:rgba(230,126,34,.3);color:var(--accent)}
 /* ═══ FORMS ═══ */
 .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;margin-bottom:10px}
+.pf-btn-grp{display:flex;gap:4px;flex-wrap:wrap}
 .fgg{display:flex;flex-direction:column;gap:4px}
 .fl{font-size:10.5px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase}
 .fl .req{color:var(--accent);margin-left:2px}
@@ -568,7 +569,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .pend-card-hdr{flex-direction:column!important;align-items:flex-start!important;gap:8px!important}
   .pend-card{padding:10px 12px}
   /* Formulário — forçar coluna única (resolve data overflow em docs e obras) */
-  .fg{grid-template-columns:1fr!important}
+  .fg{grid-template-columns:1fr!important;overflow:hidden}
+  .fgg{min-width:0;overflow:hidden}
+  .fgg input,.fgg select,.fgg textarea{min-width:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
   /* Formulário obras */
   .form-obras .fgg{margin-bottom:10px}
   .form-obras input,.form-obras select,.form-obras textarea{font-size:15px;padding:10px 12px}
