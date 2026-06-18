@@ -496,8 +496,8 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .g4{grid-template-columns:repeat(2,1fr)}.topbar{padding:0 10px;height:56px}
   .tb-btns{display:none}.bottom-nav{display:block}
   .app{padding-bottom:0}
-  .tb-theme-mobile{display:flex!important}
   #btn-sheets{display:flex!important}
+  #fab-theme{display:flex!important}
   .modal-box{margin:8px;max-height:calc(100dvh - 16px);border-radius:12px}
   .tw table{min-width:560px}
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px}
@@ -541,6 +541,26 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .topbar{height:52px}
   .tb-title{font-size:13px}
   .tb-obra{font-size:10px}
+  /* Obra banner compacto */
+  .obra-banner{padding:8px 10px;gap:8px;font-size:11px}
+  .obra-banner .obra-banner-nome{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+  /* NF form mobile */
+  .nf-cat-row{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:6px}
+  .nf-cat-tile{padding:8px 6px!important;font-size:11px!important}
+  .nf-items-list .nf-item-row{flex-direction:column;gap:4px}
+  #nf-mat-s,#nf-gen-desc{width:100%!important;max-width:100%!important}
+  #nf-mat-qty,#nf-mat-val,#nf-gen-val{max-width:100%!important;flex:1}
+  /* Pendências */
+  .pend-filters{flex-wrap:wrap;gap:6px}
+  .pend-card{padding:10px 12px}
+  /* Formulário obras */
+  .form-obras .fgg{margin-bottom:10px}
+  .form-obras input,.form-obras select,.form-obras textarea{font-size:15px;padding:10px 12px}
+  /* Documentos */
+  .doc-form-wrap{padding:12px}
+  .doc-form-wrap input,.doc-form-wrap select,.doc-form-wrap textarea{font-size:15px}
+  /* Google banner */
+  .g-required-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--red-bg);border:1.5px solid rgba(231,76,60,.3);border-radius:10px;margin-bottom:14px;font-size:12px;color:var(--red)}
 }
 /* ═══ LOGIN ═══ */
 .login-ov{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;transition:background .3s}
@@ -933,10 +953,7 @@ input,select,textarea{min-height:44px}
     <div class="kpi-pill" id="pill-dias"><div class="kpi-pv" id="tb-dias">—</div><div class="kpi-pl">Dias</div></div>
     <div class="kpi-pill" id="pill-gasto"><div class="kpi-pv" id="tb-gasto">—</div><div class="kpi-pl">Gasto</div></div>
     <div class="kpi-pill" id="pill-pct"><div class="kpi-pv" id="tb-pct">—</div><div class="kpi-pl">Orçamento</div></div>
-    <!-- Botão tema mobile -->
-    <button class="tb-theme-mobile" onclick="toggleTheme()" aria-label="Alternar tema" style="display:none;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 9px;cursor:pointer;color:#fff;font-size:16px;line-height:1">
-      <span id="tb-theme-icon">🌙</span>
-    </button>
+    <!-- Botão tema mobile (removido do topbar) -->
     <button class="btn-conn gsync-btn" id="btn-sheets" onclick="openGM()" aria-label="Sincronizar Google Sheets" style="display:none">
       <span class="gsync-dot"></span><span id="gsync-label">●</span>
     </button>
@@ -1018,6 +1035,7 @@ input,select,textarea{min-height:44px}
 
 <!-- LANÇAMENTOS -->
 <div id="page-lancamentos" class="page" role="main">
+  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — conecte para salvar dados. <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr">
     <div><div class="page-title">Lançamentos</div><div class="page-sub">Registre gastos por categoria</div></div>
   </div>
@@ -1159,6 +1177,7 @@ input,select,textarea{min-height:44px}
 
 <!-- PENDÊNCIAS -->
 <div id="page-pendencias" class="page" role="main">
+  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr">
     <div><div class="page-title">Pendências da Obra</div><div class="page-sub">Calendário de prazos e tarefas</div></div>
     <div style="display:flex;gap:7px;flex-wrap:wrap">
@@ -1235,6 +1254,7 @@ input,select,textarea{min-height:44px}
 
 <!-- DOCUMENTOS -->
 <div id="page-documentos" class="page" role="main">
+  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr">
     <div><div class="page-title">Documentos Oficiais</div><div class="page-sub">Contratos, alvarás, certidões e documentos de obras</div></div>
   </div>
@@ -1309,6 +1329,7 @@ input,select,textarea{min-height:44px}
 
 <!-- CADASTRO -->
 <div id="page-cadastro" class="page" role="main">
+  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr"><div><div class="page-title">Cadastro de Obra</div><div class="page-sub">Múltiplas obras — Macaé e região, RJ</div></div><button class="btn btn-p btn-sm" onclick="novaO()" aria-label="Nova obra">+ Nova Obra</button></div>
   <div class="card" id="form-obra" style="margin-bottom:14px">
     <div class="card-title" style="margin-bottom:12px" id="fo-title">📐 Dados da Obra</div>
@@ -1497,6 +1518,11 @@ input,select,textarea{min-height:44px}
 </div><!-- /app -->
 
 <!-- BOTTOM NAV (mobile) -->
+<!-- Botão flutuante tema (mobile) -->
+<button id="fab-theme" onclick="toggleTheme()" aria-label="Alternar tema" style="display:none;position:fixed;bottom:76px;left:12px;z-index:190;width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);background:var(--sbg);color:#fff;font-size:18px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.4);align-items:center;justify-content:center">
+  <span id="tb-theme-icon">🌙</span>
+</button>
+
 <nav class="bottom-nav" role="navigation" aria-label="Navegação mobile">
   <div class="bottom-nav-items">
     <button class="bn-item active" onclick="showPage('dashboard',null);setBnActive(this)" data-page="dashboard" aria-label="Painel">
@@ -1645,6 +1671,7 @@ function updGoogleUI(){
   if(lastSync)lastSync.textContent=(gToken&&gLastSync)?'Último sync: '+gLastSync:'';
   const driveLink=document.getElementById('gm-drive-link');
   if(driveLink)driveLink.innerHTML=gToken?`<a href="https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}" target="_blank" style="color:var(--brand3);font-size:11.5px">📁 Abrir pasta de arquivos no Drive ↗</a>`:'';
+  updGoogleBanner();
 }
 
 function updSyncBtnState(state){
@@ -1688,6 +1715,19 @@ async function uploadToDrive(file,nomeArquivo){
     });
     return{id:data.id,url:data.webViewLink};
   }catch(e){console.error('uploadToDrive:',e);return null;}
+}
+
+/* ══ GOOGLE OBRIGATÓRIO ══ */
+function requireGoogle(){
+  if(gToken)return true;
+  toast('⚠️ Conecte o Google antes de salvar. Clique em "● Sheets" no topo.','warn');
+  openGM();
+  return false;
+}
+function updGoogleBanner(){
+  document.querySelectorAll('.g-required-banner').forEach(el=>{
+    el.style.display=gToken?'none':'flex';
+  });
 }
 
 /* ══ SHEETS API HELPERS ══ */
@@ -2513,6 +2553,7 @@ function onNFComp(e){
   }
 }
 async function salvarNFMulti(){
+  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
@@ -2677,6 +2718,7 @@ function openEditLanc(id){
 }
 function closeEditLanc(){document.getElementById('edit-lanc-modal').classList.remove('open');}
 function salvarEditLanc(){
+  if(!requireGoogle())return;
   const id=document.getElementById('el-id').value;
   const l=ST.lancamentos.find(x=>x.id===id);if(!l)return;
   const v=parseFloat(document.getElementById('el-valor').value)||0;
@@ -2767,6 +2809,7 @@ function updSl(){const n=parseInt(document.getElementById('p-sl').value);documen
 function togPF(){const e=document.getElementById('pf-wrap');e.style.display=e.style.display==='none'?'block':'none';if(e.style.display==='block')updSl();}
 function togRF(){const e=document.getElementById('rf-wrap');e.style.display=e.style.display==='none'?'block':'none';}
 function salvarP(){
+  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const tit=document.getElementById('p-tit').value.trim();if(!tit){toast('Informe o título.','error');return;}
   const dias=parseInt(document.getElementById('p-sl').value);const prazo=addD(td(),dias);
@@ -2779,6 +2822,7 @@ function salvarP(){
   renderCal();renderLP();renderDash();checkOverdueBanner();
 }
 function salvarR(){
+  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const nm=document.getElementById('r-nm').value.trim();if(!nm){toast('Informe o nome.','error');return;}
   const dia=parseInt(document.getElementById('r-sl').value);
@@ -2859,6 +2903,7 @@ function openEditPend(id){
 }
 function closeEditPend(){document.getElementById('edit-pend-modal').classList.remove('open');}
 function salvarEditPend(){
+  if(!requireGoogle())return;
   const id=document.getElementById('ep-id').value;
   const p=ST.pendencias.find(x=>x.id===id);if(!p)return;
   const titulo=document.getElementById('ep-titulo').value.trim();
@@ -2905,6 +2950,7 @@ function onDocF(e){
   }
 }
 async function salvarDoc(){
+  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const tipo=document.getElementById('d-tipo').value.trim();if(!tipo){toast('Informe o tipo.','error');return;}
   if(!docF){toast('Selecione um arquivo.','error');return;}
@@ -2993,6 +3039,7 @@ function editO(id){
   document.getElementById('form-obra').scrollIntoView({behavior:'smooth'});
 }
 function salvarO(){
+  if(!requireGoogle())return;
   const nm=document.getElementById('cfg-nm').value.trim(),end=document.getElementById('cfg-end').value.trim();
   if(!nm||!end){toast('Nome e endereço são obrigatórios.','error');return;}
   const id=document.getElementById('cfg-id').value||uid();
