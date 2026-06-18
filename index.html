@@ -1533,8 +1533,9 @@ let dashPeriodo='total';
 const GOOGLE_CLIENT_ID='629740512690-r6tbeqbsh8bghr80tpgog6dan68m3osr.apps.googleusercontent.com';
 const SPREADSHEET_ID='1LnnFl0GsGTTycWt4wM7nzG4mSJjjqhcuRuurjcNnq4s';
 const SHEETS_SCOPE='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+const DRIVE_FOLDER_ID='1k4dQGFGA1X2GUySjb7uorxWBxy14OQ64';
 let gToken=null,gTokenClient=null,gSyncing=false,gLastSync=null;
-let gDriveFolderId=localStorage.getItem('lupa_drive_folder')||null;
+let gDriveFolderId=DRIVE_FOLDER_ID;
 
 function initGoogleAuth(){
   if(typeof google==='undefined'||!google.accounts)return;
@@ -1587,9 +1588,7 @@ function updGoogleUI(){
     const driveLink=document.getElementById('gm-drive-link');
     if(driveLink){
       if(gDriveFolderId){
-        driveLink.innerHTML=`<a href="https://drive.google.com/drive/folders/${gDriveFolderId}" target="_blank" style="color:var(--brand3);font-size:11.5px">📁 Ver pasta LUPA no Drive ↗</a>`;
-      } else {
-        driveLink.innerHTML='<span style="color:var(--text3);font-size:11px">📁 Pasta Drive será criada ao primeiro upload</span>';
+        driveLink.innerHTML=`<a href="https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}" target="_blank" style="color:var(--brand3);font-size:11.5px">📁 Abrir pasta de arquivos no Drive ↗</a>`;
       }
     }
   } else {
@@ -1615,32 +1614,7 @@ function updSyncBtnState(state){
 
 /* ══ DRIVE API ══ */
 async function initDriveFolder(){
-  if(gDriveFolderId)return gDriveFolderId;
-  // Busca pasta existente
-  const search=await fetch(`https://www.googleapis.com/drive/v3/files?q=name%3D'LUPA+Constru%C3%A7%C3%B5es'%20and%20mimeType%3D'application%2Fvnd.google-apps.folder'%20and%20trashed%3Dfalse&fields=files(id,name)`,{headers:{Authorization:`Bearer ${gToken}`}});
-  if(search.ok){
-    const data=await search.json();
-    if(data.files&&data.files.length){
-      gDriveFolderId=data.files[0].id;
-      localStorage.setItem('lupa_drive_folder',gDriveFolderId);
-      return gDriveFolderId;
-    }
-  }
-  // Cria pasta
-  const create=await fetch('https://www.googleapis.com/drive/v3/files',{
-    method:'POST',
-    headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
-    body:JSON.stringify({name:'LUPA Construções',mimeType:'application/vnd.google-apps.folder'})
-  });
-  if(create.ok){
-    const folder=await create.json();
-    gDriveFolderId=folder.id;
-    localStorage.setItem('lupa_drive_folder',gDriveFolderId);
-    toast('📁 Pasta "LUPA Construções" criada no Drive!','success');
-    updGoogleUI();
-    return gDriveFolderId;
-  }
-  throw new Error('Falha ao criar pasta no Drive');
+  return DRIVE_FOLDER_ID;
 }
 
 async function uploadToDrive(file,nomeArquivo){
