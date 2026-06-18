@@ -561,9 +561,14 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #nf-gen-val{width:100%!important;max-width:100%!important}
   .nf-add-row .btn-p{width:100%!important;justify-content:center!important}
   .nf-add-hint{display:none!important}
-  /* Pendências */
+  /* Pendências — filtros em grade 2×2 */
   .pend-filters{flex-wrap:wrap;gap:6px}
+  .pf-btn-grp{display:grid!important;grid-template-columns:1fr 1fr;gap:6px;width:100%}
+  .pf-btn-grp .btn{justify-content:center;width:100%}
+  .pend-card-hdr{flex-direction:column!important;align-items:flex-start!important;gap:8px!important}
   .pend-card{padding:10px 12px}
+  /* Formulário — forçar coluna única (resolve data overflow em docs e obras) */
+  .fg{grid-template-columns:1fr!important}
   /* Formulário obras */
   .form-obras .fgg{margin-bottom:10px}
   .form-obras input,.form-obras select,.form-obras textarea{font-size:15px;padding:10px 12px}
@@ -1252,9 +1257,9 @@ input,select,textarea{min-height:44px}
     </div>
   </div>
   <div class="card">
-    <div class="card-hdr">
+    <div class="card-hdr pend-card-hdr">
       <div class="card-title">Lista de Pendências</div>
-      <div style="display:flex;gap:4px;flex-wrap:wrap" role="group" aria-label="Filtros de pendências">
+      <div class="pf-btn-grp" role="group" aria-label="Filtros de pendências">
         <button class="btn btn-sm" id="pf-todas" onclick="setPF('todas',this)" style="border-color:var(--brand2);color:var(--brand3)" aria-pressed="true">Todas</button>
         <button class="btn btn-sm" id="pf-aberta" onclick="setPF('aberta',this)" aria-pressed="false">Abertas</button>
         <button class="btn btn-sm" id="pf-vencida" onclick="setPF('vencida',this)" aria-pressed="false">Vencidas</button>
