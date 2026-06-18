@@ -549,8 +549,8 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* Obra banner compacto */
   .obra-banner{padding:8px 10px;gap:8px;font-size:11px}
   .obra-banner .obra-banner-nome{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
-  /* Data — mesma altura e padding dos outros inputs */
-  input[type="date"]{width:100%!important;max-width:100%!important;box-sizing:border-box!important;height:44px!important;padding:0 11px!important;line-height:44px}
+  /* Data — remover estilo nativo e igualar visualmente aos outros inputs */
+  input[type="date"]{-webkit-appearance:none!important;appearance:none!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;height:44px!important;min-height:0!important;padding:8px 11px!important;background:var(--bg3)!important;border:1px solid var(--border2)!important;border-radius:7px!important;color:var(--text)!important;font-size:16px!important;font-family:'DM Sans',sans-serif!important}
   /* NF form mobile */
   .nf-cat-row{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:6px}
   .nf-cat-tile{padding:8px 6px!important;font-size:11px!important}
@@ -585,7 +585,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .fg{grid-template-columns:1fr!important}
   .fgg{min-width:0}
   .fgg input,.fgg select,.fgg textarea{min-width:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
-  input[type="date"]{min-width:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;height:44px!important;padding:0 11px!important}
+  /* (ver regra acima para input[type=date] — consolidado) */
   /* Formulário obras */
   .form-obras .fgg{margin-bottom:10px}
   .form-obras input,.form-obras select,.form-obras textarea{font-size:15px;padding:10px 12px}
