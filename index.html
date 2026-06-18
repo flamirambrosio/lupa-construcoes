@@ -745,10 +745,11 @@ input,select,textarea{min-height:44px}
       <button class="btn btn-sm" onclick="syncToSheets()" style="flex:1">⬆️ Exportar para Sheets</button>
     </div>
     <button class="btn btn-sm" onclick="abrirSheets()" style="width:100%;justify-content:center">📊 Abrir Planilha no Google ↗</button>
+    <div id="gm-drive-link" style="margin-top:8px;text-align:center"></div>
   </div>
 
   <div style="font-size:10.5px;color:var(--text3);margin-top:12px;line-height:1.5">
-    Os dados são sincronizados automaticamente ao salvar. Arquivos anexados ficam apenas neste dispositivo.
+    Dados sincronizados automaticamente com Google Sheets. Comprovantes e documentos enviados para o Google Drive.
   </div>
 </div></div>
 
@@ -1531,8 +1532,9 @@ let dashPeriodo='total';
 /* ══ GOOGLE SHEETS CONFIG ══ */
 const GOOGLE_CLIENT_ID='629740512690-r6tbeqbsh8bghr80tpgog6dan68m3osr.apps.googleusercontent.com';
 const SPREADSHEET_ID='1LnnFl0GsGTTycWt4wM7nzG4mSJjjqhcuRuurjcNnq4s';
-const SHEETS_SCOPE='https://www.googleapis.com/auth/spreadsheets';
+const SHEETS_SCOPE='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 let gToken=null,gTokenClient=null,gSyncing=false,gLastSync=null;
+let gDriveFolderId=localStorage.getItem('lupa_drive_folder')||null;
 
 function initGoogleAuth(){
   if(typeof google==='undefined'||!google.accounts)return;
@@ -1554,7 +1556,9 @@ function initGoogleAuth(){
 function toggleGoogleAuth(){
   if(gToken){
     gToken=null;
+    gDriveFolderId=null;
     localStorage.removeItem('lupa_g_token');
+    localStorage.removeItem('lupa_drive_folder');
     updGoogleUI();
     toast('Google desconectado','info');
   } else {
@@ -1573,12 +1577,21 @@ function updGoogleUI(){
   const lastSync=document.getElementById('gm-last-sync');
   const actions=document.getElementById('gm-sync-actions');
   if(gToken){
-    if(btn){btn.className='btn-conn gsync-btn connected';if(lbl)lbl.textContent='Sheets ✓';}
+    if(btn){btn.className='btn-conn gsync-btn connected';if(lbl)lbl.textContent='Google ✓';}
     if(connectLbl)connectLbl.textContent='Desconectar do Google';
     if(statusDot)statusDot.style.background='var(--green)';
-    if(statusText)statusText.textContent='Conectado ao Google Sheets';
+    if(statusText)statusText.textContent='Conectado — Sheets + Drive';
     if(actions)actions.style.display='block';
     if(lastSync&&gLastSync)lastSync.textContent='Último sync: '+gLastSync;
+    // Mostrar link da pasta Drive
+    const driveLink=document.getElementById('gm-drive-link');
+    if(driveLink){
+      if(gDriveFolderId){
+        driveLink.innerHTML=`<a href="https://drive.google.com/drive/folders/${gDriveFolderId}" target="_blank" style="color:var(--brand3);font-size:11.5px">📁 Ver pasta LUPA no Drive ↗</a>`;
+      } else {
+        driveLink.innerHTML='<span style="color:var(--text3);font-size:11px">📁 Pasta Drive será criada ao primeiro upload</span>';
+      }
+    }
   } else {
     if(btn){btn.className='btn-conn gsync-btn';if(lbl)lbl.textContent='Sheets';}
     if(connectLbl)connectLbl.textContent='Conectar com Google';
@@ -1586,6 +1599,8 @@ function updGoogleUI(){
     if(statusText)statusText.textContent='Não conectado';
     if(actions)actions.style.display='none';
     if(lastSync)lastSync.textContent='';
+    const driveLink=document.getElementById('gm-drive-link');
+    if(driveLink)driveLink.innerHTML='';
   }
 }
 
@@ -1596,6 +1611,61 @@ function updSyncBtnState(state){
   if(state==='syncing'){btn.className='btn-conn gsync-btn syncing';if(lbl)lbl.textContent='Sincronizando...';}
   else if(state==='error'){btn.className='btn-conn gsync-btn error';if(lbl)lbl.textContent='Erro sync';}
   else{updGoogleUI();}
+}
+
+/* ══ DRIVE API ══ */
+async function initDriveFolder(){
+  if(gDriveFolderId)return gDriveFolderId;
+  // Busca pasta existente
+  const search=await fetch(`https://www.googleapis.com/drive/v3/files?q=name%3D'LUPA+Constru%C3%A7%C3%B5es'%20and%20mimeType%3D'application%2Fvnd.google-apps.folder'%20and%20trashed%3Dfalse&fields=files(id,name)`,{headers:{Authorization:`Bearer ${gToken}`}});
+  if(search.ok){
+    const data=await search.json();
+    if(data.files&&data.files.length){
+      gDriveFolderId=data.files[0].id;
+      localStorage.setItem('lupa_drive_folder',gDriveFolderId);
+      return gDriveFolderId;
+    }
+  }
+  // Cria pasta
+  const create=await fetch('https://www.googleapis.com/drive/v3/files',{
+    method:'POST',
+    headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
+    body:JSON.stringify({name:'LUPA Construções',mimeType:'application/vnd.google-apps.folder'})
+  });
+  if(create.ok){
+    const folder=await create.json();
+    gDriveFolderId=folder.id;
+    localStorage.setItem('lupa_drive_folder',gDriveFolderId);
+    toast('📁 Pasta "LUPA Construções" criada no Drive!','success');
+    updGoogleUI();
+    return gDriveFolderId;
+  }
+  throw new Error('Falha ao criar pasta no Drive');
+}
+
+async function uploadToDrive(file,nomeArquivo){
+  if(!gToken||!file)return null;
+  try{
+    const folderId=await initDriveFolder();
+    const meta={name:nomeArquivo,parents:[folderId]};
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file',file);
+    const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',{
+      method:'POST',
+      headers:{Authorization:`Bearer ${gToken}`},
+      body:form
+    });
+    if(!r.ok){const err=await r.text();console.error('Drive upload error:',err);return null;}
+    const data=await r.json();
+    // Tornar arquivo acessível por link
+    await fetch(`https://www.googleapis.com/drive/v3/files/${data.id}/permissions`,{
+      method:'POST',
+      headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
+      body:JSON.stringify({role:'reader',type:'anyone'})
+    });
+    return{id:data.id,url:data.webViewLink};
+  }catch(e){console.error('uploadToDrive:',e);return null;}
 }
 
 /* ══ SHEETS API HELPERS ══ */
@@ -2411,7 +2481,7 @@ function onNFComp(e){
     else readB64(cFile,b64=>{cFileB64=b64;});
   }
 }
-function salvarNFMulti(){
+async function salvarNFMulti(){
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
@@ -2421,18 +2491,28 @@ function salvarNFMulti(){
   const statusPag=document.querySelector('input[name="nf-pag"]:checked')?.value||'pago';
   const dup=ST.lancamentos.find(l=>l.nfNum===nfNum&&l.obraId===ob.id);
   if(dup&&!confirm(`NF "${nfNum}" já existe nesta obra. Inserir mesmo assim?`))return;
+  // Upload comprovante para Drive
+  let driveUrl='',driveId='';
+  if(cFile&&gToken){
+    toast('Enviando comprovante para o Drive...','info');
+    const nome='LUPA-NF-'+slug(nfNum)+'-'+slug(nfForn)+'-'+data+extOf(cFile.name);
+    const result=await uploadToDrive(cFile,nome);
+    if(result){driveUrl=result.url;driveId=result.id;}
+  }
   nfItems.forEach(x=>{
     ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:nfCat,subcat:'',desc:x.desc,valor:x.valor,
       data,obs:'NF: '+nfNum,comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',
-      fornecedor:nfForn,statusPag,nfNum,extra:x.extra||{},ts:Date.now()});
+      driveUrl,driveId,fornecedor:nfForn,statusPag,nfNum,extra:x.extra||{},ts:Date.now()});
   });
   addAudit('NF inserida','NF '+nfNum+' — '+nfItems.length+' item(s) · '+nfCat);
   const total=nfItems.reduce((a,x)=>a+x.valor,0);
-  if(cFile){
+  if(cFile&&driveUrl){
+    toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! ☁️ Comprovante no Drive.','success');
+  } else if(cFile){
     const nome='LUPA-NF-'+slug(nfNum)+'-'+slug(nfForn)+'-'+data+extOf(cFile.name);
     autoDownload(cFile,nome);
     toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! 📥 NF arquivada em Downloads.','success');
-  }else{
+  } else {
     toast(nfItems.length+' item(s) · '+fmt(total)+' da NF '+nfNum+' salvos!','success');
   }
   nfItems=[];nfCat='';
@@ -2515,7 +2595,7 @@ function renderT(){
   const aPagar=items.filter(l=>(l.statusPag||'pago')==='a_pagar').reduce((a,l)=>a+l.valor,0);
   w.innerHTML=`<table role="grid"><thead><tr>${thBtn('data','Data')}${thBtn('cat','Categoria')}${thBtn('desc','Descrição')}<th class="no-sort">Subcategoria</th><th class="no-sort">Qtd</th>${thBtn('valor','Valor')}<th class="no-sort">Pagamento</th><th class="no-sort">Comprovante</th><th class="no-sort" style="width:80px">Ações</th></tr></thead><tbody>${items.map(l=>{
     const isPago=(l.statusPag||'pago')==='pago';
-    const compCell=l.fileB64?`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" style="color:var(--green);font-size:11px" title="Baixar ${l.comprovante}">📎 ${(l.comprovante||'arquivo').slice(0,20)}</a>`:(l.comprovante?`<span style="color:var(--green);font-size:11px">📎 ${l.comprovante}</span>`:'<span style="color:var(--text3)">—</span>');
+    const compCell=l.driveUrl?`<a href="${l.driveUrl}" target="_blank" style="color:var(--brand3);font-size:11px" title="Ver no Google Drive">☁️ ${(l.comprovante||'Drive').slice(0,18)}</a>`:l.fileB64?`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" style="color:var(--green);font-size:11px" title="Baixar ${l.comprovante}">📎 ${(l.comprovante||'arquivo').slice(0,20)}</a>`:(l.comprovante?`<span style="color:var(--green);font-size:11px">📎 ${l.comprovante}</span>`:'<span style="color:var(--text3)">—</span>');
     const obraNm=todasObras?ST.obras.find(o=>o.id===l.obraId)?.nome:'';
     const catClr=CC[l.cat]||'#888';
     return `<tr style="border-left:3px solid ${catClr}">
@@ -2793,15 +2873,28 @@ function onDocF(e){
     else readB64(docF,b64=>{docFB64=b64;});
   }
 }
-function salvarDoc(){
+async function salvarDoc(){
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const tipo=document.getElementById('d-tipo').value.trim();if(!tipo){toast('Informe o tipo.','error');return;}
   if(!docF){toast('Selecione um arquivo.','error');return;}
-  ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:document.getElementById('d-data').value,validade:document.getElementById('d-validade').value||'',fileName:docF.name,fileB64:docFB64||'',ts:Date.now()});
+  // Upload para Drive
+  let driveUrl='',driveId='';
+  if(gToken){
+    toast('Enviando documento para o Drive...','info');
+    const nomeArqDoc='LUPA-DOC-'+slug(tipo)+'-'+slug(document.getElementById('d-data').value||td())+extOf(docF.name);
+    const result=await uploadToDrive(docF,nomeArqDoc);
+    if(result){driveUrl=result.url;driveId=result.id;}
+  }
+  ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:document.getElementById('d-data').value,validade:document.getElementById('d-validade').value||'',fileName:docF.name,fileB64:docFB64||'',driveUrl,driveId,ts:Date.now()});
   addAudit('Documento salvo',tipo);
-  const nomeArqDoc='LUPA-DOC-'+slug(tipo)+'-'+slug(document.getElementById('d-data').value||td())+extOf(docF.name);
-  autoDownload(docF,nomeArqDoc);
-  save();toast('Documento salvo! 📥 Arquivado em Downloads como: '+nomeArqDoc,'success');
+  if(driveUrl){
+    toast('Documento salvo! ☁️ Arquivado no Google Drive.','success');
+  } else {
+    const nomeArqDoc='LUPA-DOC-'+slug(tipo)+'-'+slug(document.getElementById('d-data').value||td())+extOf(docF.name);
+    autoDownload(docF,nomeArqDoc);
+    toast('Documento salvo! 📥 Arquivado em Downloads.','success');
+  }
+  save();
   ['d-tipo','d-desc','d-data','d-validade'].forEach(id=>document.getElementById(id).value='');
   docF=null;document.getElementById('doc-fn').textContent='';document.getElementById('d-file').value='';
   renderDocs();
@@ -2835,8 +2928,8 @@ function renderDocs(){
       ${expBadge?`<div style="margin-top:6px">${expBadge}</div>`:''}
       ${d.fileName?`<div style="font-size:9.5px;color:var(--text3);word-break:break-all;margin-top:2px">📎 ${d.fileName}</div>`:''}
       <div class="doc-card-acts" style="margin-top:8px">
-        ${d.fileB64?`<a href="${d.fileB64}" download="${d.fileName||d.tipo}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Baixar ${d.tipo}">⬇ Baixar</a>`:''}
-        <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${d.tipo}" ${d.fileB64?'':'style="flex:1"'}>🗑 Remover</button>
+        ${d.driveUrl?`<a href="${d.driveUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Ver ${d.tipo} no Drive">☁️ Drive</a>`:d.fileB64?`<a href="${d.fileB64}" download="${d.fileName||d.tipo}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Baixar ${d.tipo}">⬇ Baixar</a>`:''}
+        <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${d.tipo}">🗑 Remover</button>
       </div>
     </div>`;
   }).join('');
