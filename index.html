@@ -573,6 +573,24 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #nf-gen-val{width:100%!important;max-width:100%!important}
   .nf-add-row .btn-p{width:100%!important;justify-content:center!important}
   .nf-add-hint{display:none!important}
+  /* ── Lançamentos mobile ── */
+  /* Categoria NF: 3 colunas em vez de 5 */
+  .cat-picker{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+  .cat-tile{padding:10px 4px 8px!important}
+  .cat-tile-ico{font-size:20px!important}
+  .cat-tile-label{font-size:10px!important}
+  /* Pagamento: botões lado a lado largura total */
+  .pag-toggle{gap:6px!important}
+  .pag-opt{flex:1!important;min-width:0!important;padding:10px 8px!important;font-size:12px!important}
+  /* Filtros da tabela */
+  .tbl-filters-actions{flex-wrap:wrap;border-left:none;padding-left:0;border-top:1px solid var(--border2);padding-top:8px;width:100%;gap:6px}
+  .tbl-fil-todas{flex:1;justify-content:center}
+  .btn-limpar-fil{flex:1;justify-content:center}
+  /* Total bar */
+  .nf-total-bar{padding:8px 12px}
+  /* ── Obras/Cadastro mobile ── */
+  .page-hdr{flex-direction:column!important;align-items:flex-start!important;gap:10px!important}
+  .page-hdr>button,.page-hdr .btn{width:100%!important;justify-content:center!important}
   /* Grupos de botões — empilhar em coluna no mobile */
   .obra-btns-group{flex-direction:column;gap:8px}
   .obra-btns-group .btn{width:100%!important;justify-content:center;min-height:44px;font-size:14px}
@@ -1661,21 +1679,38 @@ const DRIVE_FOLDER_ID='1k4dQGFGA1X2GUySjb7uorxWBxy14OQ64';
 let gToken=null,gTokenClient=null,gSyncing=false,gLastSync=null;
 let gDriveFolderId=DRIVE_FOLDER_ID;
 
+let gRefreshTimer=null;
+
 function initGoogleAuth(){
   if(typeof google==='undefined'||!google.accounts)return;
   gTokenClient=google.accounts.oauth2.initTokenClient({
     client_id:GOOGLE_CLIENT_ID,
     scope:SHEETS_SCOPE,
     callback:(resp)=>{
-      if(resp.error){toast('Erro Google: '+resp.error,'error');updGoogleUI();return;}
+      if(resp.error){
+        // Falha silenciosa — usuário ainda não autorizou ou revogou
+        if(resp.error==='interaction_required'||resp.error==='access_denied'||resp.error==='immediate_failed'){
+          updGoogleUI();return;
+        }
+        toast('Erro Google: '+resp.error,'error');updGoogleUI();return;
+      }
       gToken=resp.access_token;
       localStorage.setItem('lupa_g_token',gToken);
+      // Renovar automaticamente antes de expirar (tokens duram 1h)
+      if(gRefreshTimer)clearTimeout(gRefreshTimer);
+      gRefreshTimer=setTimeout(()=>silentRefreshToken(),55*60*1000);
       updGoogleUI();
       syncFromSheets();
     }
   });
-  // Tentar token salvo (não persiste entre sessões — apenas indicador)
+  // Reconectar silenciosamente ao abrir o app
+  silentRefreshToken();
   updGoogleUI();
+}
+
+function silentRefreshToken(){
+  if(!gTokenClient)return;
+  try{gTokenClient.requestAccessToken({prompt:''});}catch(e){}
 }
 
 function toggleGoogleAuth(){
