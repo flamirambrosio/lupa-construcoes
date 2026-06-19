@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>LUPA Facilities — Controle de Obras · Macaé RJ</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
@@ -61,7 +61,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .logo-img{width:54px;height:54px;border-radius:13px;overflow:hidden;background:var(--lbg);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 0 2px rgba(93,173,226,.35),0 4px 16px rgba(0,0,0,.5)}
 .logo-img img{width:54px;height:54px;object-fit:cover;border-radius:13px}
 .logo-text{flex:1;min-width:0}
-.logo-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:3px;color:#EDF0FF;line-height:1;text-shadow:0 0 24px rgba(93,173,226,.4)}
+.logo-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;letter-spacing:3px;color:#EDF0FF;line-height:1;text-shadow:0 0 24px rgba(93,173,226,.4)}
 .logo-sub{font-size:10px;color:var(--brand3);letter-spacing:2.5px;text-transform:uppercase;margin-top:3px}
 .logo-city{font-size:9px;color:var(--text3);letter-spacing:.8px;margin-top:2px}
 /* ═══ OBRA SELECTOR ═══ */
@@ -102,12 +102,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .tb-left{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
 .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:7px;background:rgba(255,255,255,.1);border-radius:7px;border:none}
 .hamburger span{width:16px;height:2px;background:#fff;border-radius:2px}
-.tb-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff}
+.tb-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;color:#fff}
 .tb-obra{font-size:11px;color:rgba(255,255,255,.62);margin-top:1px;display:flex;align-items:center;gap:5px}
 .tb-obra .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
 .tb-right{display:flex;align-items:center;gap:7px;position:relative;z-index:1}
 .kpi-pill{background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:5px 11px;text-align:center;min-width:76px}
-.kpi-pv{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff}
+.kpi-pv{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:#fff}
 .kpi-pl{font-size:9px;color:rgba(255,255,255,.62);margin-top:1px;letter-spacing:.5px;text-transform:uppercase}
 /* budget alert pill */
 .kpi-pill.danger-pill{background:rgba(231,76,60,.3);border-color:rgba(231,76,60,.5);animation:pillPulse 2s infinite}
@@ -143,13 +143,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .page{display:none}.page.active{display:block;animation:fadeUp .28s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
-.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)}
+.page-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:600;color:var(--text)}
 .page-sub{font-size:12px;color:var(--text2);margin-top:3px}
 /* ═══ CARDS ═══ */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px;margin-bottom:16px;box-shadow:var(--cglow);transition:background .3s,border-color .3s}
 .card:hover{border-color:var(--border2)}
 .card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
-.card-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:600;color:var(--text)}
+.card-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--text)}
 .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:16px}
 .g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:11px;margin-bottom:14px}
 .g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:16px}
@@ -162,7 +162,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ki{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:16px}
 .ki.b{background:var(--blue-bg);color:var(--blue)}.ki.r{background:var(--red-bg);color:var(--red)}.ki.y{background:var(--yellow-bg);color:var(--yellow)}.ki.g{background:var(--green-bg);color:var(--green)}.ki.a{background:rgba(230,126,34,.12);color:var(--accent)}
 .kl{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
-.kv{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.kv{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1}
 .kv.b{color:var(--blue)}.kv.r{color:var(--red)}.kv.g{color:var(--green)}.kv.y{color:var(--yellow)}.kv.a{color:var(--accent)}
 .kd{font-size:10px;color:var(--text3);margin-top:4px}
 .prog{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:7px}
@@ -177,7 +177,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .oc-accent.concluida{background:linear-gradient(90deg,var(--green),#52BE80)}
 .oc-accent.vendida{background:linear-gradient(90deg,var(--blue),var(--brand3))}
 .oc-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px;margin-top:4px}
-.oc-name{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:2px}
+.oc-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:2px}
 .oc-addr{font-size:10.5px;color:var(--text3)}
 .oc-sbadge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-left:7px}
 .sb-and{background:rgba(230,126,34,.14);color:var(--accent);border:1px solid rgba(230,126,34,.24)}
@@ -186,7 +186,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .oc-kpis{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
 .omk{background:var(--bg3);border-radius:7px;padding:7px 9px}
 .omk-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
-.omk-v{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700}
+.omk-v{font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;font-weight:700}
 .omk-v.da{color:var(--red)}.omk-v.su{color:var(--green)}.omk-v.wa{color:var(--yellow)}.omk-v.ac{color:var(--accent)}
 /* ═══ BADGES ═══ */
 .badge{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:16px}
@@ -220,15 +220,16 @@ input:focus,select:focus,textarea:focus{border-color:var(--brand2);box-shadow:0 
 select option{background:var(--bg2);color:var(--text)}
 textarea{resize:vertical;min-height:60px}
 input[type=range]{padding:0;border:none;background:transparent;cursor:pointer;height:22px;accent-color:var(--brand2)}
-.obra-banner{display:flex;flex-direction:column;gap:6px;padding:16px 18px 14px 22px;margin-bottom:16px;background:linear-gradient(135deg,rgba(41,128,185,.16) 0%,rgba(21,68,105,.08) 100%);border:1.5px solid rgba(41,128,185,.38);border-radius:12px;position:relative;overflow:hidden}
-.obra-banner::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--brand2),var(--brand))}
-.obra-banner::after{content:'🏗️';position:absolute;right:-4px;top:-8px;font-size:72px;opacity:.07;line-height:1;pointer-events:none}
-.obra-banner-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.obra-banner-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--brand3);background:rgba(41,128,185,.2);border:1px solid rgba(41,128,185,.32);padding:3px 9px;border-radius:20px;flex-shrink:0}
-.obra-banner-label{font-size:10.5px;color:var(--text2);font-style:italic}
-.obra-banner-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);line-height:1.2;padding-right:60px}
-.obra-banner-end{font-size:11.5px;color:var(--text2);display:flex;align-items:center;gap:4px}
-.obra-banner-warn{margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.3px;color:#E67E22;background:rgba(230,126,34,.12);border:1px solid rgba(230,126,34,.35);padding:8px 12px;border-radius:8px}
+.obra-banner{display:flex;flex-direction:column;gap:10px;padding:14px 14px 12px;margin-bottom:16px;background:var(--surface);border:1px solid rgba(41,128,185,.3);border-radius:12px;position:relative;overflow:hidden}
+.obra-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--brand3))}
+.obra-banner::after{content:'';display:none}
+.obra-banner-top{display:flex;align-items:center;justify-content:center;gap:6px}
+.obra-banner-badge{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--brand3);background:rgba(41,128,185,.12);border:1px solid rgba(41,128,185,.25);padding:3px 10px;border-radius:20px;white-space:nowrap}
+.obra-banner-label{font-size:10.5px;color:var(--text2);text-align:center}
+.obra-banner-plate{width:100%;background:linear-gradient(135deg,rgba(41,128,185,.12),rgba(41,128,185,.05));border:1px solid rgba(41,128,185,.2);border-left:4px solid var(--brand2);border-radius:8px;padding:10px 14px;box-sizing:border-box}
+.obra-banner-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.2}
+.obra-banner-end{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;margin-top:4px}
+.obra-banner-warn{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:600;color:#E67E22;background:rgba(230,126,34,.08);border:1px solid rgba(230,126,34,.25);padding:7px 12px;border-radius:8px;box-sizing:border-box}
 /* legado */
 .confirm-banner{display:none}
 /* ═══ MATERIAL AUTOCOMPLETE ═══ */
@@ -287,7 +288,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .btn-limpar-fil:hover{background:linear-gradient(135deg,#F39C12,#E67E22);transform:translateY(-1px);box-shadow:0 3px 12px rgba(230,126,34,.4)}
 /* ═══ CALENDAR ═══ */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cal-mo{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.cal-mo{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal-dh{text-align:center;font-size:9px;font-weight:700;color:var(--text3);padding:3px;letter-spacing:.7px;text-transform:uppercase}
 .cal-day{min-height:56px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);transition:all .2s;position:relative}
@@ -315,7 +316,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 /* ═══ SLIDER ═══ */
 .sl-row{display:flex;align-items:center;gap:9px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:8px 11px}
 .sl-lbl{font-size:12px;color:var(--text2);min-width:48px}
-.sl-val{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--brand3);min-width:33px;text-align:right}
+.sl-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;color:var(--brand3);min-width:33px;text-align:right}
 .sl-unit{font-size:10.5px;color:var(--text3)}
 /* ═══ RECURRING ═══ */
 .rec-item{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;margin-bottom:6px}
@@ -348,7 +349,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .modal-ov.open{display:flex}
 .modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.5)}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.modal-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.modal-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
 .modal-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:15px;transition:all .2s;font-family:sans-serif}
 .modal-close:hover{background:var(--red-bg);color:var(--red)}
 .nf-row{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:13px;margin-bottom:9px;position:relative}
@@ -432,7 +433,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .nf-item-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;margin-bottom:6px;animation:slideDown .15s ease}
 .nf-item-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
 .nf-item-desc{flex:1;font-size:12.5px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nf-item-val{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--green);flex-shrink:0}
+.nf-item-val{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--green);flex-shrink:0}
 .nf-total-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(41,128,185,.07);border:1px solid rgba(41,128,185,.18);border-radius:9px;margin:10px 0}
 .nf-total-label{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.6px;text-transform:uppercase}
 .nf-total-val{display:inline-flex;align-items:baseline;gap:3px}
@@ -478,7 +479,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .doc-card-new.expiring{border-color:rgba(241,196,15,.35)}
 .doc-card-new.expired{border-color:rgba(231,76,60,.35)}
 .doc-card-ico{font-size:28px;line-height:1;margin-left:8px}
-.doc-card-tipo{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-left:8px;word-break:break-word}
+.doc-card-tipo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-left:8px;word-break:break-word}
 .doc-card-meta{font-size:10.5px;color:var(--text3);margin-left:8px;display:flex;flex-direction:column;gap:2px}
 .doc-card-acts{display:flex;gap:5px;margin-left:8px;margin-top:2px}
 @media(max-width:480px){.doc-grid-new{grid-template-columns:1fr}}
@@ -492,7 +493,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .pie-leg-item{display:flex;align-items:center;gap:7px;min-width:0}
 .pie-leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
 .pie-leg-label{font-size:11.5px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
-.pie-leg-val{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--text);flex-shrink:0}
+.pie-leg-val{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;color:var(--text);flex-shrink:0}
 .pie-leg-pct{font-size:10px;color:var(--text3);flex-shrink:0}
 @media(max-width:900px){.chart-row{grid-template-columns:1fr}}
 /* ═══ RESPONSIVE ═══ */
@@ -536,7 +537,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* Banner Google — não vazar */
   .g-required-banner{flex-wrap:wrap!important;gap:6px!important}
   /* Banner obra mobile */
-  .obra-banner{padding:14px 16px 12px 20px}
+  .obra-banner{padding:14px 16px 12px 16px}
   .obra-banner-name{font-size:16px;padding-right:40px}
   /* CORREÇÃO RAIZ: tabela min-width:560px inflava toda a página como flex item */
   .main-wrap{min-width:0;overflow-x:hidden}
@@ -598,8 +599,13 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* Total bar */
   .nf-total-bar{padding:8px 12px}
   /* ── Obras/Cadastro mobile ── */
-  .page-hdr{flex-direction:column!important;align-items:flex-start!important;gap:10px!important}
+  .page-hdr{flex-direction:column!important;align-items:center!important;gap:10px!important;text-align:center!important}
+  .page-hdr>div:first-child{width:100%;text-align:center}
+  .page-title{text-align:center!important}
+  .page-sub{text-align:center!important}
   .page-hdr>button,.page-hdr .btn{width:100%!important;justify-content:center!important}
+  .pend-top-btns{display:grid!important;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .pend-top-btns .btn{width:100%!important;justify-content:center!important;min-height:44px;font-size:13px}
   /* Grupos de botões — empilhar em coluna no mobile */
   .obra-btns-group{flex-direction:column;gap:8px}
   .obra-btns-group .btn{width:100%!important;justify-content:center;min-height:44px;font-size:14px}
@@ -635,7 +641,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .login-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.5);text-align:center}
 .login-logo{width:72px;height:72px;border-radius:16px;overflow:hidden;background:var(--lbg);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(93,173,226,.35),0 4px 16px rgba(0,0,0,.5)}
 .login-logo img{width:72px;height:72px;object-fit:cover}
-.login-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:3px;color:var(--text);margin-bottom:4px}
+.login-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;letter-spacing:3px;color:var(--text);margin-bottom:4px}
 .login-sub{font-size:11px;color:var(--brand3);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
 .user-chip{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--text2);margin-bottom:6px}
 .user-chip-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
@@ -660,7 +666,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .rel-card-top{display:flex;align-items:flex-start;gap:12px}
 .rel-card-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .rel-card-info{flex:1}
-.rel-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.rel-card-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
 .rel-card-desc{font-size:11.5px;color:var(--text2);line-height:1.5}
 .rel-card-tags{display:flex;flex-wrap:wrap;gap:5px}
 .rel-tag{font-size:9.5px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.3px}
@@ -670,7 +676,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .rel-modal-ov.open{display:flex}
 .rel-modal{background:#fff;color:#1a1a2e;border-radius:14px;width:100%;max-width:860px;padding:0;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.35)}
 .rel-modal-toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#1A3A5C;color:#fff;gap:12px}
-.rel-modal-toolbar-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.rel-modal-toolbar-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700}
 .rel-modal-toolbar-btns{display:flex;gap:8px}
 .rel-print-btn{padding:7px 18px;background:#27AE60;color:#fff;border:none;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif}
 .rel-close-btn{padding:7px 14px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:7px;font-size:12.5px;cursor:pointer;font-family:'DM Sans',sans-serif}
@@ -679,11 +685,11 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .rpt-header{display:flex;align-items:center;gap:14px;padding:14px 18px;margin-bottom:20px;background:linear-gradient(135deg,#1A3A5C,#2471A3);border-radius:10px;color:#fff}
 .rpt-logo{width:42px;height:42px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .rpt-logo img{width:38px;height:38px;object-fit:contain}
-.rpt-logo-fallback{font-family:'Syne',sans-serif;font-size:13px;font-weight:900;color:#1A3A5C;letter-spacing:.5px}
+.rpt-logo-fallback{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:900;color:#1A3A5C;letter-spacing:.5px}
 .rpt-header-divider{width:1px;height:36px;background:rgba(255,255,255,.25);flex-shrink:0}
 .rpt-header-info{flex:1;min-width:0}
 .rpt-header-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;margin-bottom:3px}
-.rpt-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpt-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rpt-meta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:5px}
 .rpt-meta-item{display:flex;align-items:center;gap:4px;font-size:10.5px;opacity:.85}
 .rpt-meta-item strong{opacity:1;font-weight:600}
@@ -692,7 +698,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .rpt-kpi{background:#F4F7FB;border-radius:10px;padding:12px 14px;border-left:3px solid #2980B9}
 .rpt-kpi-v{font-family:'DM Sans',sans-serif;font-size:17px;font-weight:700;color:#1A3A5C;font-variant-numeric:tabular-nums}
 .rpt-kpi-l{font-size:10px;color:#666;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
-.rpt-section{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#2980B9;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid #E0E8F0}
+.rpt-section{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#2980B9;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid #E0E8F0}
 .rpt-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:16px}
 .rpt-table th{background:#1A3A5C;color:#fff;padding:7px 10px;text-align:left;font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
 .rpt-table td{padding:7px 10px;border-bottom:1px solid #E8EEF4;color:#2C3E50;vertical-align:middle}
@@ -1112,10 +1118,12 @@ input,select,textarea{min-height:44px}
     <div class="obra-banner" role="status" aria-live="polite">
       <div class="obra-banner-top">
         <span class="obra-banner-badge">🏗️ Obra Ativa</span>
-        <span class="obra-banner-label">todos os lançamentos serão vinculados a</span>
+        <span class="obra-banner-label">— lançamentos vinculados a</span>
       </div>
-      <div class="obra-banner-name" id="conf-ob-nm">—</div>
-      <div class="obra-banner-end" id="conf-ob-end"></div>
+      <div class="obra-banner-plate">
+        <div class="obra-banner-name" id="conf-ob-nm">—</div>
+        <div class="obra-banner-end" id="conf-ob-end"></div>
+      </div>
       <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
     </div>
     <!-- hidden legacy fields to avoid JS errors -->
@@ -1249,7 +1257,7 @@ input,select,textarea{min-height:44px}
   <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr">
     <div><div class="page-title">Pendências da Obra</div><div class="page-sub">Calendário de prazos e tarefas</div></div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap">
+    <div class="pend-top-btns">
       <button class="btn btn-p btn-sm" onclick="togPF()" aria-label="Nova pendência">+ Nova</button>
       <button class="btn btn-a btn-sm" onclick="togRF()" aria-label="Nova periódica">🔄 Periódica</button>
     </div>
@@ -1335,9 +1343,11 @@ input,select,textarea{min-height:44px}
     <div class="obra-banner" role="status">
       <div class="obra-banner-top">
         <span class="obra-banner-badge">🏗️ Obra Ativa</span>
-        <span class="obra-banner-label">todos os documentos serão vinculados a</span>
+        <span class="obra-banner-label">— documentos vinculados a</span>
       </div>
-      <div class="obra-banner-name" id="doc-ob-nm">—</div>
+      <div class="obra-banner-plate">
+        <div class="obra-banner-name" id="doc-ob-nm">—</div>
+      </div>
       <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
     </div>
 
@@ -3083,7 +3093,7 @@ function renderDocs(){
       <div style="display:flex;align-items:flex-start;gap:10px">
         <span style="font-size:30px;line-height:1;flex-shrink:0">${DI[d.cat]||'📄'}</span>
         <div style="min-width:0;flex:1">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);word-break:break-word">${d.tipo}</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--text);word-break:break-word">${d.tipo}</div>
           <div style="font-size:10.5px;color:var(--text3);margin-top:2px">${DOC_CAT_LABELS[d.cat]||d.cat}${d.data?' · '+fD(d.data):''}</div>
           ${d.desc?`<div style="font-size:10.5px;color:var(--text2);margin-top:3px">${d.desc}</div>`:''}
         </div>
