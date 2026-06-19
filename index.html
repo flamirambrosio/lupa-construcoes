@@ -305,6 +305,16 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .cd.alta{background:var(--red)}.cd.media{background:var(--yellow)}.cd.baixa{background:var(--green)}.cd.recur{background:var(--blue)}
 .cal-lbl{font-size:8px;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cal-cnt{position:absolute;top:3px;right:4px;font-size:9px;font-weight:700;padding:1px 4px;border-radius:7px}
+/* ═══ DASH PENDÊNCIAS BANNER ═══ */
+.dash-pend-banner{width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;margin-bottom:16px;background:linear-gradient(135deg,rgba(230,126,34,.14),rgba(230,126,34,.06));border:1.5px solid rgba(230,126,34,.4);border-left:5px solid #E67E22;border-radius:12px;cursor:pointer;transition:all .2s;text-align:left;box-sizing:border-box;box-shadow:0 2px 10px rgba(230,126,34,.12)}
+.dash-pend-banner:hover,.dash-pend-banner:active{background:linear-gradient(135deg,rgba(230,126,34,.22),rgba(230,126,34,.1));transform:translateY(-1px);box-shadow:0 4px 16px rgba(230,126,34,.2)}
+.dash-pend-left{display:flex;align-items:center;gap:12px}
+.dash-pend-icon{font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(230,126,34,.4))}
+.dash-pend-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.dash-pend-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.dash-pend-right{display:flex;align-items:center;gap:10px}
+.dash-pend-count{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#E67E22;line-height:1}
+.dash-pend-arrow{font-size:20px;color:#E67E22;opacity:.7}
 /* ═══ PENDÊNCIAS ═══ */
 .pend-item{display:flex;align-items:flex-start;gap:9px;padding:11px 0;border-bottom:1px solid var(--border)}
 .pend-item:last-child{border-bottom:none}
@@ -544,6 +554,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .main-content{min-width:0!important;overflow-x:hidden!important}
   /* Tabela: scroll horizontal DENTRO do .tw, não vaza para a página */
   .tw{overflow-x:auto!important;max-width:100%}
+  #kpi-glob{grid-template-columns:repeat(2,1fr)!important}
   .kpi-glob .kc{padding:10px}
   .kpi-glob .kv{font-size:18px}
   .card{padding:12px}
@@ -1058,13 +1069,25 @@ input,select,textarea{min-height:44px}
     <button class="btn" id="pp-ano" onclick="setDashPeriodo('ano',this)">Este Ano</button>
     <span id="dash-periodo-label" style="font-size:11px;color:var(--brand3);margin-left:4px"></span>
   </div>
-  <div class="g5" id="kpi-glob">
+  <div class="g4" id="kpi-glob">
     <div class="kc cb"><div class="ki b" aria-hidden="true">🏠</div><div class="kl">Obras Ativas</div><div class="kv b" id="k-obras">0</div></div>
     <div class="kc cr"><div class="ki r" aria-hidden="true">💰</div><div class="kl">Total Investido</div><div class="kv r" id="k-total">R$0</div></div>
     <div class="kc cg"><div class="ki g" aria-hidden="true">📈</div><div class="kl">VGV / Receita</div><div class="kv g" id="k-vgv">R$0</div></div>
     <div class="kc ca"><div class="ki a" aria-hidden="true">💹</div><div class="kl">Lucro Estimado</div><div class="kv a" id="k-lucro">R$0</div></div>
-    <div class="kc cy"><div class="ki y" aria-hidden="true">⚠️</div><div class="kl">Pendências</div><div class="kv y" id="k-pend">0</div></div>
   </div>
+  <button class="dash-pend-banner" onclick="showPage('pendencias')" aria-label="Ver pendências">
+    <div class="dash-pend-left">
+      <div class="dash-pend-icon">⚠️</div>
+      <div>
+        <div class="dash-pend-title">Pendências</div>
+        <div class="dash-pend-sub">Prazos e tarefas da obra</div>
+      </div>
+    </div>
+    <div class="dash-pend-right">
+      <div class="dash-pend-count" id="k-pend">0</div>
+      <div class="dash-pend-arrow">→</div>
+    </div>
+  </button>
   <div class="card">
     <div class="card-hdr"><div class="card-title">🏠 Obras Cadastradas</div><button class="btn btn-sm btn-a" onclick="showPage('cadastro',null)" aria-label="Nova obra">+ Nova Obra</button></div>
     <div class="obras-grid" id="obras-grid"></div>
