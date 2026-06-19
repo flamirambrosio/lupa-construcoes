@@ -220,14 +220,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--brand2);box-shadow:0 
 select option{background:var(--bg2);color:var(--text)}
 textarea{resize:vertical;min-height:60px}
 input[type=range]{padding:0;border:none;background:transparent;cursor:pointer;height:22px;accent-color:var(--brand2)}
-.obra-banner{display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:16px;background:linear-gradient(135deg,rgba(231,76,60,.12),rgba(192,57,43,.06));border:1.5px solid rgba(231,76,60,.35);border-radius:10px;position:relative;overflow:hidden}
-.obra-banner::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#E74C3C,#C0392B)}
-.obra-banner-ico{font-size:20px;flex-shrink:0}
-.obra-banner-body{flex:1;min-width:0}
-.obra-banner-label{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#E74C3C;margin-bottom:2px}
-.obra-banner-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.obra-banner-end{font-size:11px;color:var(--text2);margin-top:1px}
-.obra-banner-warn{font-size:10.5px;color:#E74C3C;font-weight:600;background:rgba(231,76,60,.1);padding:3px 9px;border-radius:20px;white-space:normal;flex-shrink:0;text-align:center}
+.obra-banner{display:flex;flex-direction:column;gap:6px;padding:16px 18px 14px 22px;margin-bottom:16px;background:linear-gradient(135deg,rgba(41,128,185,.16) 0%,rgba(21,68,105,.08) 100%);border:1.5px solid rgba(41,128,185,.38);border-radius:12px;position:relative;overflow:hidden}
+.obra-banner::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--brand2),var(--brand))}
+.obra-banner::after{content:'🏗️';position:absolute;right:-4px;top:-8px;font-size:72px;opacity:.07;line-height:1;pointer-events:none}
+.obra-banner-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.obra-banner-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--brand3);background:rgba(41,128,185,.2);border:1px solid rgba(41,128,185,.32);padding:3px 9px;border-radius:20px;flex-shrink:0}
+.obra-banner-label{font-size:10.5px;color:var(--text2);font-style:italic}
+.obra-banner-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);line-height:1.2;padding-right:60px}
+.obra-banner-end{font-size:11.5px;color:var(--text2);display:flex;align-items:center;gap:4px}
+.obra-banner-warn{margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.3px;color:#E67E22;background:rgba(230,126,34,.12);border:1px solid rgba(230,126,34,.35);padding:8px 12px;border-radius:8px}
 /* legado */
 .confirm-banner{display:none}
 /* ═══ MATERIAL AUTOCOMPLETE ═══ */
@@ -534,9 +535,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .doc-cat-picker{grid-template-columns:repeat(2,1fr)!important}
   /* Banner Google — não vazar */
   .g-required-banner{flex-wrap:wrap!important;gap:6px!important}
-  /* Banner obra — não cortar */
-  .obra-banner{flex-wrap:wrap!important}
-  .obra-banner-warn{width:100%;text-align:center;border-radius:8px}
+  /* Banner obra mobile */
+  .obra-banner{padding:14px 16px 12px 20px}
+  .obra-banner-name{font-size:16px;padding-right:40px}
   /* CORREÇÃO RAIZ: tabela min-width:560px inflava toda a página como flex item */
   .main-wrap{min-width:0;overflow-x:hidden}
   .main-content{min-width:0!important;overflow-x:hidden!important}
@@ -1109,13 +1110,13 @@ input,select,textarea{min-height:44px}
 
   <div class="card" style="margin-bottom:14px">
     <div class="obra-banner" role="status" aria-live="polite">
-      <div class="obra-banner-ico">🏗️</div>
-      <div class="obra-banner-body">
-        <div class="obra-banner-label">Obra ativa — todos os lançamentos serão vinculados a</div>
-        <div class="obra-banner-name" id="conf-ob-nm">—</div>
-        <div class="obra-banner-end" id="conf-ob-end"></div>
+      <div class="obra-banner-top">
+        <span class="obra-banner-badge">🏗️ Obra Ativa</span>
+        <span class="obra-banner-label">todos os lançamentos serão vinculados a</span>
       </div>
-      <div class="obra-banner-warn">⚠️ Confirme antes de salvar</div>
+      <div class="obra-banner-name" id="conf-ob-nm">—</div>
+      <div class="obra-banner-end" id="conf-ob-end"></div>
+      <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
     </div>
     <!-- hidden legacy fields to avoid JS errors -->
     <select id="f-cat" style="display:none"></select>
@@ -1332,12 +1333,12 @@ input,select,textarea{min-height:44px}
       <div><div class="card-title">📁 Anexar Documento</div><div class="chart-subtitle">Vinculado à obra selecionada</div></div>
     </div>
     <div class="obra-banner" role="status">
-      <div class="obra-banner-ico">🏗️</div>
-      <div class="obra-banner-body">
-        <div class="obra-banner-label">Obra ativa — todos os documentos serão vinculados a</div>
-        <div class="obra-banner-name" id="doc-ob-nm">—</div>
+      <div class="obra-banner-top">
+        <span class="obra-banner-badge">🏗️ Obra Ativa</span>
+        <span class="obra-banner-label">todos os documentos serão vinculados a</span>
       </div>
-      <div class="obra-banner-warn">⚠️ Confirme antes de salvar</div>
+      <div class="obra-banner-name" id="doc-ob-nm">—</div>
+      <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
     </div>
 
     <!-- Categoria do documento -->
