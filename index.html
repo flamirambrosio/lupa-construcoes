@@ -537,9 +537,11 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* Banner obra — não cortar */
   .obra-banner{flex-wrap:wrap!important}
   .obra-banner-warn{width:100%;text-align:center;border-radius:8px}
-  /* Evitar overflow horizontal em todo o conteúdo */
-  .main-content{overflow-x:hidden!important}
-  .card{overflow-x:hidden}
+  /* CORREÇÃO RAIZ: tabela min-width:560px inflava toda a página como flex item */
+  .main-wrap{min-width:0;overflow-x:hidden}
+  .main-content{min-width:0!important;overflow-x:hidden!important}
+  /* Tabela: scroll horizontal DENTRO do .tw, não vaza para a página */
+  .tw{overflow-x:auto!important;max-width:100%}
   .kpi-glob .kc{padding:10px}
   .kpi-glob .kv{font-size:18px}
   .card{padding:12px}

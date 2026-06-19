@@ -1,5 +1,5 @@
 // LUPA Controle Financeiro — Service Worker
-const CACHE = 'lupa-v4';
+const CACHE = 'lupa-v5';
 const APP_SHELL = ['/lupa-construcoes/', '/lupa-construcoes/index.html'];
 
 // Instala e faz cache do app shell
