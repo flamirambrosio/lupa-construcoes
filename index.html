@@ -227,7 +227,7 @@ input[type=range]{padding:0;border:none;background:transparent;cursor:pointer;he
 .obra-banner-label{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#E74C3C;margin-bottom:2px}
 .obra-banner-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .obra-banner-end{font-size:11px;color:var(--text2);margin-top:1px}
-.obra-banner-warn{font-size:10.5px;color:#E74C3C;font-weight:600;background:rgba(231,76,60,.1);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.obra-banner-warn{font-size:10.5px;color:#E74C3C;font-weight:600;background:rgba(231,76,60,.1);padding:3px 9px;border-radius:20px;white-space:normal;flex-shrink:0;text-align:center}
 /* legado */
 .confirm-banner{display:none}
 /* ═══ MATERIAL AUTOCOMPLETE ═══ */
@@ -449,7 +449,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 @media(max-width:360px){.cat-picker{grid-template-columns:repeat(2,1fr)}}
 /* ═══ PAYMENT TOGGLE ═══ */
 .pag-toggle{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
-.pag-opt{display:flex;align-items:center;gap:8px;padding:10px 20px;cursor:pointer;font-size:13px;font-weight:600;border-radius:10px;border:2px solid var(--border2);background:var(--surface2);color:var(--text2);transition:all .18s;user-select:none;-webkit-user-select:none;min-width:130px;justify-content:center}
+.pag-opt{display:flex;align-items:center;gap:8px;padding:10px 20px;cursor:pointer;font-size:13px;font-weight:600;border-radius:10px;border:2px solid var(--border2);background:var(--surface2);color:var(--text2);transition:all .18s;user-select:none;-webkit-user-select:none;min-width:0;flex:1;justify-content:center}
 .pag-opt:hover{border-color:var(--brand2);background:var(--surface3);color:var(--text)}
 .pag-opt input{position:absolute;opacity:0;width:0;height:0}
 .pag-opt.sel-pago{background:rgba(39,174,96,.15);color:var(--green);border-color:var(--green);box-shadow:0 0 0 3px rgba(39,174,96,.12)}
@@ -527,8 +527,16 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .tbl-filters-search input{width:100%!important;max-width:100%!important}
   .tbl-filters-main{width:100%;justify-content:flex-start}
   .tbl-filters input,.tbl-filters select{max-width:100%!important}
-  .cat-picker{grid-template-columns:repeat(2,1fr)!important}
+  .cat-picker{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+  .cat-tile{padding:10px 4px 8px!important}
+  .cat-tile-ico{font-size:20px!important}
+  .cat-tile-label{font-size:10px!important}
   .doc-cat-picker{grid-template-columns:repeat(2,1fr)!important}
+  /* Banner Google — não vazar */
+  .g-required-banner{flex-wrap:wrap!important;gap:6px!important}
+  /* Banner obra — não cortar */
+  .obra-banner{flex-wrap:wrap!important}
+  .obra-banner-warn{width:100%;text-align:center;border-radius:8px}
   .kpi-glob .kc{padding:10px}
   .kpi-glob .kv{font-size:18px}
   .card{padding:12px}
@@ -574,14 +582,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .nf-add-row .btn-p{width:100%!important;justify-content:center!important}
   .nf-add-hint{display:none!important}
   /* ── Lançamentos mobile ── */
-  /* Categoria NF: 3 colunas em vez de 5 */
-  .cat-picker{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
-  .cat-tile{padding:10px 4px 8px!important}
-  .cat-tile-ico{font-size:20px!important}
-  .cat-tile-label{font-size:10px!important}
   /* Pagamento: botões lado a lado largura total */
   .pag-toggle{gap:6px!important}
-  .pag-opt{flex:1!important;min-width:0!important;padding:10px 8px!important;font-size:12px!important}
+  .pag-opt{padding:10px 8px!important;font-size:12px!important}
   /* Filtros da tabela */
   .tbl-filters-actions{flex-wrap:wrap;border-left:none;padding-left:0;border-top:1px solid var(--border2);padding-top:8px;width:100%;gap:6px}
   .tbl-fil-todas{flex:1;justify-content:center}
