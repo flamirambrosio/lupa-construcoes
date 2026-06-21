@@ -1829,10 +1829,52 @@ async function initDriveFolder(){
   return DRIVE_FOLDER_ID;
 }
 
-async function uploadToDrive(file,nomeArquivo){
+// Cache de IDs de subpastas: { 'obraId/tipo': folderId }
+const _driveFolderCache={};
+
+async function getDriveSubfolder(parentId, nome){
+  const cacheKey=parentId+'|'+nome;
+  if(_driveFolderCache[cacheKey])return _driveFolderCache[cacheKey];
+  // Verifica se já existe
+  const q=encodeURIComponent(`name='${nome}' and '${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+  const res=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,{
+    headers:{Authorization:`Bearer ${gToken}`}
+  });
+  const data=await res.json();
+  if(data.files&&data.files.length>0){
+    _driveFolderCache[cacheKey]=data.files[0].id;
+    return data.files[0].id;
+  }
+  // Cria a pasta
+  const cr=await fetch('https://www.googleapis.com/drive/v3/files',{
+    method:'POST',
+    headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
+    body:JSON.stringify({name:nome,mimeType:'application/vnd.google-apps.folder',parents:[parentId]})
+  });
+  const folder=await cr.json();
+  _driveFolderCache[cacheKey]=folder.id;
+  return folder.id;
+}
+
+async function getObraFolder(obraId, tipo){
+  // Estrutura: LUPA/ <Nome da Obra>/ <Comprovantes|Documentos>/
+  const rootId=await initDriveFolder();
+  const obra=ST.obras.find(o=>o.id===obraId);
+  const obraNome=obra?obra.nome:('Obra-'+obraId);
+  const obraFolderId=await getDriveSubfolder(rootId, obraNome);
+  const tipoNome=tipo==='comprovante'?'Comprovantes':'Documentos';
+  return await getDriveSubfolder(obraFolderId, tipoNome);
+}
+
+async function uploadToDrive(file, nomeArquivo, obraId, tipo){
   if(!gToken||!file)return null;
   try{
-    const folderId=await initDriveFolder();
+    let folderId;
+    if(obraId){
+      folderId=await getObraFolder(obraId, tipo||'comprovante');
+    }else{
+      folderId=await initDriveFolder();
+    }
     const meta={name:nomeArquivo,parents:[folderId]};
     const form=new FormData();
     form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
@@ -2707,7 +2749,7 @@ async function salvarNFMulti(){
   if(cFile&&gToken){
     toast('Enviando comprovante para o Drive...','info');
     const nome='LUPA-NF-'+slug(nfNum)+'-'+slug(nfForn)+'-'+data+extOf(cFile.name);
-    const result=await uploadToDrive(cFile,nome);
+    const result=await uploadToDrive(cFile,nome,ob.id,'comprovante');
     if(result){driveUrl=result.url;driveId=result.id;}
   }
   nfItems.forEach(x=>{
@@ -3119,7 +3161,7 @@ async function salvarDoc(){
   if(gToken){
     toast('Enviando documento para o Drive...','info');
     const nomeArqDoc='LUPA-DOC-'+slug(tipo)+'-'+slug(document.getElementById('d-data').value||td())+extOf(docF.name);
-    const result=await uploadToDrive(docF,nomeArqDoc);
+    const result=await uploadToDrive(docF,nomeArqDoc,ob.id,'documento');
     if(result){driveUrl=result.url;driveId=result.id;}
   }
   ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:document.getElementById('d-data').value,validade:document.getElementById('d-validade').value||'',fileName:docF.name,fileB64:docFB64||'',driveUrl,driveId,ts:Date.now()});
