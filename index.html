@@ -477,6 +477,23 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .fsec{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px}
 .fsec-title{font-size:10px;font-weight:800;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:7px}
 .fsec-title::before{content:'';display:inline-block;width:3px;height:12px;border-radius:2px;background:var(--brand2);flex-shrink:0}
+/* OCR */
+.btn-ocr{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,#8e44ad,#6c3483);border:none;border-radius:7px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;white-space:nowrap;box-shadow:0 2px 8px rgba(142,68,173,.3)}
+.btn-ocr:hover{filter:brightness(1.1)}
+.ocr-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.ocr-overlay.open{display:flex}
+.ocr-spin{width:48px;height:48px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ocr-msg{color:#fff;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif}
+.ocr-preview{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;display:none}
+.ocr-preview.open{display:block}
+.ocr-preview-title{font-size:10px;font-weight:800;color:#8e44ad;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ocr-preview-title::before{content:'✦';color:#8e44ad}
+.ocr-field-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.ocr-field-lbl{color:var(--text3);min-width:90px;font-size:11px}
+.ocr-confidence{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;margin-left:6px}
+.ocr-conf-ok{background:rgba(39,174,96,.15);color:#27AE60}
+.ocr-conf-warn{background:rgba(243,156,18,.15);color:#E67E22}
 .form-reveal{animation:slideDown .2s ease}
 @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 /* ═══ DOC CAT PICKER ═══ */
@@ -781,6 +798,12 @@ input,select,textarea{min-height:44px}
 <body>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 <!-- NF MODAL -->
+<!-- OCR Loading Overlay -->
+<div class="ocr-overlay" id="ocr-overlay">
+  <div class="ocr-spin"></div>
+  <div class="ocr-msg" id="ocr-msg">Lendo nota fiscal...</div>
+</div>
+
 <div class="modal-ov" id="nf-modal" role="dialog" aria-label="Inserção por Nota Fiscal">
 <div class="modal-box">
   <div class="modal-hdr"><div class="modal-title">🧾 Inserção por Nota Fiscal</div><button class="modal-close" onclick="closeNF()" aria-label="Fechar">✕</button></div>
@@ -1168,7 +1191,13 @@ input,select,textarea{min-height:44px}
     <!-- ═══ LANÇAMENTOS (NF) ═══ -->
     <div id="mode-nf">
       <div class="fsec" style="margin-top:14px">
-        <div class="fsec-title">Dados da Nota Fiscal</div>
+        <div class="fsec-title" style="justify-content:space-between">
+          <span>Dados da Nota Fiscal</span>
+          <label for="ocr-input" class="btn-ocr" title="Fotografe ou selecione a NF para preencher automaticamente">📷 Escanear NF</label>
+          <input type="file" id="ocr-input" style="display:none" accept="image/*" capture="environment" onchange="iniciarOCR(event)">
+        </div>
+        <!-- Preview do resultado OCR -->
+        <div class="ocr-preview" id="ocr-preview"></div>
         <div class="fg" style="margin-bottom:10px">
           <div class="fgg"><label class="fl" for="nf-num">Nº da NF <span class="req">*</span></label><input type="text" id="nf-num" placeholder="Ex: NF-001234" autocomplete="off"></div>
           <div class="fgg"><label class="fl" for="nf-forn">Emissor / Fornecedor</label>
@@ -2618,6 +2647,205 @@ function salvarL(){
 /* ══ MODO LANÇAMENTOS ══ */
 let lancMode='nf',nfItems=[],nfCat='';
 function setLancMode(mode){/* modo único — NF */limparL();}
+/* ═══════════════════════════════════════
+   OCR DE NOTAS FISCAIS via Google Drive
+   ═══════════════════════════════════════ */
+
+async function iniciarOCR(e){
+  const file=e.target.files[0];
+  e.target.value=''; // reset input
+  if(!file)return;
+  if(!gToken){toast('⚠️ Conecte o Google para usar o OCR. Clique em "● Sheets" no topo.','warn');return;}
+  if(!file.type.startsWith('image/')){toast('Use uma imagem (JPG, PNG, etc.).','error');return;}
+
+  const overlay=document.getElementById('ocr-overlay');
+  const msgEl=document.getElementById('ocr-msg');
+  overlay.classList.add('open');
+  msgEl.textContent='Enviando imagem...';
+
+  try{
+    // 1. Upload para o Drive com OCR ativado (converte para Google Doc)
+    msgEl.textContent='Lendo nota fiscal com OCR...';
+    const meta={name:'_lupa_ocr_tmp_'+Date.now(),mimeType:'application/vnd.google-apps.document',parents:[DRIVE_FOLDER_ID]};
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file',file);
+    const upRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&ocr=true&fields=id',{
+      method:'POST',
+      headers:{Authorization:`Bearer ${gToken}`},
+      body:form
+    });
+    if(!upRes.ok){const err=await upRes.text();throw new Error('Upload OCR falhou: '+err);}
+    const {id:docId}=await upRes.json();
+
+    // 2. Exporta o Doc como texto puro
+    msgEl.textContent='Extraindo texto...';
+    const txtRes=await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/export?mimeType=text/plain`,{
+      headers:{Authorization:`Bearer ${gToken}`}
+    });
+    const texto=await txtRes.text();
+
+    // 3. Apaga o arquivo temporário
+    fetch(`https://www.googleapis.com/drive/v3/files/${docId}`,{method:'DELETE',headers:{Authorization:`Bearer ${gToken}`}});
+
+    overlay.classList.remove('open');
+
+    // 4. Parseia e preenche
+    const parsed=parseNFText(texto);
+    fillNFFromOCR(parsed,texto);
+
+  }catch(err){
+    overlay.classList.remove('open');
+    console.error('OCR error:',err);
+    toast('Erro no OCR: '+err.message,'error');
+  }
+}
+
+function parseNFText(txt){
+  const r={nfNum:'',fornecedor:'',data:'',cnpj:'',itens:[],total:0,confianca:{}};
+  const linhas=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+
+  // Número da NF — procura padrões comuns
+  const nfPatterns=[
+    /n[oº°]\.?\s*:?\s*(\d[\d./-]{2,})/i,
+    /nota\s+fiscal\s+(?:n[oº°]\.?\s*:?\s*)?(\d[\d./-]{2,})/i,
+    /nf[e\s-]*n[oº°]?\s*:?\s*(\d[\d./-]{2,})/i,
+    /\bNF[e]?\s*(\d{6,})/i,
+    /número\s*:?\s*(\d[\d./-]{2,})/i,
+  ];
+  for(const p of nfPatterns){
+    const m=txt.match(p);
+    if(m){r.nfNum=m[1].replace(/\./g,'').trim();r.confianca.nfNum='ok';break;}
+  }
+
+  // CNPJ — formato XX.XXX.XXX/XXXX-XX
+  const cnpjM=txt.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/);
+  if(cnpjM){r.cnpj=cnpjM[0];r.confianca.cnpj='ok';}
+
+  // Fornecedor — linha antes ou depois do CNPJ, ou razão social
+  const razaoM=txt.match(/raz[aã]o\s+social\s*:?\s*([^\n\r]{4,60})/i);
+  if(razaoM){r.fornecedor=razaoM[1].trim();r.confianca.fornecedor='ok';}
+  else if(cnpjM){
+    // Pega a linha mais próxima ao CNPJ que parece nome de empresa
+    const idx=linhas.findIndex(l=>l.includes(cnpjM[0]));
+    for(let delta=-3;delta<=3;delta++){
+      const l=linhas[idx+delta];
+      if(l&&!l.match(/\d{2}\.\d{3}/)&&l.length>4&&l.length<80&&/[A-Za-z]/.test(l)){
+        r.fornecedor=l;r.confianca.fornecedor='warn';break;
+      }
+    }
+  }
+
+  // Data — DD/MM/YYYY ou YYYY-MM-DD
+  const dataPatterns=[
+    /data\s*(?:de\s*emiss[aã]o)?\s*:?\s*(\d{2}\/\d{2}\/\d{4})/i,
+    /emiss[aã]o\s*:?\s*(\d{2}\/\d{2}\/\d{4})/i,
+    /(\d{2}\/\d{2}\/\d{4})/,
+  ];
+  for(const p of dataPatterns){
+    const m=txt.match(p);
+    if(m){
+      const[d,mo,y]=m[1].split('/');
+      r.data=`${y}-${mo.padStart(2,'0')}-${d.padStart(2,'0')}`;
+      r.confianca.data='ok';break;
+    }
+  }
+
+  // Total — procura VALOR TOTAL, TOTAL, TOTAL NF
+  const totalPatterns=[
+    /total\s+(?:geral|nf|nota|a\s+pagar|do\s+documento)?\s*:?\s*R?\$?\s*([\d.,]+)/i,
+    /valor\s+total\s*:?\s*R?\$?\s*([\d.,]+)/i,
+    /\bTOTAL\b[^\d]*([\d]{1,3}(?:[.,]\d{3})*[.,]\d{2})/i,
+  ];
+  for(const p of totalPatterns){
+    const m=txt.match(p);
+    if(m){r.total=parseBRNum(m[1]);r.confianca.total='ok';break;}
+  }
+
+  // Itens — linhas com valor monetário ao final (R$ X.XXX,XX ou X.XXX,XX)
+  const valorRx=/R?\$?\s*([\d]{1,3}(?:[.,]\d{3})*[.,]\d{2})\s*$/;
+  linhas.forEach(l=>{
+    if(l.length<4||l.length>120)return;
+    // Ignora linhas que são só cabeçalho/totais
+    if(/total|subtotal|desconto|frete|imposto|iss|icms|pis|cofins|ipi|cst|cfop|ncm|aliq|base/i.test(l))return;
+    const m=l.match(valorRx);
+    if(m){
+      const valor=parseBRNum(m[1]);
+      if(valor>0&&valor<500000){
+        const desc=l.replace(m[0],'').replace(/^[\d\s.]+/,'').trim();
+        if(desc.length>2)r.itens.push({desc,valor});
+      }
+    }
+  });
+
+  // Se não encontrou itens mas tem total, cria um item genérico
+  if(!r.itens.length&&r.total>0){
+    r.itens.push({desc:r.fornecedor?'Item — '+r.fornecedor:'Item da nota fiscal',valor:r.total});
+  }
+
+  return r;
+}
+
+function parseBRNum(s){
+  s=String(s).trim();
+  // Formato brasileiro: 1.234,56 → 1234.56
+  if(s.match(/\d+\.\d{3},\d{2}/))return parseFloat(s.replace(/\./g,'').replace(',','.'));
+  // Formato 1234,56
+  if(s.match(/\d+,\d{2}$/))return parseFloat(s.replace(',','.'));
+  return parseFloat(s)||0;
+}
+
+function fillNFFromOCR(parsed, textoOriginal){
+  // Preenche campos do formulário
+  if(parsed.nfNum){
+    const el=document.getElementById('nf-num');
+    if(el)el.value=parsed.nfNum;
+  }
+  if(parsed.fornecedor){
+    const el=document.getElementById('nf-forn');
+    if(el)el.value=norm(parsed.fornecedor);
+  }
+  if(parsed.data){
+    const el=document.getElementById('nf-data-f');
+    if(el)el.value=parsed.data;
+  }
+
+  // Monta preview com o que foi detectado
+  const preview=document.getElementById('ocr-preview');
+  if(!preview)return;
+
+  const conf=c=>`<span class="ocr-confidence ${c==='ok'?'ocr-conf-ok':'ocr-conf-warn'}">${c==='ok'?'✓ detectado':'~ provável'}</span>`;
+
+  let html=`<div class="ocr-preview-title">Resultado do escaneamento</div>`;
+
+  if(parsed.nfNum)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Nº da NF</span><strong>${esc(parsed.nfNum)}</strong>${conf(parsed.confianca.nfNum)}</div>`;
+  if(parsed.fornecedor)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Fornecedor</span><strong>${esc(parsed.fornecedor)}</strong>${conf(parsed.confianca.fornecedor)}</div>`;
+  if(parsed.cnpj)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">CNPJ</span><span>${esc(parsed.cnpj)}</span>${conf(parsed.confianca.cnpj)}</div>`;
+  if(parsed.data)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Data</span><strong>${fD(parsed.data)}</strong>${conf(parsed.confianca.data)}</div>`;
+  if(parsed.total)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Total detectado</span><strong>${fmt(parsed.total)}</strong>${conf(parsed.confianca.total)}</div>`;
+
+  if(parsed.itens.length){
+    html+=`<div style="margin-top:10px;font-size:10.5px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Itens detectados (${parsed.itens.length})</div>`;
+    html+=`<div style="margin-top:6px;font-size:11.5px">`;
+    parsed.itens.slice(0,8).forEach(it=>{
+      html+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text)">${esc(it.desc)}</span><span style="font-weight:700;white-space:nowrap;margin-left:8px">${fmt(it.valor)}</span></div>`;
+    });
+    if(parsed.itens.length>8)html+=`<div style="color:var(--text3);font-size:10.5px;padding-top:4px">...e mais ${parsed.itens.length-8} itens</div>`;
+    html+=`</div>`;
+    html+=`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:rgba(142,68,173,.07);border-radius:6px;padding:8px 10px">💡 Selecione a categoria abaixo e os itens aparecerão para confirmar antes de salvar.</div>`;
+  } else {
+    html+=`<div style="margin-top:8px;font-size:11px;color:var(--warn)">⚠️ Não consegui detectar os itens automaticamente. Adicione manualmente abaixo.</div>`;
+  }
+
+  // Guarda itens detectados para inserção
+  window._ocrItens=parsed.itens;
+
+  preview.innerHTML=html;
+  preview.classList.add('open');
+
+  toast('NF escaneada! Confira os dados e selecione a categoria.','success');
+}
+
 /* ─── Helpers para autocomplete ─── */
 function getAllMats(q){
   const used=[...new Set(ST.lancamentos.filter(l=>l.cat==='material').map(l=>l.desc).filter(Boolean))];
@@ -2689,7 +2917,6 @@ function selectNFCat(cat,el){
   nfCat=cat;
   document.querySelectorAll('[data-nfcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   if(el){el.classList.add('active');el.setAttribute('aria-pressed','true');}
-  nfItems=[];
   // Limpar todos os campos de entrada ao trocar categoria
   ['nf-mat-s','nf-mat-qty','nf-mat-val','nf-gen-desc','nf-gen-val'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('nf-mat-dd')?.classList.remove('open');
@@ -2699,6 +2926,14 @@ function selectNFCat(cat,el){
   document.getElementById('nf-row-gen').style.display=cat!=='material'?'':'none';
   const title=document.getElementById('nf-items-title');
   if(title)title.textContent='Itens da NF — '+({material:'🧱 Materiais',funcionario:'👷 Funcionários',burocracia:'📋 Burocracia',terreno:'🏡 Terreno',outro:'📦 Outros'}[cat]||cat);
+  // Se tem itens do OCR, importa automaticamente
+  if(window._ocrItens&&window._ocrItens.length){
+    nfItems=window._ocrItens.map(it=>({id:uid(),desc:norm(it.desc),valor:it.valor,extra:{}}));
+    window._ocrItens=null;
+    toast(`${nfItems.length} item(s) importados do OCR. Confira e salve.`,'success');
+  } else {
+    nfItems=[];
+  }
   renderNFItems();
   setTimeout(()=>{const f=document.getElementById(cat==='material'?'nf-mat-s':'nf-gen-desc');if(f)f.focus();},120);
 }
@@ -2860,6 +3095,10 @@ function limparL(){
   const tb=document.getElementById('nf-total-bar');if(tb)tb.style.display='none';
   setNFPag('pago');
   clrM();cFile=null;cFileB64=null;
+  // Limpar OCR
+  window._ocrItens=null;
+  const op=document.getElementById('ocr-preview');if(op){op.classList.remove('open');op.innerHTML='';}
+  const oi=document.getElementById('nf-data-f');if(oi)oi.value='';
 }
 function togFiltros(){
   const panel=document.getElementById('filtros-panel');
