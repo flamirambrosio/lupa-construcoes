@@ -478,8 +478,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .fsec-title{font-size:10px;font-weight:800;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:7px}
 .fsec-title::before{content:'';display:inline-block;width:3px;height:12px;border-radius:2px;background:var(--brand2);flex-shrink:0}
 /* OCR */
-.btn-ocr{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,#8e44ad,#6c3483);border:none;border-radius:7px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;white-space:nowrap;box-shadow:0 2px 8px rgba(142,68,173,.3)}
-.btn-ocr:hover{filter:brightness(1.1)}
+.btn-ocr{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;color:#fff;background:linear-gradient(135deg,#8e44ad,#6c3483);border:none;border-radius:8px;cursor:pointer;transition:all .18s;box-shadow:0 2px 8px rgba(142,68,173,.3);flex-shrink:0}
+.btn-ocr:hover{filter:brightness(1.15);transform:scale(1.05)}
+.btn-ocr svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ocr-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
 .ocr-overlay.open{display:flex}
 .ocr-spin{width:48px;height:48px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
@@ -1193,7 +1194,9 @@ input,select,textarea{min-height:44px}
       <div class="fsec" style="margin-top:14px">
         <div class="fsec-title" style="justify-content:space-between">
           <span>Dados da Nota Fiscal</span>
-          <label for="ocr-input" class="btn-ocr" title="Fotografe ou selecione a NF para preencher automaticamente">📷 Escanear NF</label>
+          <label for="ocr-input" class="btn-ocr" title="Fotografar nota fiscal para preenchimento automático">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </label>
           <input type="file" id="ocr-input" style="display:none" accept="image/*" capture="environment" onchange="iniciarOCR(event)">
         </div>
         <!-- Preview do resultado OCR -->
@@ -1260,7 +1263,8 @@ input,select,textarea{min-height:44px}
         </div>
         <div class="form-footer-bar">
           <div style="display:flex;align-items:center;gap:8px">
-            <label for="nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 14px">📎 Anexar NF</label>
+            <!-- Anexar manual — some quando OCR foi usado -->
+            <label for="nf-comp" id="lbl-nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 14px">📎 Anexar NF</label>
             <input type="file" id="nf-comp" style="display:none" accept="image/*,application/pdf" onchange="onNFComp(event)">
             <span id="nf-comp-nm" style="font-size:11.5px;color:var(--text2)"></span>
           </div>
@@ -2653,7 +2657,7 @@ function setLancMode(mode){/* modo único — NF */limparL();}
 
 async function iniciarOCR(e){
   const file=e.target.files[0];
-  e.target.value=''; // reset input
+  e.target.value='';
   if(!file)return;
   if(!gToken){toast('⚠️ Conecte o Google para usar o OCR. Clique em "● Sheets" no topo.','warn');return;}
   if(!file.type.startsWith('image/')){toast('Use uma imagem (JPG, PNG, etc.).','error');return;}
@@ -2664,7 +2668,7 @@ async function iniciarOCR(e){
   msgEl.textContent='Enviando imagem...';
 
   try{
-    // 1. Upload para o Drive com OCR ativado (converte para Google Doc)
+    // 1. Upload temporário com OCR (converte para Google Doc)
     msgEl.textContent='Lendo nota fiscal com OCR...';
     const meta={name:'_lupa_ocr_tmp_'+Date.now(),mimeType:'application/vnd.google-apps.document',parents:[DRIVE_FOLDER_ID]};
     const form=new FormData();
@@ -2678,19 +2682,29 @@ async function iniciarOCR(e){
     if(!upRes.ok){const err=await upRes.text();throw new Error('Upload OCR falhou: '+err);}
     const {id:docId}=await upRes.json();
 
-    // 2. Exporta o Doc como texto puro
+    // 2. Exporta texto puro
     msgEl.textContent='Extraindo texto...';
     const txtRes=await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/export?mimeType=text/plain`,{
       headers:{Authorization:`Bearer ${gToken}`}
     });
     const texto=await txtRes.text();
 
-    // 3. Apaga o arquivo temporário
+    // 3. Apaga o Doc temporário (não a imagem original)
     fetch(`https://www.googleapis.com/drive/v3/files/${docId}`,{method:'DELETE',headers:{Authorization:`Bearer ${gToken}`}});
 
     overlay.classList.remove('open');
 
-    // 4. Parseia e preenche
+    // 4. Registra a foto como comprovante (mesmo destino do "Anexar NF")
+    cFile=file;
+    cFileB64=null;
+    if(file.size<=2097152) readB64(file,b64=>{cFileB64=b64;});
+    // Atualiza UI: mostra nome do arquivo e esconde botão Anexar
+    const nm=document.getElementById('nf-comp-nm');
+    if(nm)nm.textContent='📷 '+file.name;
+    const lbl=document.getElementById('lbl-nf-comp');
+    if(lbl)lbl.style.display='none';
+
+    // 5. Parseia e preenche
     const parsed=parseNFText(texto);
     fillNFFromOCR(parsed,texto);
 
@@ -2795,55 +2809,57 @@ function parseBRNum(s){
   return parseFloat(s)||0;
 }
 
-function fillNFFromOCR(parsed, textoOriginal){
-  // Preenche campos do formulário
-  if(parsed.nfNum){
-    const el=document.getElementById('nf-num');
-    if(el)el.value=parsed.nfNum;
-  }
-  if(parsed.fornecedor){
-    const el=document.getElementById('nf-forn');
-    if(el)el.value=norm(parsed.fornecedor);
-  }
-  if(parsed.data){
-    const el=document.getElementById('nf-data-f');
-    if(el)el.value=parsed.data;
-  }
-
-  // Monta preview com o que foi detectado
+async function fillNFFromOCR(parsed, textoOriginal){
   const preview=document.getElementById('ocr-preview');
-  if(!preview)return;
 
-  const conf=c=>`<span class="ocr-confidence ${c==='ok'?'ocr-conf-ok':'ocr-conf-warn'}">${c==='ok'?'✓ detectado':'~ provável'}</span>`;
-
-  let html=`<div class="ocr-preview-title">Resultado do escaneamento</div>`;
-
-  if(parsed.nfNum)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Nº da NF</span><strong>${esc(parsed.nfNum)}</strong>${conf(parsed.confianca.nfNum)}</div>`;
+  // Monta painel de preview
+  const conf=c=>`<span class="ocr-confidence ${c==='ok'?'ocr-conf-ok':'ocr-conf-warn'}">${c==='ok'?'✓':'~'}</span>`;
+  let html=`<div class="ocr-preview-title">Escaneamento concluído</div>`;
+  if(parsed.nfNum)  html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Nº da NF</span><strong>${esc(parsed.nfNum)}</strong>${conf(parsed.confianca.nfNum)}</div>`;
   if(parsed.fornecedor)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Fornecedor</span><strong>${esc(parsed.fornecedor)}</strong>${conf(parsed.confianca.fornecedor)}</div>`;
-  if(parsed.cnpj)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">CNPJ</span><span>${esc(parsed.cnpj)}</span>${conf(parsed.confianca.cnpj)}</div>`;
-  if(parsed.data)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Data</span><strong>${fD(parsed.data)}</strong>${conf(parsed.confianca.data)}</div>`;
-  if(parsed.total)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Total detectado</span><strong>${fmt(parsed.total)}</strong>${conf(parsed.confianca.total)}</div>`;
-
+  if(parsed.cnpj)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">CNPJ</span><span>${esc(parsed.cnpj)}</span>${conf(parsed.confianca.cnpj)}</div>`;
+  if(parsed.data)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Data</span><strong>${fD(parsed.data)}</strong>${conf(parsed.confianca.data)}</div>`;
+  if(parsed.total)  html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Total</span><strong>${fmt(parsed.total)}</strong>${conf(parsed.confianca.total)}</div>`;
   if(parsed.itens.length){
-    html+=`<div style="margin-top:10px;font-size:10.5px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Itens detectados (${parsed.itens.length})</div>`;
-    html+=`<div style="margin-top:6px;font-size:11.5px">`;
-    parsed.itens.slice(0,8).forEach(it=>{
-      html+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text)">${esc(it.desc)}</span><span style="font-weight:700;white-space:nowrap;margin-left:8px">${fmt(it.valor)}</span></div>`;
-    });
-    if(parsed.itens.length>8)html+=`<div style="color:var(--text3);font-size:10.5px;padding-top:4px">...e mais ${parsed.itens.length-8} itens</div>`;
-    html+=`</div>`;
-    html+=`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:rgba(142,68,173,.07);border-radius:6px;padding:8px 10px">💡 Selecione a categoria abaixo e os itens aparecerão para confirmar antes de salvar.</div>`;
+    html+=`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:rgba(142,68,173,.07);border-radius:6px;padding:8px 10px">💡 Selecione a categoria abaixo — os itens serão adicionados automaticamente.</div>`;
   } else {
-    html+=`<div style="margin-top:8px;font-size:11px;color:var(--warn)">⚠️ Não consegui detectar os itens automaticamente. Adicione manualmente abaixo.</div>`;
+    html+=`<div style="margin-top:8px;font-size:11px;color:var(--warn)">⚠️ Não detectei itens. Adicione manualmente.</div>`;
   }
+  if(preview){preview.innerHTML=html;preview.classList.add('open');}
 
-  // Guarda itens detectados para inserção
+  // Preenche campos com efeito de digitação
+  await typeIntoField('nf-num',   parsed.nfNum||'',   40);
+  await typeIntoField('nf-forn',  norm(parsed.fornecedor||''), 30);
+  if(parsed.data){const el=document.getElementById('nf-data-f');if(el)el.value=parsed.data;}
+
+  // Guarda itens para inserção quando categoria for selecionada
   window._ocrItens=parsed.itens;
 
-  preview.innerHTML=html;
-  preview.classList.add('open');
+  toast('NF detectada! Selecione a categoria para adicionar os itens.','success');
+}
 
-  toast('NF escaneada! Confira os dados e selecione a categoria.','success');
+// Simula digitação campo a campo (efeito autocomplete visual)
+function typeIntoField(id, value, delayPerChar=35){
+  return new Promise(resolve=>{
+    const el=document.getElementById(id);
+    if(!el||!value){resolve();return;}
+    el.value='';
+    el.focus();
+    let i=0;
+    const tick=()=>{
+      if(i<=value.length){
+        el.value=value.slice(0,i);
+        // Dispara evento input para acionar autocomplete
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        i++;
+        setTimeout(tick, delayPerChar);
+      } else {
+        el.blur();
+        resolve();
+      }
+    };
+    setTimeout(tick, 120);
+  });
 }
 
 /* ─── Helpers para autocomplete ─── */
@@ -3012,9 +3028,11 @@ function onNFComp(e){
   cFile=e.target.files[0];cFileB64=null;
   if(cFile){
     const el=document.getElementById('nf-comp-nm');if(el)el.textContent='✓ '+cFile.name;
-    /* compact zone — no has-file class needed */
     if(cFile.size>2097152)toast('Arquivo maior que 2MB — salvo apenas o nome.','warn');
     else readB64(cFile,b64=>{cFileB64=b64;});
+    // Mutuamente exclusivo com OCR: esconde botão câmera
+    const ocrLbl=document.querySelector('label[for="ocr-input"]');
+    if(ocrLbl)ocrLbl.style.display='none';
   }
 }
 async function salvarNFMulti(){
@@ -3095,10 +3113,12 @@ function limparL(){
   const tb=document.getElementById('nf-total-bar');if(tb)tb.style.display='none';
   setNFPag('pago');
   clrM();cFile=null;cFileB64=null;
-  // Limpar OCR
+  // Limpar OCR e restaurar botões
   window._ocrItens=null;
   const op=document.getElementById('ocr-preview');if(op){op.classList.remove('open');op.innerHTML='';}
   const oi=document.getElementById('nf-data-f');if(oi)oi.value='';
+  const lbl=document.getElementById('lbl-nf-comp');if(lbl)lbl.style.display='';
+  const ocrLbl=document.querySelector('label[for="ocr-input"]');if(ocrLbl)ocrLbl.style.display='';
 }
 function togFiltros(){
   const panel=document.getElementById('filtros-panel');
