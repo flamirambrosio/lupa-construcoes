@@ -2057,6 +2057,36 @@ function migrateSchema(d){
 /* ══ UTILS ══ */
 // Sanitização XSS — sempre usar em dados digitados pelo usuário antes de inserir em innerHTML
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+// Normaliza texto para evitar duplicatas: trim + capitaliza primeira letra
+// Mantém siglas em maiúsculas (ex: ITBI, ART, CEF)
+function norm(s){
+  s=(s||'').trim();
+  if(!s)return s;
+  // Se a string inteira é maiúscula E tem <= 8 chars sem espaço → sigla, mantém
+  if(s===s.toUpperCase()&&s.replace(/\s/g,'').length<=8)return s;
+  // Capitaliza primeira letra de cada palavra se for nome de fornecedor-like
+  // Mas para descrições simples, só capitaliza a primeira letra
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+// Verifica similaridade para alertar de possível duplicata
+function similarExists(campo, valor, existentes){
+  const v=valor.trim().toLowerCase();
+  if(!v||v.length<3)return null;
+  return existentes.find(e=>{
+    const el=e.toLowerCase();
+    if(el===v)return false; // igual: já vai autocompletar, não alertar
+    // Distância simples: um contém o outro, ou diferem só por capitalização
+    if(el.includes(v)||v.includes(el))return true;
+    // Diferença de 1-2 caracteres (typo)
+    if(Math.abs(el.length-v.length)<=2){
+      let diff=0;
+      const minLen=Math.min(el.length,v.length);
+      for(let i=0;i<minLen;i++)if(el[i]!==v[i])diff++;
+      if(diff<=2)return true;
+    }
+    return false;
+  });
+}
 const fmt=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function fmtHtml(v){const n=Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});return`<span class="curr">R$</span><span class="amt">${n}</span>`;};
 const fmtS=n=>n>=1e6?'R$'+(n/1e6).toFixed(1)+'M':n>=1e3?'R$'+(n/1e3).toFixed(0)+'k':fmt(n);
@@ -2570,9 +2600,10 @@ function salvarL(){
   if(cat==='material'){extra.qtd=document.getElementById('mat-qtd').value;extra.un=document.getElementById('mat-un').value;}
   if(cat==='funcionario')extra.cargo=document.getElementById('fun-cg').value;
   const statusPag=document.querySelector('input[name="f-pag"]:checked')?.value||'pago';
-  const fornecedor=(document.getElementById('f-forn').value||document.getElementById('f-nf-forn').value||'').trim();
-  const nfNum=document.getElementById('f-nf-num').value.trim();
-  ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat,subcat:(SC[cat]&&document.getElementById('subcat-w').style.display!=='none')?document.getElementById('f-subcat').value:'',desc:gDesc(cat),valor:v,data,obs:document.getElementById('f-obs').value,comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',fornecedor,statusPag,nfNum,extra,ts:Date.now()});
+  const fornecedor=norm(document.getElementById('f-forn').value||document.getElementById('f-nf-forn').value||'');
+  const nfNum=(document.getElementById('f-nf-num').value||'').trim();
+  const descNorm=norm(gDesc(cat));
+  ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat,subcat:(SC[cat]&&document.getElementById('subcat-w').style.display!=='none')?document.getElementById('f-subcat').value:'',desc:descNorm,valor:v,data,obs:document.getElementById('f-obs').value,comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',fornecedor,statusPag,nfNum,extra,ts:Date.now()});
   addAudit('Lançamento criado',gDesc(cat)+' — '+fmt(v));
   if(cFile){
     const ob2=getOA();
@@ -2618,15 +2649,33 @@ function buildAC(ddId,items,onPick){
   dd.classList.add('open');
 }
 function showFornAC(){
-  const q=(document.getElementById('nf-forn').value||'').toLowerCase();
+  const raw=document.getElementById('nf-forn').value||'';
+  const q=raw.toLowerCase();
   const all=[...new Set(ST.lancamentos.map(l=>l.fornecedor).filter(Boolean))];
   const filtered=q?all.filter(f=>f.toLowerCase().includes(q)):all;
+  const dd=document.getElementById('nf-forn-dd');
+  if(dd&&q.length>=3&&!filtered.length){
+    const sim=similarExists('fornecedor',raw,all);
+    if(sim){
+      dd.innerHTML=`<div class="mat-item" style="color:var(--warn);pointer-events:none;font-size:11px">⚠️ Parecido com "<b>${esc(sim)}</b>" — use o mesmo nome para evitar duplicatas</div>`;
+      dd.classList.add('open');return;
+    }
+  }
   buildAC('nf-forn-dd',filtered,v=>{document.getElementById('nf-forn').value=v;});
 }
 function showDescAC(){
-  const q=(document.getElementById('nf-gen-desc').value||'').toLowerCase();
+  const raw=document.getElementById('nf-gen-desc').value||'';
+  const q=raw.toLowerCase();
   const all=[...new Set(ST.lancamentos.filter(l=>l.cat===nfCat).map(l=>l.desc).filter(Boolean))];
   const filtered=q?all.filter(d=>d.toLowerCase().includes(q)):all;
+  const dd=document.getElementById('nf-gen-dd');
+  if(dd&&q.length>=3&&!filtered.length){
+    const sim=similarExists('desc',raw,all);
+    if(sim){
+      dd.innerHTML=`<div class="mat-item" style="color:var(--warn);pointer-events:none;font-size:11px">⚠️ Parecido com "<b>${esc(sim)}</b>" — use o mesmo nome para evitar duplicatas</div>`;
+      dd.classList.add('open');return;
+    }
+  }
   buildAC('nf-gen-dd',filtered,v=>{document.getElementById('nf-gen-desc').value=v;});
 }
 function setNFPag(val){
@@ -2739,7 +2788,7 @@ async function salvarNFMulti(){
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
   const nfNum=document.getElementById('nf-num').value.trim()||'NF-'+Date.now();
-  const nfForn=document.getElementById('nf-forn').value.trim();
+  const nfForn=norm(document.getElementById('nf-forn').value||'');
   const data=document.getElementById('nf-data-f').value||td();
   const statusPag=document.querySelector('input[name="nf-pag"]:checked')?.value||'pago';
   const dup=ST.lancamentos.find(l=>l.nfNum===nfNum&&l.obraId===ob.id);
@@ -2753,7 +2802,7 @@ async function salvarNFMulti(){
     if(result){driveUrl=result.url;driveId=result.id;}
   }
   nfItems.forEach(x=>{
-    ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:nfCat,subcat:'',desc:x.desc,valor:x.valor,
+    ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:nfCat,subcat:'',desc:norm(x.desc),valor:x.valor,
       data,obs:'NF: '+nfNum,comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',
       driveUrl,driveId,fornecedor:nfForn,statusPag,nfNum,extra:x.extra||{},ts:Date.now()});
   });
