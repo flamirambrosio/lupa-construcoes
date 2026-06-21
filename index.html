@@ -272,20 +272,27 @@ tfoot td{padding:9px 11px;background:var(--bg3);font-weight:700;font-family:'DM 
 tfoot .tdm .curr{font-size:11px;color:var(--text2)}
 tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 /* ═══ TABLE FILTERS ═══ */
-.tbl-filters{display:flex;flex-wrap:nowrap;gap:6px;margin-bottom:14px;align-items:center;padding:8px 10px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)}
-.tbl-filters-search{flex-shrink:0;padding-right:10px;border-right:1px solid var(--border2)}
-.tbl-filters-main{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;flex:1}
-.tbl-filters-actions{display:flex;align-items:center;gap:6px;padding-left:12px;border-left:1px solid var(--border2);flex-shrink:0}
-.tbl-filters input[type=text]{max-width:130px;padding:5px 9px;font-size:11.5px;height:32px}
-.tbl-filters input[type=date]{max-width:118px;padding:5px 8px;font-size:11.5px;height:32px}
-.tbl-filters select{width:auto;padding:5px 8px;font-size:11.5px;height:32px}
-.tbl-fil-todas{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11.5px;font-weight:600;color:var(--text2);white-space:nowrap;padding:5px 12px;height:32px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:7px;transition:all .18s}
+.tbl-filters{margin-bottom:14px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);padding:10px}
+.tbl-filters-row1{display:flex;gap:8px;align-items:center}
+.tbl-filters-row1 input[type=text]{flex:1;padding:7px 11px;font-size:13px;height:36px}
+.btn-filtros-toggle{display:flex;align-items:center;gap:5px;padding:0 13px;height:36px;font-size:12px;font-weight:600;color:var(--text2);background:var(--surface2);border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .18s;flex-shrink:0}
+.btn-filtros-toggle:hover,.btn-filtros-toggle.ativo{border-color:var(--brand2);color:var(--brand2)}
+.btn-filtros-toggle.ativo{background:rgba(41,128,185,.08)}
+.fil-badge{background:var(--brand2);color:#fff;border-radius:99px;font-size:10px;font-weight:700;padding:1px 6px;min-width:16px;text-align:center}
+.filtros-panel{display:none;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)}
+.filtros-panel.aberto{display:flex}
+.filtros-panel select,.filtros-panel input[type=date]{width:100%;padding:7px 10px;font-size:13px;height:36px}
+.fil-datas{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fil-row-btns{display:flex;gap:8px;align-items:center}
+.tbl-fil-todas{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);padding:0 12px;height:36px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:8px;transition:all .18s;flex:1;justify-content:center}
 .tbl-fil-todas:hover{border-color:var(--brand2);color:var(--text)}
-.tbl-fil-todas.ativa{background:linear-gradient(135deg,#E74C3C,#C0392B);border-color:transparent;color:#fff;box-shadow:0 2px 10px rgba(231,76,60,.45)}
-.tbl-fil-todas.ativa:hover{background:linear-gradient(135deg,#F1948A,#E74C3C);box-shadow:0 3px 14px rgba(231,76,60,.5)}
+.tbl-fil-todas.ativa{background:linear-gradient(135deg,#E74C3C,#C0392B);border-color:transparent;color:#fff;box-shadow:0 2px 10px rgba(231,76,60,.35)}
 .tbl-fil-todas input[type=checkbox]{display:none}
-.btn-limpar-fil{display:flex;align-items:center;gap:5px;padding:5px 12px;height:32px;font-size:11.5px;font-weight:600;color:#fff;background:linear-gradient(135deg,#E67E22,#CA6F1E);border:none;border-radius:7px;cursor:pointer;transition:all .18s;box-shadow:0 2px 8px rgba(230,126,34,.3)}
-.btn-limpar-fil:hover{background:linear-gradient(135deg,#F39C12,#E67E22);transform:translateY(-1px);box-shadow:0 3px 12px rgba(230,126,34,.4)}
+.btn-limpar-fil{display:flex;align-items:center;justify-content:center;gap:5px;padding:0 14px;height:36px;font-size:12px;font-weight:600;color:#fff;background:linear-gradient(135deg,#E67E22,#CA6F1E);border:none;border-radius:8px;cursor:pointer;transition:all .18s;flex:1}
+.btn-limpar-fil:hover{background:linear-gradient(135deg,#F39C12,#E67E22)}
+/* Documentos filtros */
+.doc-filtros{display:flex;flex-direction:column;gap:8px}
+.doc-filtros input[type=text],.doc-filtros select{width:100%;padding:7px 11px;font-size:13px;height:36px;box-sizing:border-box}
 /* ═══ CALENDAR ═══ */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .cal-mo{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
@@ -534,11 +541,8 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .g4,.g3,.g2{grid-template-columns:1fr}.obras-grid{grid-template-columns:1fr}
   .doc-grid-new{grid-template-columns:1fr!important}
   .doc-grid{grid-template-columns:1fr}
-  .tbl-filters{flex-direction:column;gap:8px}
-  .tbl-filters-search{border-right:none;border-bottom:1px solid var(--border2);padding-right:0;padding-bottom:8px;width:100%}
-  .tbl-filters-search input{width:100%!important;max-width:100%!important}
-  .tbl-filters-main{width:100%;justify-content:flex-start}
-  .tbl-filters input,.tbl-filters select{max-width:100%!important}
+  .tbl-filters input[type=text]{font-size:14px}
+  .filtros-panel select,.filtros-panel input[type=date]{font-size:14px}
   .cat-picker{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
   .cat-tile{padding:10px 4px 8px!important}
   .cat-tile-ico{font-size:20px!important}
@@ -571,7 +575,6 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .period-bar{flex-wrap:wrap;gap:4px}
   .period-bar .btn{font-size:11px;padding:4px 8px}
   .obra-banner{font-size:12px}
-  .tbl-filters-main{flex-wrap:wrap}
   .bottom-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
   .bn-item{padding:6px 8px;min-width:52px}
   .bn-item svg{width:22px;height:22px}
@@ -1248,27 +1251,30 @@ input,select,textarea{min-height:44px}
       <button class="btn btn-sm" onclick="exportCSV()" aria-label="Exportar CSV">⬇ CSV</button>
     </div>
     <div class="tbl-filters" role="search">
-      <div class="tbl-filters-search">
-        <input type="text" id="tbl-search" placeholder="🔍 Buscar..." oninput="renderT()">
+      <div class="tbl-filters-row1">
+        <input type="text" id="tbl-search" placeholder="🔍 Buscar..." oninput="renderT()" aria-label="Buscar lançamentos">
+        <button class="btn-filtros-toggle" onclick="togFiltros()" id="btn-filtros" aria-expanded="false" aria-controls="filtros-panel">⚙ Filtros <span class="fil-badge" id="fil-badge" style="display:none">0</span></button>
       </div>
-      <div class="tbl-filters-main">
-        <select id="fil-cat" onchange="renderT()">
+      <div class="filtros-panel" id="filtros-panel" style="display:none">
+        <select id="fil-cat" onchange="renderT();updFilBadge()">
           <option value="">Todas as categorias</option>
           <option value="material">🧱 Materiais</option><option value="funcionario">👷 Funcionários</option>
           <option value="burocracia">📋 Burocracia</option><option value="terreno">🏡 Terreno</option><option value="outro">📦 Outros</option>
         </select>
-        <input type="date" id="fil-de" onchange="renderT()" title="De">
-        <input type="date" id="fil-ate" onchange="renderT()" title="Até">
-        <select id="fil-pag" onchange="renderT()">
+        <div class="fil-datas">
+          <input type="date" id="fil-de" onchange="renderT();updFilBadge()" placeholder="De" title="De">
+          <input type="date" id="fil-ate" onchange="renderT();updFilBadge()" placeholder="Até" title="Até">
+        </div>
+        <select id="fil-pag" onchange="renderT();updFilBadge()">
           <option value="">Todos pagamentos</option><option value="pago">✅ Pago</option><option value="a_pagar">⏳ A Pagar</option>
         </select>
-      </div>
-      <div class="tbl-filters-actions">
-        <label class="tbl-fil-todas" id="lbl-todas-obras">
-          <input type="checkbox" id="fil-todas-obras" onchange="renderT();this.closest('label').classList.toggle('ativa',this.checked)">
-          🏠 Todas as obras
-        </label>
-        <button class="btn-limpar-fil" onclick="limparFiltros()">✕ Limpar</button>
+        <div class="fil-row-btns">
+          <label class="tbl-fil-todas" id="lbl-todas-obras">
+            <input type="checkbox" id="fil-todas-obras" onchange="renderT();updFilBadge();this.closest('label').classList.toggle('ativa',this.checked)">
+            🏠 Todas as obras
+          </label>
+          <button class="btn-limpar-fil" onclick="limparFiltros()">✕ Limpar</button>
+        </div>
       </div>
     </div>
     <div class="tw" id="tabela" role="region"></div>
@@ -1413,11 +1419,11 @@ input,select,textarea{min-height:44px}
 
   <!-- LISTA DE DOCUMENTOS -->
   <div class="card">
-    <div class="card-hdr" style="margin-bottom:12px">
-      <div class="card-title">📂 Documentos Salvos</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-        <input type="text" id="doc-search" placeholder="🔍 Buscar..." oninput="renderDocs()" style="max-width:150px;padding:5px 9px;font-size:11.5px" aria-label="Buscar documentos">
-        <select id="d-fil" onchange="renderDocs()" style="width:auto;padding:5px 9px;font-size:11.5px" aria-label="Filtrar por categoria">
+    <div style="margin-bottom:12px">
+      <div class="card-title" style="margin-bottom:10px">📂 Documentos Salvos</div>
+      <div class="doc-filtros">
+        <input type="text" id="doc-search" placeholder="🔍 Buscar documento..." oninput="renderDocs()" aria-label="Buscar documentos">
+        <select id="d-fil" onchange="renderDocs()" aria-label="Filtrar por categoria">
           <option value="">Todas as categorias</option>
           <option value="terreno">🏡 Terreno</option><option value="obra">🏗️ Obra</option>
           <option value="prefeitura">🏛️ Prefeitura</option><option value="financeiro">💰 Financeiro</option>
@@ -1433,7 +1439,7 @@ input,select,textarea{min-height:44px}
 <div id="page-cadastro" class="page" role="main">
   <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr"><div><div class="page-title">Cadastro de Obra</div><div class="page-sub">Múltiplas obras — Macaé e região, RJ</div></div><button class="btn btn-p btn-sm" onclick="novaO()" aria-label="Nova obra">+ Nova Obra</button></div>
-  <div class="card" id="form-obra" style="margin-bottom:14px">
+  <div class="card" id="form-obra" style="margin-bottom:14px;display:none">
     <div class="card-title" style="margin-bottom:12px" id="fo-title">📐 Dados da Obra</div>
     <div class="fg">
       <div class="fgg"><label class="fl" for="cfg-nm">Nome da Obra <span class="req">*</span></label><input type="text" id="cfg-nm" placeholder="Ex: Res. Barra de Macaé" aria-required="true"></div>
@@ -1453,6 +1459,7 @@ input,select,textarea{min-height:44px}
     <input type="hidden" id="cfg-id">
     <div class="obra-btns-group">
       <button class="btn btn-p" onclick="salvarO()" aria-label="Salvar obra">✓ Salvar Obra</button>
+      <button class="btn" onclick="fecharFormObra()" aria-label="Cancelar" style="margin-top:8px">✕ Cancelar</button>
       <button class="btn" onclick="expJSON()" aria-label="Exportar backup">⬇ Backup JSON</button>
       <button class="btn btn-s" onclick="openImport()" aria-label="Importar backup">📥 Importar Backup</button>
     </div>
@@ -2758,12 +2765,33 @@ function limparL(){
   setNFPag('pago');
   clrM();cFile=null;cFileB64=null;
 }
+function togFiltros(){
+  const panel=document.getElementById('filtros-panel');
+  const btn=document.getElementById('btn-filtros');
+  const aberto=panel.classList.toggle('aberto');
+  panel.style.display=aberto?'flex':'none';
+  btn.classList.toggle('ativo',aberto);
+  btn.setAttribute('aria-expanded',aberto);
+}
+function updFilBadge(){
+  let n=0;
+  if(document.getElementById('fil-cat')?.value)n++;
+  if(document.getElementById('fil-de')?.value)n++;
+  if(document.getElementById('fil-ate')?.value)n++;
+  if(document.getElementById('fil-pag')?.value)n++;
+  if(document.getElementById('fil-todas-obras')?.checked)n++;
+  const badge=document.getElementById('fil-badge');
+  const btn=document.getElementById('btn-filtros');
+  if(badge){badge.style.display=n?'inline-block':'none';badge.textContent=n;}
+  if(btn)btn.classList.toggle('ativo',n>0);
+}
 function limparFiltros(){
   document.getElementById('tbl-search').value='';document.getElementById('fil-cat').value='';
   document.getElementById('fil-de').value='';document.getElementById('fil-ate').value='';
   const fp=document.getElementById('fil-pag');if(fp)fp.value='';
   const fto=document.getElementById('fil-todas-obras');if(fto)fto.checked=false;
   document.getElementById('lbl-todas-obras')?.classList.remove('ativa');
+  updFilBadge();
   renderT();
 }
 
@@ -3153,6 +3181,11 @@ function novaO(){
   ['cfg-nm','cfg-end','cfg-ini','cfg-orc','cfg-area','cfg-concl','cfg-soc','cfg-venda'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('cfg-st').value='andamento';document.getElementById('cfg-vw').style.display='none';
   document.getElementById('fo-title').textContent='📐 Nova Obra';
+  document.getElementById('form-obra').style.display='block';
+  document.getElementById('form-obra').scrollIntoView({behavior:'smooth'});
+}
+function fecharFormObra(){
+  document.getElementById('form-obra').style.display='none';
 }
 function editO(id){
   const ob=ST.obras.find(o=>o.id===id);if(!ob)return;
@@ -3163,6 +3196,7 @@ function editO(id){
   document.getElementById('cfg-soc').value=ob.socio||'';document.getElementById('cfg-st').value=ob.status||'andamento';
   document.getElementById('cfg-venda').value=ob.valorVenda||'';onSt();
   document.getElementById('fo-title').textContent='✏️ Editando: '+ob.nome;
+  document.getElementById('form-obra').style.display='block';
   document.getElementById('form-obra').scrollIntoView({behavior:'smooth'});
 }
 function salvarO(){
@@ -3174,7 +3208,7 @@ function salvarO(){
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
   addAudit('Obra salva',nm);
-  save();toast('Obra salva!');renderOA();updSB();updKpis();renderDash();
+  save();toast('Obra salva!');fecharFormObra();renderOA();updSB();updKpis();renderDash();
 }
 function delO(id){
   const oNome=ST.obras.find(o=>o.id===id)?.nome||id;
