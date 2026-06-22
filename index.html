@@ -1147,6 +1147,7 @@ input,select,textarea{min-height:44px}
     <div><div class="page-title">Painel Geral &amp; Gráficos</div><div class="page-sub" id="dash-sub">LUPA Facilities · Macaé, RJ</div></div>
     <span class="badge b-accent" aria-label="Status das obras">🏗️ Obras Ativas</span>
   </div>
+  <div id="assinatura-alert-wrap"></div>
   <div id="budget-alert-wrap"></div>
   <div id="doc-alert-wrap"></div>
   <div class="period-bar" id="dash-period-bar">
@@ -2132,7 +2133,7 @@ async function syncFromSheets(){
     // Refresh UI
     updSB();updKpis();updGC();updBanners();
     renderT();renderCal();renderDocs();
-    checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
+    checkAssinaturaAlert();checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
     toast('Dados sincronizados com sucesso!','success');
   }catch(e){
     console.error('syncFromSheets:',e);
@@ -2408,6 +2409,34 @@ function globalSearch(){
 function closeGS(){document.getElementById('gs-results').classList.remove('open');}
 
 /* ══ BUDGET ALERT ══ */
+function checkAssinaturaAlert(){
+  const wrap=document.getElementById('assinatura-alert-wrap');
+  if(!wrap)return;
+  // Empreendimentos concluídos que ainda têm casas na planta (pagamento pendente)
+  const pendentes=[];
+  ST.obras.forEach(o=>{
+    if(o.status!=='concluida')return;
+    normCasas(o);
+    o.casas.forEach(c=>{
+      if(c.situacao==='vendida_planta'){
+        const aReceber=(+c.valorVenda||0)-(+c.adiantamento||0);
+        if(aReceber>0)pendentes.push({emp:o.nome,casa:c.nome,aReceber,obraId:o.id});
+      }
+    });
+  });
+  if(!pendentes.length){wrap.innerHTML='';return;}
+  const totalAReceber=pendentes.reduce((a,p)=>a+p.aReceber,0);
+  const linhas=pendentes.map(p=>`<span style="display:block;margin-top:3px">🏠 <strong>${esc(p.casa)}</strong> (${esc(p.emp)}) — <strong style="color:var(--green)">${fmt(p.aReceber)}</strong> a receber na assinatura</span>`).join('');
+  wrap.innerHTML=`<div class="budget-alert" style="background:rgba(39,174,96,.09);border-color:rgba(39,174,96,.35)" role="alert">
+    <div class="budget-alert-icon">💰</div>
+    <div class="budget-alert-text">
+      <strong style="color:var(--green)">Assinatura(s) pendente(s) — ${fmt(totalAReceber)} a receber!</strong>
+      <span style="display:block;font-size:10.5px;color:var(--text2);margin-top:2px">Empreendimento(s) concluído(s) com casa(s) vendida(s) na planta aguardando pagamento final.</span>
+      ${linhas}
+      <span style="display:block;margin-top:6px;font-size:10px;color:var(--text3)">Ao receber, edite o empreendimento e mude a situação da casa para <strong>Vendida</strong>.</span>
+    </div>
+  </div>`;
+}
 function checkBudgetAlert(){
   const wrap=document.getElementById('budget-alert-wrap');
   if(!wrap)return;
@@ -2574,7 +2603,7 @@ function renderDash(){
   document.getElementById('badge-pend').style.display=pnd>0?'':'none';
   const bnp=document.getElementById('bn-badge-pend');
   if(bnp){bnp.textContent=pnd;bnp.style.display=pnd>0?'':'none';}
-  checkBudgetAlert();checkDocAlert();updAPagar();
+  checkAssinaturaAlert();checkBudgetAlert();checkDocAlert();updAPagar();
 
   const og=document.getElementById('obras-grid');
   if(!ST.obras.length){og.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px">Nenhum empreendimento cadastrado. <a href="#" onclick="showPage(\'cadastro\',null)" style="color:var(--brand3)">Cadastrar →</a></div>';return;}
@@ -4165,7 +4194,7 @@ function initApp(){
   showPage('dashboard',null);
   updSB();updKpis();updGC();updBanners();
   renderT();renderCal();renderDocs();
-  checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
+  checkAssinaturaAlert();checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
   document.querySelectorAll('.nav-item[tabindex]').forEach(el=>{el.addEventListener('keydown',e=>{if(e.key==='Enter')el.click();});});
   // Inicializar Google Auth (com delay para garantir que o script GIS carregou)
   setTimeout(initGoogleAuth, 1500);
