@@ -215,6 +215,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .fgg{display:flex;flex-direction:column;gap:4px}
 .fl{font-size:10.5px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase}
 .fl .req{color:var(--accent);margin-left:2px}
+.casas-sec{margin-top:14px;padding-top:14px;border-top:1px dashed var(--border2)}
+.casas-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.casas-tit{font-size:13px;font-weight:800;color:var(--text)}
+.casas-sub{font-size:10.5px;color:var(--text3);margin-top:2px;max-width:240px}
+.casa-row{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:11px 12px;margin-bottom:9px;position:relative}
+.casa-row-top{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.casa-row-top .casa-nome{flex:1}
+.casa-del{flex-shrink:0;width:30px;height:30px;border-radius:7px;border:1px solid var(--border2);background:var(--bg2);color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.casa-del:hover{border-color:var(--red);color:var(--red)}
+.casa-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.casa-fields .cf-full{grid-column:1/-1}
+.casa-mini-l{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;display:block}
+.casa-sit-badge{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px}
+.csb-disp{background:rgba(127,140,141,.16);color:#95a5a6}
+.csb-planta{background:rgba(41,128,185,.16);color:var(--brand3)}
+.csb-vend{background:rgba(39,174,96,.16);color:var(--green)}
+.casa-adto{display:none}
+.casa-row.is-planta .casa-adto{display:block}
+.casa-row.is-disp .casa-data{display:none}
+.caixa-strip{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:11px 15px;margin-bottom:12px}
+.cxs-item{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.cxs-l{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px}
+.cxs-v{font-size:16px;font-weight:800}
+.cxs-v.g{color:var(--green)}.cxs-v.y{color:var(--yellow)}
+.cxs-sep{width:1px;align-self:stretch;background:var(--border)}
+.oc-casas-line{font-size:10.5px;color:var(--text2);font-weight:600;margin:2px 0 9px;padding:5px 9px;background:var(--bg3);border-radius:7px}
+.caixa-box{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px;padding-top:13px;border-top:1px solid var(--border)}
+.cxb-item{background:var(--bg3);border-radius:9px;padding:10px 12px;text-align:center}
+.cxb-l{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.cxb-v{font-size:15px;font-weight:800}
+.cxb-v.g{color:var(--green)}.cxb-v.y{color:var(--yellow)}.cxb-v.r{color:var(--red)}
+.cxb-note{font-size:10.5px;color:var(--text3);margin-top:11px;line-height:1.45;background:var(--bg3);padding:9px 11px;border-radius:8px}
+.casas-result-list{display:flex;flex-direction:column;gap:10px;margin-bottom:13px}
+.casa-result-card{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 14px}
+.crc-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.crc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.crc-full{grid-column:1/-1}
+.crc-sep{height:1px;background:var(--border2);margin:2px 0}
+.crc-item{display:flex;flex-direction:column;gap:2px}
+.crc-l{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.3px}
+.crc-v{font-size:15px;font-weight:800;color:var(--text)}
+.crc-dest{padding:7px 9px;border-radius:8px}
+.crc-green{background:rgba(39,174,96,.12)}.crc-green .crc-v{color:var(--green)}
+.crc-red{background:rgba(231,76,60,.12)}.crc-red .crc-v{color:var(--red)}
+@media(max-width:600px){.caixa-box{grid-template-columns:1fr;gap:8px}}
 input,select,textarea{width:100%;padding:8px 11px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;transition:all .2s;outline:none}
 input:focus,select:focus,textarea:focus{border-color:var(--brand2);box-shadow:0 0 0 3px rgba(41,128,185,.14)}
 select option{background:var(--bg2);color:var(--text)}
@@ -1113,10 +1158,15 @@ input,select,textarea{min-height:44px}
     <span id="dash-periodo-label" style="font-size:11px;color:var(--brand3);margin-left:4px"></span>
   </div>
   <div class="g4" id="kpi-glob">
-    <div class="kc cb"><div class="ki b" aria-hidden="true">🏠</div><div class="kl">Obras Ativas</div><div class="kv b" id="k-obras">0</div></div>
+    <div class="kc cb"><div class="ki b" aria-hidden="true">🏠</div><div class="kl">Casas Vendidas</div><div class="kv b" id="k-obras">0</div></div>
     <div class="kc cr"><div class="ki r" aria-hidden="true">💰</div><div class="kl">Total Investido</div><div class="kv r" id="k-total">R$0</div></div>
-    <div class="kc cg"><div class="ki g" aria-hidden="true">📈</div><div class="kl">VGV / Receita</div><div class="kv g" id="k-vgv">R$0</div></div>
+    <div class="kc cg"><div class="ki g" aria-hidden="true">📈</div><div class="kl">VGV Realizado</div><div class="kv g" id="k-vgv">R$0</div></div>
     <div class="kc ca"><div class="ki a" aria-hidden="true">💹</div><div class="kl">Lucro Estimado</div><div class="kv a" id="k-lucro">R$0</div></div>
+  </div>
+  <div class="caixa-strip" id="caixa-strip" style="display:none">
+    <div class="cxs-item"><span class="cxs-l">💵 Recebido (caixa)</span><span class="cxs-v g" id="cx-receb">R$0</span></div>
+    <div class="cxs-sep" aria-hidden="true"></div>
+    <div class="cxs-item"><span class="cxs-l">⏳ A receber (assinatura)</span><span class="cxs-v y" id="cx-areceber">R$0</span></div>
   </div>
   <button class="dash-pend-banner" onclick="showPage('pendencias')" aria-label="Ver pendências">
     <div class="dash-pend-left">
@@ -1132,14 +1182,15 @@ input,select,textarea{min-height:44px}
     </div>
   </button>
   <div class="card">
-    <div class="card-hdr"><div class="card-title">🏠 Obras Cadastradas</div><button class="btn btn-sm btn-a" onclick="showPage('cadastro',null)" aria-label="Nova obra">+ Nova Obra</button></div>
+    <div class="card-hdr"><div class="card-title">🏘️ Empreendimentos</div><button class="btn btn-sm btn-a" onclick="showPage('cadastro',null)" aria-label="Novo empreendimento">+ Novo Empreendimento</button></div>
     <div class="obras-grid" id="obras-grid"></div>
   </div>
   <div id="obra-detail">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-      <div class="page-title" style="font-size:16px" id="detail-title">Selecione uma obra acima</div>
+      <div class="page-title" style="font-size:16px" id="detail-title">Selecione um empreendimento acima</div>
     </div>
     <div class="g5" id="kpi-obra"></div>
+    <div id="casas-result" style="margin-bottom:16px;display:none"></div>
     <div class="g2">
       <div class="card"><div class="card-hdr"><div class="card-title">Gastos por Categoria</div></div><div id="cat-bars"></div></div>
       <div class="card"><div class="card-hdr"><div class="card-title">Últimos Lançamentos</div><button class="btn btn-sm" onclick="showPage('lancamentos',null)" aria-label="Ver todos os lançamentos">Ver todos →</button></div><div id="dash-last"></div></div>
@@ -1487,33 +1538,39 @@ input,select,textarea{min-height:44px}
 <!-- CADASTRO -->
 <div id="page-cadastro" class="page" role="main">
   <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
-  <div class="page-hdr"><div><div class="page-title">Cadastro de Obra</div><div class="page-sub">Múltiplas obras — Macaé e região, RJ</div></div><button class="btn btn-p btn-sm" onclick="novaO()" aria-label="Nova obra">+ Nova Obra</button></div>
+  <div class="page-hdr"><div><div class="page-title">Empreendimentos</div><div class="page-sub">Terreno com uma ou mais casas — Macaé e região, RJ</div></div><button class="btn btn-p btn-sm" onclick="novaO()" aria-label="Novo empreendimento">+ Novo Empreendimento</button></div>
   <div class="card" id="form-obra" style="margin-bottom:14px;display:none">
     <div class="card-title" style="margin-bottom:12px" id="fo-title">📐 Dados da Obra</div>
     <div class="fg">
-      <div class="fgg"><label class="fl" for="cfg-nm">Nome da Obra <span class="req">*</span></label><input type="text" id="cfg-nm" placeholder="Ex: Res. Barra de Macaé" aria-required="true"></div>
+      <div class="fgg"><label class="fl" for="cfg-nm">Nome do Empreendimento <span class="req">*</span></label><input type="text" id="cfg-nm" placeholder="Ex: Terreno Barra de Macaé" aria-required="true"></div>
       <div class="fgg"><label class="fl" for="cfg-end">Endereço Completo <span class="req">*</span></label><input type="text" id="cfg-end" placeholder="Rua, nº, bairro — Macaé/RJ" aria-required="true"></div>
     </div>
     <div class="fg">
       <div class="fgg"><label class="fl" for="cfg-ini">Data de Início <span class="req">*</span></label><input type="date" id="cfg-ini" placeholder="dd/mm/aaaa" aria-required="true"></div>
       <div class="fgg"><label class="fl" for="cfg-orc">Orçamento Máximo (R$) <span class="req">*</span></label><input type="number" id="cfg-orc" min="0" step="0.01" placeholder="Ex: 500000" aria-required="true"></div>
-      <div class="fgg"><label class="fl" for="cfg-area">Área Construída (m²)</label><input type="number" id="cfg-area" min="0" step="0.1" placeholder="Ex: 120"></div>
+      <div class="fgg"><label class="fl" for="cfg-area">Área por casa (m²)</label><input type="number" id="cfg-area" min="0" step="0.1" placeholder="Ex: 120"></div>
       <div class="fgg"><label class="fl" for="cfg-concl">Previsão de Conclusão</label><input type="date" id="cfg-concl" placeholder="dd/mm/aaaa"></div>
     </div>
     <div class="fg">
-      <div class="fgg"><label class="fl" for="cfg-st">Status da Obra</label><select id="cfg-st" onchange="onSt()" aria-label="Status da obra"><option value="andamento">🏗️ Em Andamento</option><option value="vendida">📋 Vendida na Planta</option><option value="concluida">✅ Concluída</option></select></div>
-      <div class="fgg" id="cfg-vw" style="display:none"><label class="fl" for="cfg-venda">Valor de Venda / VGV (R$)</label><input type="number" id="cfg-venda" min="0" step="0.01" placeholder="0,00" aria-label="Valor de venda"></div>
+      <div class="fgg"><label class="fl" for="cfg-st">Situação da construção</label><select id="cfg-st" aria-label="Situação da construção"><option value="andamento">🏗️ Em Andamento</option><option value="concluida">✅ Concluída</option></select></div>
       <div class="fgg"><label class="fl" for="cfg-soc">Responsável / Sócio</label><input type="text" id="cfg-soc" placeholder="Nome do responsável"></div>
+    </div>
+    <div class="casas-sec">
+      <div class="casas-hdr">
+        <div><div class="casas-tit">🏠 Casas / Unidades</div><div class="casas-sub">Os custos do empreendimento são rateados igualmente entre as casas.</div></div>
+        <button type="button" class="btn btn-sm btn-s" onclick="addCasaRow()" aria-label="Adicionar casa">+ Casa</button>
+      </div>
+      <div id="casas-list"></div>
     </div>
     <input type="hidden" id="cfg-id">
     <div class="obra-btns-group">
-      <button class="btn btn-p" onclick="salvarO()" aria-label="Salvar obra">✓ Salvar Obra</button>
+      <button class="btn btn-p" onclick="salvarO()" aria-label="Salvar empreendimento">✓ Salvar Empreendimento</button>
       <button class="btn" onclick="fecharFormObra()" aria-label="Cancelar" style="margin-top:8px">✕ Cancelar</button>
       <button class="btn" onclick="expJSON()" aria-label="Exportar backup">⬇ Backup JSON</button>
       <button class="btn btn-s" onclick="openImport()" aria-label="Importar backup">📥 Importar Backup</button>
     </div>
   </div>
-  <div class="card"><div class="card-hdr"><div class="card-title">🏠 Obras Cadastradas</div></div><div id="obras-adm"></div></div>
+  <div class="card"><div class="card-hdr"><div class="card-title">🏘️ Empreendimentos Cadastrados</div></div><div id="obras-adm"></div></div>
   <div style="text-align:center;padding:8px 0 4px">
     <button onclick="togZonaPerigo()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text3);opacity:.5;padding:6px 12px;border-radius:6px;transition:opacity .2s" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='.5'">⚙ configurações avançadas</button>
   </div>
@@ -1749,7 +1806,7 @@ function closeLogoutModal(){document.getElementById('logout-modal').classList.re
 function confirmarLogout(){sessionStorage.removeItem('lupa_user');location.reload();}
 
 const SK='lupa_macae_v5';
-const SCHEMA_VER=1;
+const SCHEMA_VER=2;
 const MS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const CL={material:'Materiais',funcionario:'Funcionários',burocracia:'Burocracia',terreno:'Terreno',outro:'Outros'};
@@ -1986,7 +2043,7 @@ async function sheetsUpdate(range,values){
 }
 
 /* ══ SERIALIZE / DESERIALIZE ══ */
-const OBR_H=['id','nome','endereco','status','orcamento','area','inicio','previsao','notas'];
+const OBR_H=['id','nome','endereco','status','orcamento','area','inicio','previsao','notas','conclusao','socio','casasJson'];
 const LAN_H=['id','obraId','data','fornecedor','nfNum','cat','mat','qty','unit','valor','statusPag','createdBy','createdAt'];
 const PEN_H=['id','texto','prazo','status','prioridade','createdAt'];
 const REC_H=['id','texto','valor','dia','cat','ativo','createdAt'];
@@ -2015,7 +2072,7 @@ async function syncToSheets(){
   gSyncing=true;updSyncBtnState('syncing');
   try{
     await Promise.all([
-      (async()=>{await sheetsClear('OBRAS');if(ST.obras.length)await sheetsUpdate('OBRAS',toRows(OBR_H,ST.obras));})(),
+      (async()=>{await sheetsClear('OBRAS');if(ST.obras.length)await sheetsUpdate('OBRAS',toRows(OBR_H,ST.obras.map(o=>({...o,casasJson:JSON.stringify((normCasas(o),o.casas||[]))}))));})(),
       (async()=>{await sheetsClear('LANCAMENTOS');if(ST.lancamentos.length)await sheetsUpdate('LANCAMENTOS',toRows(LAN_H,ST.lancamentos));})(),
       (async()=>{await sheetsClear('PENDENCIAS');if(ST.pendencias.length)await sheetsUpdate('PENDENCIAS',toRows(PEN_H,ST.pendencias));})(),
       (async()=>{await sheetsClear('RECORRENTES');if(ST.recorrentes.length)await sheetsUpdate('RECORRENTES',toRows(REC_H,ST.recorrentes));})(),
@@ -2048,7 +2105,16 @@ async function syncFromSheets(){
     ]);
     const localL=[...ST.lancamentos];
     const localD=[...ST.documentos];
-    if(obras&&obras.values){ST.obras=fromRows(obras.values,['orcamento','area']);}
+    if(obras&&obras.values){
+      const localO=[...ST.obras];
+      const arr=fromRows(obras.values,['orcamento','area']);
+      arr.forEach(o=>{
+        if(o.casasJson){try{o.casas=JSON.parse(o.casasJson);}catch(e){o.casas=null;}}
+        if(!o.casas||!o.casas.length){const loc=localO.find(x=>x.id===o.id);if(loc&&loc.casas)o.casas=loc.casas;}
+        delete o.casasJson;normCasas(o);
+      });
+      ST.obras=arr;
+    }
     if(lancs&&lancs.values){
       const arr=fromRows(lancs.values,['valor','qty']);
       ST.lancamentos=arr.map(l=>{const loc=localL.find(x=>x.id===l.id);if(loc&&loc.compBase64)l.compBase64=loc.compBase64;return l;});
@@ -2106,7 +2172,27 @@ function migrateSchema(d){
     if(l.fornecedor===undefined)l.fornecedor='';
   });
   if(d.documentos)d.documentos.forEach(doc=>{if(!doc.validade)doc.validade='';});
-  if(d.obras)d.obras.forEach(o=>{if(!o.area)o.area=0;});
+  if(d.obras)d.obras.forEach(o=>{if(!o.area)o.area=0;normCasas(o);});
+}
+/* Garante que todo empreendimento tenha casas[]. Migra obras antigas (1 obra = 1 casa). */
+function normCasas(o){
+  if(!o)return o;
+  if(!Array.isArray(o.casas)||!o.casas.length){
+    const sit=o.status==='vendida'?'vendida_planta':(o.valorVenda?'vendida':'disponivel');
+    o.casas=[{id:o.id+'-c1',nome:o.nome||'Casa 1',situacao:sit,valorVenda:+o.valorVenda||0,adiantamento:0,dataVenda:''}];
+  }
+  o.casas.forEach((c,i)=>{
+    if(!c.id)c.id=o.id+'-c'+(i+1);
+    if(!c.nome)c.nome='Casa '+(i+1);
+    if(!c.situacao)c.situacao='disponivel';
+    c.valorVenda=+c.valorVenda||0;
+    c.adiantamento=+c.adiantamento||0;
+    if(c.dataVenda===undefined)c.dataVenda='';
+  });
+  // status do empreendimento agora é só da construção
+  if(o.status==='vendida')o.status='andamento';
+  if(o.status!=='andamento'&&o.status!=='concluida')o.status='andamento';
+  return o;
 }
 
 /* ══ UTILS ══ */
@@ -2218,6 +2304,39 @@ function toggleTheme(){
 }
 
 /* ══ OBRA MANAGEMENT ══ */
+/* ══ FINANCEIRO POR CASA ══
+   Empreendimento = pote de custos. Custo rateado igualmente entre as casas (idênticas).
+   DRE: receita = valor de venda cheio. Caixa: entrou = adiantamentos + vendas quitadas. */
+function casasDe(o){normCasas(o);return o.casas;}
+function custoEmp(o){return ST.lancamentos.filter(l=>l.obraId===o.id).reduce((a,l)=>a+(+l.valor||0),0);}
+function custoPorCasa(o){const n=casasDe(o).length||1;return custoEmp(o)/n;}
+/* Resultado de UMA casa. recebido = caixa real; aReceber = saldo a quitar na assinatura. */
+function casaResultado(o,c){
+  const custo=custoPorCasa(o);
+  const vendida=c.situacao==='vendida';
+  const naPlanta=c.situacao==='vendida_planta';
+  const receita=(vendida||naPlanta)?(+c.valorVenda||0):0;          // DRE (regime de competência)
+  const recebido=vendida?(+c.valorVenda||0):(naPlanta?(+c.adiantamento||0):0); // Caixa real
+  const aReceber=(vendida||naPlanta)?Math.max(0,receita-recebido):0;
+  const margem=(vendida||naPlanta)?(receita-custo):null;            // lucro estimado/realizado
+  const estimado=naPlanta||(o.status!=='concluida'); // ainda não fechou: margem é estimada
+  return {custo,receita,recebido,aReceber,margem,estimado,vendida,naPlanta};
+}
+/* Consolida o empreendimento inteiro. */
+function empResumo(o){
+  const casas=casasDe(o);
+  const r={nCasas:casas.length,vendidas:0,naPlanta:0,disponiveis:0,custoTotal:custoEmp(o),
+    vgvRealizado:0,vgvPotencial:0,recebido:0,aReceber:0,margemTotal:0};
+  casas.forEach(c=>{
+    const cr=casaResultado(o,c);
+    if(cr.vendida)r.vendidas++;else if(cr.naPlanta)r.naPlanta++;else r.disponiveis++;
+    r.vgvRealizado+=cr.receita;r.recebido+=cr.recebido;r.aReceber+=cr.aReceber;
+    if(cr.margem!==null)r.margemTotal+=cr.margem;
+    r.vgvPotencial+=(+c.valorVenda||0); // inclui disponíveis com preço-alvo preenchido
+  });
+  return r;
+}
+const SIT_LBL={disponivel:'Disponível',vendida_planta:'Vendida na planta',vendida:'Vendida'};
 function getOA(){return ST.obras.find(o=>o.id===ST.obraAtiva)||ST.obras[0]||null;}
 function setOA(id){ST.obraAtiva=id;save();updSB();updBanners();updKpis();renderDash();}
 function updSB(){
@@ -2440,15 +2559,16 @@ function gerarPDF(){
 
 /* ══ DASHBOARD ══ */
 function renderDash(){
-  const atv=ST.obras.filter(o=>o.status==='andamento').length;
   const totAll=ST.lancamentos.reduce((a,l)=>a+l.valor,0);
-  const vgv=ST.obras.reduce((a,o)=>a+(o.valorVenda||0),0);
-  const custoAll=totAll;const lucro=vgv-custoAll;
+  let totalCasas=0,vendidasTot=0,vgvReal=0,recebTot=0,aReceberTot=0,margemTot=0,temVenda=false;
+  ST.obras.forEach(o=>{const r=empResumo(o);totalCasas+=r.nCasas;vendidasTot+=r.vendidas+r.naPlanta;vgvReal+=r.vgvRealizado;recebTot+=r.recebido;aReceberTot+=r.aReceber;margemTot+=r.margemTotal;if(r.vgvRealizado>0)temVenda=true;});
   const pnd=ST.pendencias.filter(p=>p.status==='aberta').length;
-  document.getElementById('k-obras').textContent=atv;
+  document.getElementById('k-obras').textContent=totalCasas?`${vendidasTot}/${totalCasas}`:'0';
   document.getElementById('k-total').textContent=fmt(totAll);
-  document.getElementById('k-vgv').textContent=fmt(vgv);
-  document.getElementById('k-lucro').textContent=vgv?fmt(lucro):'—';
+  document.getElementById('k-vgv').textContent=fmtS(vgvReal);
+  document.getElementById('k-lucro').textContent=temVenda?fmtS(margemTot):'—';
+  const cxStrip=document.getElementById('caixa-strip');
+  if(cxStrip){cxStrip.style.display=temVenda?'flex':'none';document.getElementById('cx-receb').textContent=fmt(recebTot);document.getElementById('cx-areceber').textContent=fmt(aReceberTot);}
   document.getElementById('k-pend').textContent=pnd;
   document.getElementById('badge-pend').textContent=pnd;
   document.getElementById('badge-pend').style.display=pnd>0?'':'none';
@@ -2457,30 +2577,32 @@ function renderDash(){
   checkBudgetAlert();checkDocAlert();updAPagar();
 
   const og=document.getElementById('obras-grid');
-  if(!ST.obras.length){og.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px">Nenhuma obra cadastrada. <a href="#" onclick="showPage(\'cadastro\',null)" style="color:var(--brand3)">Cadastrar →</a></div>';return;}
+  if(!ST.obras.length){og.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px">Nenhum empreendimento cadastrado. <a href="#" onclick="showPage(\'cadastro\',null)" style="color:var(--brand3)">Cadastrar →</a></div>';return;}
   og.innerHTML=ST.obras.map(o=>{
     const ls=ST.lancamentos.filter(l=>l.obraId===o.id);
     const gasto=ls.reduce((a,l)=>a+l.valor,0);
     const saldo=(o.orcamento||0)-gasto;
     const pct=o.orcamento?Math.min(100,Math.round(gasto/o.orcamento*100)):0;
-    const dias=o.inicio?Math.max(0,dif(o.inicio,td())):0;
-    const lucroO=o.valorVenda?o.valorVenda-gasto:null;
-    const diasFim=o.conclusao&&o.status==='andamento'?dif(td(),o.conclusao):null;
-    const cpM2=o.area&&gasto?Math.round(gasto/o.area):null;
-    return `<div class="obra-card${o.id===ST.obraAtiva?' sel':''}" onclick="selOD('${o.id}')" role="button" tabindex="0" aria-label="Selecionar obra ${o.nome}" aria-pressed="${o.id===ST.obraAtiva}">
+    const r=empResumo(o);
+    const cpCasa=r.nCasas?gasto/r.nCasas:gasto;
+    const temVenda=r.vendidas+r.naPlanta>0;
+    return `<div class="obra-card${o.id===ST.obraAtiva?' sel':''}" onclick="selOD('${o.id}')" role="button" tabindex="0" aria-label="Selecionar empreendimento ${o.nome}" aria-pressed="${o.id===ST.obraAtiva}">
       <div class="oc-accent ${o.status}" aria-hidden="true"></div>
       <div class="oc-hdr">
         <div><div class="oc-name">${o.nome}</div><div class="oc-addr">📍 ${o.endereco}</div></div>
-        <span class="oc-sbadge ${o.status==='andamento'?'sb-and':o.status==='concluida'?'sb-con':'sb-ven'}">${o.status==='andamento'?'⚙️ Andamento':o.status==='concluida'?'✅ Concluída':'📋 Vendida'}</span>
+        <span class="oc-sbadge ${o.status==='concluida'?'sb-con':'sb-and'}">${o.status==='concluida'?'✅ Concluída':'⚙️ Andamento'}</span>
       </div>
+      <div class="oc-casas-line">🏠 ${r.nCasas} casa${r.nCasas>1?'s':''} · ${r.vendidas} vendida${r.vendidas!==1?'s':''}${r.naPlanta?` · ${r.naPlanta} na planta`:''}${r.disponiveis?` · ${r.disponiveis} disponíve${r.disponiveis>1?'is':'l'}`:''}</div>
       <div><div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${pct}% do orçamento utilizado"><div class="prog-f" style="width:${pct}%;background:${pct>90?'var(--red)':pct>70?'var(--yellow)':'var(--accent)'}"></div></div>
       <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:9.5px;color:var(--text3)">${pct}% do orçamento</span><span style="font-size:9.5px;color:var(--text3)">${fmt(o.orcamento||0)}</span></div></div>
       <div class="oc-kpis">
-        <div class="omk"><div class="omk-l">Gasto</div><div class="omk-v ac">${fmtS(gasto)}</div></div>
-        <div class="omk"><div class="omk-l">Saldo</div><div class="omk-v ${saldo>=0?'su':'da'}">${fmtS(saldo)}</div></div>
-        <div class="omk"><div class="omk-l">Dias</div><div class="omk-v">${dias}</div></div>
-        ${lucroO!==null?`<div class="omk"><div class="omk-l">Lucro</div><div class="omk-v ${lucroO>=0?'su':'da'}">${fmtS(lucroO)}</div></div>`:diasFim!==null?`<div class="omk"><div class="omk-l">Dias Restantes</div><div class="omk-v ${diasFim<0?'da':diasFim<30?'wa':'su'}">${diasFim<0?'Atrasado':diasFim+'d'}</div></div>`:`<div class="omk"><div class="omk-l">Lançamentos</div><div class="omk-v">${ls.length}</div></div>`}
-        ${cpM2?`<div class="omk" style="grid-column:1/-1"><div class="omk-l">Custo/m²</div><div class="omk-v ac">${fmt(cpM2)}</div></div>`:''}
+        <div class="omk"><div class="omk-l">Investido</div><div class="omk-v ac">${fmtS(gasto)}</div></div>
+        <div class="omk"><div class="omk-l">Custo/casa</div><div class="omk-v">${fmtS(cpCasa)}</div></div>
+        ${temVenda?`<div class="omk"><div class="omk-l">VGV</div><div class="omk-v ac">${fmtS(r.vgvRealizado)}</div></div>
+        <div class="omk"><div class="omk-l">Lucro ${o.status==='concluida'?'':'est.'}</div><div class="omk-v ${r.margemTotal>=0?'su':'da'}">${fmtS(r.margemTotal)}</div></div>`
+        :`<div class="omk"><div class="omk-l">Saldo orç.</div><div class="omk-v ${saldo>=0?'su':'da'}">${fmtS(saldo)}</div></div>
+        <div class="omk"><div class="omk-l">Lançamentos</div><div class="omk-v">${ls.length}</div></div>`}
+        ${r.aReceber>0?`<div class="omk" style="grid-column:1/-1"><div class="omk-l">⏳ A receber (assinatura)</div><div class="omk-v" style="color:var(--yellow)">${fmt(r.aReceber)}</div></div>`:''}
       </div></div>`;
   }).join('');
   const ob=getOA();if(ob)renderDetail(ob);
@@ -2500,6 +2622,47 @@ function filterByPeriodo(items){
   if(!de)return items;
   return items.filter(l=>l.data>=de&&l.data<=ate);
 }
+function renderCasasResult(ob,res){
+  const box=document.getElementById('casas-result');
+  if(!box)return;
+  normCasas(ob);
+  const custoCasa=custoPorCasa(ob);
+  const temVenda=res.vendidas+res.naPlanta>0;
+  const estimando=ob.status!=='concluida';
+  const sitBadge=c=>{const cls=c.situacao==='vendida'?'csb-vend':(c.situacao==='vendida_planta'?'csb-planta':'csb-disp');return `<span class="casa-sit-badge ${cls}">${SIT_LBL[c.situacao]||c.situacao}</span>`;};
+  const casaCards=ob.casas.map(c=>{
+    const cr=casaResultado(ob,c);
+    const hasSale=cr.vendida||cr.naPlanta;
+    return `<div class="casa-result-card">
+      <div class="crc-hdr">
+        <strong style="font-size:14px">${esc(c.nome)}</strong>
+        ${sitBadge(c)}
+      </div>
+      <div class="crc-grid">
+        <div class="crc-item"><div class="crc-l">Custo rateado</div><div class="crc-v">${fmtS(custoCasa)}</div></div>
+        ${hasSale?`
+        <div class="crc-item"><div class="crc-l">Valor de venda</div><div class="crc-v">${fmtS(c.valorVenda)}</div></div>
+        <div class="crc-item crc-full crc-dest ${cr.margem>=0?'crc-green':'crc-red'}"><div class="crc-l">Margem ${cr.estimado?'estimada':''}</div><div class="crc-v">${fmtS(cr.margem)}${cr.estimado?'<span style="font-size:9px;font-weight:400;opacity:.7"> est.</span>':''}</div></div>
+        `:`<div class="crc-item"><div class="crc-l">Situação</div><div class="crc-v" style="color:var(--text3)">Não vendida</div></div>`}
+        ${cr.naPlanta?`
+        <div class="crc-item crc-full"><div class="crc-sep"></div></div>
+        <div class="crc-item"><div class="crc-l">💵 Recebido</div><div class="crc-v" style="color:var(--green)">${fmtS(cr.recebido)}</div></div>
+        <div class="crc-item"><div class="crc-l">⏳ A receber</div><div class="crc-v" style="color:var(--yellow)">${fmtS(cr.aReceber)}</div></div>
+        `:''}
+      </div>
+    </div>`;
+  }).join('');
+  box.innerHTML=`<div class="card">
+    <div class="card-hdr"><div class="card-title">🏠 Resultado por casa</div><span style="font-size:10px;color:var(--text3)">Custo/casa: ${fmtS(custoCasa)}</span></div>
+    <div class="casas-result-list">${casaCards}</div>
+    ${temVenda?`<div class="caixa-box">
+      <div class="cxb-item"><div class="cxb-l">💵 Recebido</div><div class="cxb-v g">${fmtS(res.recebido)}</div></div>
+      <div class="cxb-item"><div class="cxb-l">⏳ A receber</div><div class="cxb-v y">${fmtS(res.aReceber)}</div></div>
+      <div class="cxb-item"><div class="cxb-l">📈 Lucro ${estimando?'est.':'final'}</div><div class="cxb-v ${res.margemTotal>=0?'g':'r'}">${fmtS(res.margemTotal)}</div></div>
+    </div>${estimando&&res.naPlanta?'<div class="cxb-note">⚠️ Vendida na planta — margem estimada. Se ajusta conforme custos entram, fecha quando concluído.</div>':''}`:'<div class="cxb-note" style="margin-top:12px">Nenhuma casa vendida ainda. Edite o empreendimento para atualizar a situação de cada casa.</div>'}
+  </div>`;
+  box.style.display='block';
+}
 function renderDetail(ob){
   const[de]=getPeriodoDates();
   const periodoLabel=de?` (${dashPeriodo==='mes'?'Este Mês':dashPeriodo==='trimestre'?'Trimestre':'Este Ano'})`:'';
@@ -2512,18 +2675,20 @@ function renderDetail(ob){
   const diasFim=ob.conclusao&&ob.status==='andamento'?dif(td(),ob.conclusao):null;
   const burnRate=dias>30?tot/Math.floor(dias/30):null;
   const cpM2=ob.area&&tot?Math.round(tot/ob.area):null;
-  const roi=ob.valorVenda&&tot?Math.round((ob.valorVenda-tot)/tot*100):null;
+  const res=empResumo(ob);
+  const roi=res.custoTotal&&res.vgvRealizado?Math.round(res.margemTotal/res.custoTotal*100):null;
   document.getElementById('kpi-obra').innerHTML=`
     <div class="kc cb"><div class="ki b" aria-hidden="true">📅</div><div class="kl">Dias em Obra</div><div class="kv b">${dias}</div><div class="kd">${fD(ob.inicio)} → ${fD(ob.conclusao)}</div></div>
     <div class="kc cr"><div class="ki r" aria-hidden="true">💸</div><div class="kl">Total Gasto</div><div class="kv r">${fmt(tot)}</div><div class="kd">${ls.length} lançamentos</div></div>
     <div class="kc cy"><div class="ki y" aria-hidden="true">🎯</div><div class="kl">Orçamento Usado</div><div class="kv y">${pct}%</div><div class="kd">${fmt(ob.orcamento||0)} limite</div></div>
     <div class="kc cg"><div class="ki g" aria-hidden="true">💰</div><div class="kl">Saldo</div><div class="kv ${saldo>=0?'g':'r'}">${fmtS(saldo)}</div><div class="kd">${saldo>=0?'Dentro do limite':'⚠️ Estourado'}</div></div>
-    ${ob.valorVenda?`<div class="kc ca"><div class="ki a" aria-hidden="true">📈</div><div class="kl">VGV / Venda</div><div class="kv a">${fmt(ob.valorVenda)}</div><div class="kd">Lucro: ${fmtS(ob.valorVenda-tot)}</div></div>`:''}
+    ${res.vgvRealizado?`<div class="kc ca"><div class="ki a" aria-hidden="true">📈</div><div class="kl">VGV Realizado</div><div class="kv a">${fmtS(res.vgvRealizado)}</div><div class="kd">Lucro ${ob.status==='concluida'?'':'est. '}${fmtS(res.margemTotal)}</div></div>`:''}
     ${diasFim!==null?`<div class="kc ${diasFim<0?'cr':diasFim<30?'cy':'cg'}"><div class="ki ${diasFim<0?'r':diasFim<30?'y':'g'}" aria-hidden="true">⏱️</div><div class="kl">Dias Restantes</div><div class="kv ${diasFim<0?'r':diasFim<30?'y':'g'}">${diasFim<0?'Atrasado':diasFim+'d'}</div><div class="kd">Conclusão: ${fD(ob.conclusao)}</div></div>`:''}
     ${burnRate?`<div class="kc ca"><div class="ki a" aria-hidden="true">🔥</div><div class="kl">Burn Rate Mensal</div><div class="kv a">${fmtS(burnRate)}</div><div class="kd">Média últimos meses</div></div>`:''}
     ${cpM2?`<div class="kc cb"><div class="ki b" aria-hidden="true">📐</div><div class="kl">Custo por m²</div><div class="kv b">${fmt(cpM2)}</div><div class="kd">${ob.area}m² construídos</div></div>`:''}
-    ${roi!==null?`<div class="kc cg"><div class="ki g" aria-hidden="true">📊</div><div class="kl">ROI Estimado</div><div class="kv ${roi>=0?'g':'r'}">${roi}%</div><div class="kd">Retorno sobre investimento</div></div>`:''}
+    ${roi!==null?`<div class="kc cg"><div class="ki g" aria-hidden="true">📊</div><div class="kl">ROI Estimado</div><div class="kv ${roi>=0?'g':'r'}">${roi}%</div><div class="kd">Sobre o custo das vendidas</div></div>`:''}
   `;
+  renderCasasResult(ob,res);
   const bycat={};ls.forEach(l=>{bycat[l.cat]=(bycat[l.cat]||0)+l.valor;});
   const cb=document.getElementById('cat-bars');
   if(!Object.keys(bycat).length){cb.innerHTML='<p style="color:var(--text3);font-size:13px">Sem lançamentos.</p>';return;}
@@ -3552,12 +3717,80 @@ function delDoc(id){
 }
 
 /* ══ CADASTRO DE OBRA ══ */
-function onSt(){const s=document.getElementById('cfg-st').value;document.getElementById('cfg-vw').style.display=(s==='vendida'||s==='concluida')?'flex':'none';}
+/* ── Casas no formulário ── */
+let _casaSeq=0;
+function casaRowHTML(c){
+  const i=++_casaSeq;
+  const sit=c.situacao||'disponivel';
+  const cls=sit==='vendida_planta'?'is-planta':(sit==='vendida'?'is-vend':'is-disp');
+  return `<div class="casa-row ${cls}" data-row="${i}">
+    <div class="casa-row-top">
+      <input type="text" class="casa-nome" placeholder="Nome da casa (ex: Casa 1)" value="${esc(c.nome||'')}">
+      <button type="button" class="casa-del" onclick="delCasaRow(this)" aria-label="Remover casa" title="Remover casa">✕</button>
+    </div>
+    <div class="casa-fields">
+      <div class="cf-full">
+        <span class="casa-mini-l">Situação</span>
+        <select class="casa-sit" onchange="onCasaSit(this)">
+          <option value="disponivel"${sit==='disponivel'?' selected':''}>Disponível (não vendida)</option>
+          <option value="vendida_planta"${sit==='vendida_planta'?' selected':''}>Vendida na planta (antecipada)</option>
+          <option value="vendida"${sit==='vendida'?' selected':''}>Vendida (recebida)</option>
+        </select>
+      </div>
+      <div>
+        <span class="casa-mini-l">Valor de venda (R$)</span>
+        <input type="number" class="casa-venda" min="0" step="0.01" placeholder="0,00" value="${c.valorVenda?c.valorVenda:''}">
+      </div>
+      <div class="casa-data">
+        <span class="casa-mini-l">Data da venda</span>
+        <input type="date" class="casa-dt" value="${esc(c.dataVenda||'')}">
+      </div>
+      <div class="cf-full casa-adto">
+        <span class="casa-mini-l">💵 Adiantamento já recebido (R$)</span>
+        <input type="number" class="casa-adt" min="0" step="0.01" placeholder="0,00" value="${c.adiantamento?c.adiantamento:''}">
+        <div style="font-size:9.5px;color:var(--text3);margin-top:3px">O restante entra na assinatura final, quando a casa ficar pronta.</div>
+      </div>
+    </div>
+  </div>`;
+}
+function renderCasasForm(casas){
+  document.getElementById('casas-list').innerHTML=(casas&&casas.length?casas:[{nome:'Casa 1',situacao:'disponivel'}]).map(casaRowHTML).join('');
+}
+function addCasaRow(){
+  const list=document.getElementById('casas-list');
+  const n=list.querySelectorAll('.casa-row').length+1;
+  list.insertAdjacentHTML('beforeend',casaRowHTML({nome:'Casa '+n,situacao:'disponivel'}));
+}
+function delCasaRow(btn){
+  const list=document.getElementById('casas-list');
+  if(list.querySelectorAll('.casa-row').length<=1){toast('Mantenha ao menos 1 casa.','error');return;}
+  btn.closest('.casa-row').remove();
+}
+function onCasaSit(sel){
+  const row=sel.closest('.casa-row');
+  row.classList.remove('is-disp','is-planta','is-vend');
+  row.classList.add(sel.value==='vendida_planta'?'is-planta':(sel.value==='vendida'?'is-vend':'is-disp'));
+}
+function readCasasForm(baseId){
+  const rows=[...document.querySelectorAll('#casas-list .casa-row')];
+  return rows.map((r,i)=>{
+    const sit=r.querySelector('.casa-sit').value;
+    return {
+      id:baseId+'-c'+(i+1),
+      nome:norm(r.querySelector('.casa-nome').value)||('Casa '+(i+1)),
+      situacao:sit,
+      valorVenda:parseFloat(r.querySelector('.casa-venda').value)||0,
+      adiantamento:sit==='vendida_planta'?(parseFloat(r.querySelector('.casa-adt').value)||0):0,
+      dataVenda:sit==='disponivel'?'':(r.querySelector('.casa-dt').value||'')
+    };
+  });
+}
 function novaO(){
   document.getElementById('cfg-id').value='';
-  ['cfg-nm','cfg-end','cfg-ini','cfg-orc','cfg-area','cfg-concl','cfg-soc','cfg-venda'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('cfg-st').value='andamento';document.getElementById('cfg-vw').style.display='none';
-  document.getElementById('fo-title').textContent='📐 Nova Obra';
+  ['cfg-nm','cfg-end','cfg-ini','cfg-orc','cfg-area','cfg-concl','cfg-soc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('cfg-st').value='andamento';
+  renderCasasForm(null);
+  document.getElementById('fo-title').textContent='🏗️ Novo Empreendimento';
   document.getElementById('form-obra').style.display='block';
   document.getElementById('form-obra').scrollIntoView({behavior:'smooth'});
 }
@@ -3565,52 +3798,54 @@ function fecharFormObra(){
   document.getElementById('form-obra').style.display='none';
 }
 function editO(id){
-  const ob=ST.obras.find(o=>o.id===id);if(!ob)return;
+  const ob=ST.obras.find(o=>o.id===id);if(!ob)return;normCasas(ob);
   document.getElementById('cfg-id').value=id;
   document.getElementById('cfg-nm').value=ob.nome||'';document.getElementById('cfg-end').value=ob.endereco||'';
   document.getElementById('cfg-ini').value=ob.inicio||'';document.getElementById('cfg-orc').value=ob.orcamento||'';
   document.getElementById('cfg-area').value=ob.area||'';document.getElementById('cfg-concl').value=ob.conclusao||'';
-  document.getElementById('cfg-soc').value=ob.socio||'';document.getElementById('cfg-st').value=ob.status||'andamento';
-  document.getElementById('cfg-venda').value=ob.valorVenda||'';onSt();
+  document.getElementById('cfg-soc').value=ob.socio||'';document.getElementById('cfg-st').value=(ob.status==='concluida'?'concluida':'andamento');
+  renderCasasForm(ob.casas);
   document.getElementById('fo-title').textContent='✏️ Editando: '+ob.nome;
   document.getElementById('form-obra').style.display='block';
   document.getElementById('form-obra').scrollIntoView({behavior:'smooth'});
 }
 function salvarO(){
   if(!requireGoogle())return;
-  const nm=document.getElementById('cfg-nm').value.trim(),end=document.getElementById('cfg-end').value.trim();
+  const nm=norm(document.getElementById('cfg-nm').value),end=document.getElementById('cfg-end').value.trim();
   if(!nm||!end){toast('Nome e endereço são obrigatórios.','error');return;}
   const id=document.getElementById('cfg-id').value||uid();
-  const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFloat(document.getElementById('cfg-orc').value)||0,area:parseFloat(document.getElementById('cfg-area').value)||0,conclusao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,valorVenda:parseFloat(document.getElementById('cfg-venda').value)||0};
+  const casas=readCasasForm(id);
+  if(!casas.length){toast('Adicione pelo menos 1 casa.','error');return;}
+  const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFloat(document.getElementById('cfg-orc').value)||0,area:parseFloat(document.getElementById('cfg-area').value)||0,conclusao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,casas};
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
-  addAudit('Obra salva',nm);
-  save();toast('Obra salva!');fecharFormObra();renderOA();updSB();updKpis();renderDash();
+  addAudit('Empreendimento salvo',nm+' ('+casas.length+' casa'+(casas.length>1?'s':'')+')');
+  save();toast('Empreendimento salvo!');fecharFormObra();renderOA();updSB();updKpis();renderDash();
 }
 function delO(id){
   const oNome=ST.obras.find(o=>o.id===id)?.nome||id;
-  if(!confirm('Remover esta obra e TODOS os seus dados (lançamentos, pendências, documentos)?'))return;
+  if(!confirm('Remover este empreendimento e TODOS os seus dados (casas, lançamentos, pendências, documentos)?'))return;
   ST.obras=ST.obras.filter(o=>o.id!==id);
   ST.lancamentos=ST.lancamentos.filter(l=>l.obraId!==id);
   ST.pendencias=ST.pendencias.filter(p=>p.obraId!==id);
   ST.recorrentes=ST.recorrentes.filter(r=>r.obraId!==id);
   ST.documentos=ST.documentos.filter(d=>d.obraId!==id);
   if(ST.obraAtiva===id)ST.obraAtiva=ST.obras[0]?.id||null;
-  addAudit('Obra removida',oNome);
-  save();toast('Obra removida.');renderOA();updSB();renderDash();
+  addAudit('Empreendimento removido',oNome);
+  save();toast('Empreendimento removido.');renderOA();updSB();renderDash();
 }
 function renderOA(){
   const div=document.getElementById('obras-adm');
-  if(!ST.obras.length){div.innerHTML='<p style="color:var(--text3);font-size:12.5px;padding:7px 0">Nenhuma obra cadastrada.</p>';return;}
-  div.innerHTML=`<div class="tw"><table role="grid"><thead><tr><th class="no-sort">Nome</th><th class="no-sort">Endereço</th><th class="no-sort">Status</th><th class="no-sort">Orçamento</th><th class="no-sort">VGV</th><th class="no-sort">Área m²</th><th class="no-sort">Início</th><th class="no-sort">Ações</th></tr></thead><tbody>${ST.obras.map(o=>`<tr>
-    <td><strong>${o.nome}</strong></td><td style="font-size:11.5px">${o.endereco}</td>
-    <td><span class="badge ${o.status==='andamento'?'b-accent':o.status==='concluida'?'b-green':'b-blue'}">${o.status}</span></td>
+  if(!ST.obras.length){div.innerHTML='<p style="color:var(--text3);font-size:12.5px;padding:7px 0">Nenhum empreendimento cadastrado.</p>';return;}
+  div.innerHTML=`<div class="tw"><table role="grid"><thead><tr><th class="no-sort">Nome</th><th class="no-sort">Endereço</th><th class="no-sort">Construção</th><th class="no-sort">Casas</th><th class="no-sort">Orçamento</th><th class="no-sort">VGV</th><th class="no-sort">Início</th><th class="no-sort">Ações</th></tr></thead><tbody>${ST.obras.map(o=>{const r=empResumo(o);return `<tr>
+    <td><strong>${esc(o.nome)}</strong></td><td style="font-size:11.5px">${esc(o.endereco)}</td>
+    <td><span class="badge ${o.status==='concluida'?'b-green':'b-accent'}">${o.status==='concluida'?'Concluída':'Andamento'}</span></td>
+    <td>${r.nCasas} <span style="color:var(--text3);font-size:10px">(${r.vendidas+r.naPlanta} vend.)</span></td>
     <td class="tdm">${fmt(o.orcamento||0)}</td>
-    <td>${o.valorVenda?fmt(o.valorVenda):'<span style="color:var(--text3)">—</span>'}</td>
-    <td>${o.area?o.area+'m²':'—'}</td>
+    <td>${r.vgvRealizado?fmt(r.vgvRealizado):'<span style="color:var(--text3)">—</span>'}</td>
     <td>${fD(o.inicio)}</td>
-    <td><div style="display:flex;gap:4px"><button class="btn btn-sm" onclick="editO('${o.id}')" aria-label="Editar obra ${o.nome}">✏️</button><button class="btn btn-sm btn-d" onclick="delO('${o.id}')" aria-label="Remover obra ${o.nome}">✕</button></div></td>
-  </tr>`).join('')}</tbody></table></div>`;
+    <td><div style="display:flex;gap:4px"><button class="btn btn-sm" onclick="editO('${o.id}')" aria-label="Editar empreendimento ${esc(o.nome)}">✏️</button><button class="btn btn-sm btn-d" onclick="delO('${o.id}')" aria-label="Remover empreendimento ${esc(o.nome)}">✕</button></div></td>
+  </tr>`;}).join('')}</tbody></table></div>`;
 }
 
 /* ══ EXPORT / IMPORT ══ */
