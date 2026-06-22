@@ -399,6 +399,8 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .cbr-fill{height:100%;border-radius:3px;transition:width .7s cubic-bezier(.4,0,.2,1)}
 .cbr-val{font-size:12px;font-weight:600;color:var(--text);min-width:80px;text-align:right}
 .cbr-pct{font-size:10px;color:var(--text3);min-width:28px;text-align:right}
+/* ── Pílula discreta de assinatura pendente ── */
+.sign-pend-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#8B6914;background:rgba(241,196,15,.10);border:1px solid rgba(241,196,15,.28);border-radius:6px;padding:3px 8px;margin-top:6px;letter-spacing:.1px}
 /* ═══ CHART ═══ */
 .cc{position:relative;width:100%}
 /* ═══ TOAST ═══ */
@@ -711,6 +713,17 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .doc-form-wrap input,.doc-form-wrap select,.doc-form-wrap textarea{font-size:15px}
   /* Google banner */
   .g-required-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--red-bg);border:1.5px solid rgba(231,76,60,.3);border-radius:10px;margin-bottom:14px;font-size:12px;color:var(--red)}
+  /* ── Detalhe financeiro — KPI tiles compactos ── */
+  #kpi-obra .kc{padding:10px 11px}
+  #kpi-obra .kv{font-size:16px}
+  #kpi-obra .ki{width:26px;height:26px;font-size:13px;margin-bottom:5px}
+  #kpi-obra .kl{font-size:9px}
+  #kpi-obra .kd{font-size:9px;margin-top:2px}
+  /* ── Alertas — compactos no mobile ── */
+  .budget-alert{padding:8px 10px;gap:7px;margin-bottom:10px}
+  .budget-alert-icon{font-size:15px}
+  .budget-alert-text{font-size:11px}
+  .budget-alert-text strong{font-size:11.5px}
 }
 /* ═══ LOGIN ═══ */
 .login-ov{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;transition:background .3s}
@@ -1147,7 +1160,6 @@ input,select,textarea{min-height:44px}
     <div><div class="page-title">Painel Geral &amp; Gráficos</div><div class="page-sub" id="dash-sub">LUPA Facilities · Macaé, RJ</div></div>
     <span class="badge b-accent" aria-label="Status das obras">🏗️ Obras Ativas</span>
   </div>
-  <div id="assinatura-alert-wrap"></div>
   <div id="budget-alert-wrap"></div>
   <div id="doc-alert-wrap"></div>
   <div class="period-bar" id="dash-period-bar">
@@ -1270,10 +1282,10 @@ input,select,textarea{min-height:44px}
         <!-- Preview do resultado OCR -->
         <div class="ocr-preview" id="ocr-preview"></div>
         <div class="fg" style="margin-bottom:10px">
-          <div class="fgg"><label class="fl" for="nf-num">Nº da NF <span class="req">*</span></label><input type="text" id="nf-num" placeholder="Ex: NF-001234" autocomplete="off"></div>
-          <div class="fgg"><label class="fl" for="nf-forn">Emissor / Fornecedor</label>
+          <div class="fgg"><label class="fl" for="nfm-num">Nº da NF <span class="req">*</span></label><input type="text" id="nfm-num" placeholder="Ex: NF-001234" autocomplete="off"></div>
+          <div class="fgg"><label class="fl" for="nfm-forn">Emissor / Fornecedor</label>
             <div style="position:relative">
-              <input type="text" id="nf-forn" placeholder="Razão social ou nome" oninput="showFornAC()" onfocus="showFornAC()" autocomplete="off">
+              <input type="text" id="nfm-forn" placeholder="Razão social ou nome" oninput="showFornAC()" onfocus="showFornAC()" autocomplete="off">
               <div class="mat-dd" id="nf-forn-dd" role="listbox"></div>
             </div>
           </div>
@@ -1810,8 +1822,8 @@ const SK='lupa_macae_v5';
 const SCHEMA_VER=2;
 const MS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-const CL={material:'Materiais',funcionario:'Funcionários',burocracia:'Burocracia',terreno:'Terreno',outro:'Outros'};
-const CC={material:'#E67E22',funcionario:'#2980B9',burocracia:'#F1C40F',terreno:'#27AE60',outro:'#8E44AD'};
+const CL={material:'Materiais',funcionario:'Funcionários',mao_obra:'Mão de Obra',burocracia:'Burocracia',eletrica:'Elétrica',terreno:'Terreno',outro:'Outros'};
+const CC={material:'#E67E22',funcionario:'#2980B9',mao_obra:'#C0392B',burocracia:'#F1C40F',eletrica:'#16A085',terreno:'#27AE60',outro:'#8E44AD'};
 const TI={energia:'⚡',agua:'💧',prefeitura:'🏛️',corretor:'🤝',cartorio:'📜',fornecedor:'📦',outro:'📋'};
 const DI={terreno:'🏡',obra:'🏗️',prefeitura:'🏛️',financeiro:'💰',contrato:'📝',outro:'📦'};
 const SC={funcionario:['Diária','Semana','Quinzena','Mensal','Empreitada'],burocracia:['Conta de Água','Conta de Energia','IPTU','ISS','Taxa de Licença','Taxa de Habite-se','Cartório','Outro'],terreno:['ITBI','Escritura','Certidão de Matrícula','Certidão Negativa','Habite-se','Alvará','Averbação','Planta Aprovada','Outro']};
@@ -2133,7 +2145,7 @@ async function syncFromSheets(){
     // Refresh UI
     updSB();updKpis();updGC();updBanners();
     renderT();renderCal();renderDocs();
-    checkAssinaturaAlert();checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
+    checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
     toast('Dados sincronizados com sucesso!','success');
   }catch(e){
     console.error('syncFromSheets:',e);
@@ -2400,7 +2412,7 @@ function globalSearch(){
   // also search by obra name
   const obs=ST.obras.filter(o=>o.nome.toLowerCase().includes(q)).slice(0,2);
   let html='';
-  if(ls.length){html+=`<div class="gs-section">Lançamentos</div>`;html+=ls.map(l=>`<div class="gs-item" onclick="showPage('lancamentos',null);closeGS()" role="option"><div class="gs-item-icon" style="background:rgba(230,126,34,.12)">💰</div><div><div class="gs-item-main">${esc(l.desc)}</div><div class="gs-item-sub">${fD(l.data)} · ${fmt(l.valor)}</div></div></div>`).join('');}
+  if(ls.length){html+=`<div class="gs-section">Lançamentos</div>`;html+=ls.map(l=>`<div class="gs-item" onclick="showPage('lancamentos',null);closeGS()" role="option"><div class="gs-item-icon" style="background:rgba(230,126,34,.12)">💰</div><div><div class="gs-item-main">${esc(l.desc||l.descricao||'—')}</div><div class="gs-item-sub">${fD(l.data)} · ${fmt(l.valor)}</div></div></div>`).join('');}
   if(ps.length){html+=`<div class="gs-section">Pendências</div>`;html+=ps.map(p=>`<div class="gs-item" onclick="showPage('pendencias',null);closeGS()" role="option"><div class="gs-item-icon" style="background:${p.prio==='alta'?'var(--red-bg)':'var(--yellow-bg)'}"><span>${TI[p.tipo]||'📋'}</span></div><div><div class="gs-item-main">${esc(p.titulo)}</div><div class="gs-item-sub">Prazo: ${fD(p.prazo)}</div></div></div>`).join('');}
   if(obs.length){html+=`<div class="gs-section">Obras</div>`;html+=obs.map(o=>`<div class="gs-item" onclick="setOA('${o.id}');renderDash();closeGS()" role="option"><div class="gs-item-icon" style="background:var(--blue-bg)">🏠</div><div><div class="gs-item-main">${esc(o.nome)}</div><div class="gs-item-sub">${esc(o.endereco)}</div></div></div>`).join('');}
   if(!html)html='<div style="padding:12px;color:var(--text3);font-size:12.5px">Nenhum resultado para "'+q+'"</div>';
@@ -2409,34 +2421,6 @@ function globalSearch(){
 function closeGS(){document.getElementById('gs-results').classList.remove('open');}
 
 /* ══ BUDGET ALERT ══ */
-function checkAssinaturaAlert(){
-  const wrap=document.getElementById('assinatura-alert-wrap');
-  if(!wrap)return;
-  // Empreendimentos concluídos que ainda têm casas na planta (pagamento pendente)
-  const pendentes=[];
-  ST.obras.forEach(o=>{
-    if(o.status!=='concluida')return;
-    normCasas(o);
-    o.casas.forEach(c=>{
-      if(c.situacao==='vendida_planta'){
-        const aReceber=(+c.valorVenda||0)-(+c.adiantamento||0);
-        if(aReceber>0)pendentes.push({emp:o.nome,casa:c.nome,aReceber,obraId:o.id});
-      }
-    });
-  });
-  if(!pendentes.length){wrap.innerHTML='';return;}
-  const totalAReceber=pendentes.reduce((a,p)=>a+p.aReceber,0);
-  const linhas=pendentes.map(p=>`<span style="display:block;margin-top:3px">🏠 <strong>${esc(p.casa)}</strong> (${esc(p.emp)}) — <strong style="color:var(--green)">${fmt(p.aReceber)}</strong> a receber na assinatura</span>`).join('');
-  wrap.innerHTML=`<div class="budget-alert" style="background:rgba(39,174,96,.09);border-color:rgba(39,174,96,.35)" role="alert">
-    <div class="budget-alert-icon">💰</div>
-    <div class="budget-alert-text">
-      <strong style="color:var(--green)">Assinatura(s) pendente(s) — ${fmt(totalAReceber)} a receber!</strong>
-      <span style="display:block;font-size:10.5px;color:var(--text2);margin-top:2px">Empreendimento(s) concluído(s) com casa(s) vendida(s) na planta aguardando pagamento final.</span>
-      ${linhas}
-      <span style="display:block;margin-top:6px;font-size:10px;color:var(--text3)">Ao receber, edite o empreendimento e mude a situação da casa para <strong>Vendida</strong>.</span>
-    </div>
-  </div>`;
-}
 function checkBudgetAlert(){
   const wrap=document.getElementById('budget-alert-wrap');
   if(!wrap)return;
@@ -2541,7 +2525,7 @@ function gerarPDF(){
   const[de,ate]=getPeriodoDates();
   const periodoTxt=de?'Período: '+fD(de)+' a '+fD(ate):'Período: Total';
   const catRows=Object.entries(bycat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${CL[k]||k}</td><td style="text-align:right;font-weight:700">${fmt(v)}</td><td style="text-align:right;color:#888">${tot?Math.round(v/tot*100):0}%</td></tr>`).join('');
-  const lancRows=ls.slice(0,50).map(l=>`<tr><td>${fD(l.data)}</td><td>${l.desc}</td><td>${l.fornecedor||'—'}</td><td style="text-align:right;font-weight:700">${fmt(l.valor)}</td><td>${(l.statusPag||'pago')==='pago'?'Pago':'A Pagar'}</td></tr>`).join('');
+  const lancRows=ls.slice(0,50).map(l=>`<tr><td>${fD(l.data)}</td><td>${l.desc||l.descricao||'—'}</td><td>${l.fornecedor||'—'}</td><td style="text-align:right;font-weight:700">${fmt(l.valor)}</td><td>${(l.statusPag||'pago')==='pago'?'Pago':'A Pagar'}</td></tr>`).join('');
   const win=window.open('','_blank','width=900,height=700');
   win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório LUPA — ${ob.nome}</title>
   <style>body{font-family:Arial,sans-serif;color:#1A2040;margin:0;padding:24px;font-size:13px}
@@ -2603,7 +2587,7 @@ function renderDash(){
   document.getElementById('badge-pend').style.display=pnd>0?'':'none';
   const bnp=document.getElementById('bn-badge-pend');
   if(bnp){bnp.textContent=pnd;bnp.style.display=pnd>0?'':'none';}
-  checkAssinaturaAlert();checkBudgetAlert();checkDocAlert();updAPagar();
+  checkBudgetAlert();checkDocAlert();updAPagar();
 
   const og=document.getElementById('obras-grid');
   if(!ST.obras.length){og.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px">Nenhum empreendimento cadastrado. <a href="#" onclick="showPage(\'cadastro\',null)" style="color:var(--brand3)">Cadastrar →</a></div>';return;}
@@ -2615,13 +2599,14 @@ function renderDash(){
     const r=empResumo(o);
     const cpCasa=r.nCasas?gasto/r.nCasas:gasto;
     const temVenda=r.vendidas+r.naPlanta>0;
-    return `<div class="obra-card${o.id===ST.obraAtiva?' sel':''}" onclick="selOD('${o.id}')" role="button" tabindex="0" aria-label="Selecionar empreendimento ${o.nome}" aria-pressed="${o.id===ST.obraAtiva}">
+    return `<div class="obra-card${o.id===ST.obraAtiva?' sel':''}" onclick="selOD('${o.id}')" role="button" tabindex="0" aria-label="Selecionar empreendimento ${esc(o.nome)}" aria-pressed="${o.id===ST.obraAtiva}">
       <div class="oc-accent ${o.status}" aria-hidden="true"></div>
       <div class="oc-hdr">
-        <div><div class="oc-name">${o.nome}</div><div class="oc-addr">📍 ${o.endereco}</div></div>
+        <div><div class="oc-name">${esc(o.nome)}</div><div class="oc-addr">📍 ${esc(o.endereco)}</div></div>
         <span class="oc-sbadge ${o.status==='concluida'?'sb-con':'sb-and'}">${o.status==='concluida'?'✅ Concluída':'⚙️ Andamento'}</span>
       </div>
       <div class="oc-casas-line">🏠 ${r.nCasas} casa${r.nCasas>1?'s':''} · ${r.vendidas} vendida${r.vendidas!==1?'s':''}${r.naPlanta?` · ${r.naPlanta} na planta`:''}${r.disponiveis?` · ${r.disponiveis} disponíve${r.disponiveis>1?'is':'l'}`:''}</div>
+      ${o.status==='concluida'&&r.naPlanta>0?`<div><span class="sign-pend-pill">📝 Pendente de Assinatura Final</span></div>`:''}
       <div><div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${pct}% do orçamento utilizado"><div class="prog-f" style="width:${pct}%;background:${pct>90?'var(--red)':pct>70?'var(--yellow)':'var(--accent)'}"></div></div>
       <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:9.5px;color:var(--text3)">${pct}% do orçamento</span><span style="font-size:9.5px;color:var(--text3)">${fmt(o.orcamento||0)}</span></div></div>
       <div class="oc-kpis">
@@ -2727,7 +2712,7 @@ function renderDetail(ob){
     <div class="cbr-val">${fmt(v)}</div><div class="cbr-pct">${tot?Math.round(v/tot*100):0}%</div></div>`).join('');
   const ld=document.getElementById('dash-last');
   ld.innerHTML=ls.length?ls.slice(0,6).map(l=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
-    <div><div style="font-size:13px;font-weight:500">${l.desc}</div><div style="font-size:10.5px;color:var(--text3)">${fD(l.data)} · ${CL[l.cat]||l.cat}</div></div>
+    <div><div style="font-size:13px;font-weight:500">${l.desc||l.descricao||'—'}</div><div style="font-size:10.5px;color:var(--text3)">${fD(l.data)} · ${CL[l.cat]||l.cat}</div></div>
     <div class="tdm" aria-label="${fmt(l.valor)}">${fmt(l.valor)}</div></div>`).join(''):'<p style="color:var(--text3);font-size:13px">Sem lançamentos.</p>';
   renderCharts(ob.id);
 }
@@ -2849,7 +2834,7 @@ function salvarL(){
   if(cat==='material'){extra.qtd=document.getElementById('mat-qtd').value;extra.un=document.getElementById('mat-un').value;}
   if(cat==='funcionario')extra.cargo=document.getElementById('fun-cg').value;
   const statusPag=document.querySelector('input[name="f-pag"]:checked')?.value||'pago';
-  const fornecedor=norm(document.getElementById('f-forn').value||document.getElementById('f-nf-forn').value||'');
+  const fornecedor=norm(document.getElementById('f-forn').value||'');
   const nfNum=(document.getElementById('f-nf-num').value||'').trim();
   const descNorm=norm(gDesc(cat));
   ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat,subcat:(SC[cat]&&document.getElementById('subcat-w').style.display!=='none')?document.getElementById('f-subcat').value:'',desc:descNorm,valor:v,data,obs:document.getElementById('f-obs').value,comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',fornecedor,statusPag,nfNum,extra,ts:Date.now()});
@@ -3044,8 +3029,8 @@ async function fillNFFromOCR(parsed, textoOriginal){
   if(preview){preview.innerHTML=html;preview.classList.add('open');}
 
   // Preenche campos com efeito de digitação
-  await typeIntoField('nf-num',   parsed.nfNum||'',   40);
-  await typeIntoField('nf-forn',  norm(parsed.fornecedor||''), 30);
+  await typeIntoField('nfm-num',  parsed.nfNum||'',   40);
+  await typeIntoField('nfm-forn', norm(parsed.fornecedor||''), 30);
   if(parsed.data){const el=document.getElementById('nf-data-f');if(el)el.value=parsed.data;}
 
   // Guarda itens para inserção quando categoria for selecionada
@@ -3109,7 +3094,7 @@ function buildAC(ddId,items,onPick){
   dd.classList.add('open');
 }
 function showFornAC(){
-  const raw=document.getElementById('nf-forn').value||'';
+  const raw=document.getElementById('nfm-forn').value||'';
   const q=raw.toLowerCase();
   const all=[...new Set(ST.lancamentos.map(l=>l.fornecedor).filter(Boolean))];
   const filtered=q?all.filter(f=>f.toLowerCase().includes(q)):all;
@@ -3121,7 +3106,7 @@ function showFornAC(){
       dd.classList.add('open');return;
     }
   }
-  buildAC('nf-forn-dd',filtered,v=>{document.getElementById('nf-forn').value=v;});
+  buildAC('nf-forn-dd',filtered,v=>{document.getElementById('nfm-forn').value=v;});
 }
 function showDescAC(){
   const raw=document.getElementById('nf-gen-desc').value||'';
@@ -3256,8 +3241,8 @@ async function salvarNFMulti(){
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
-  const nfNum=document.getElementById('nf-num').value.trim()||'NF-'+Date.now();
-  const nfForn=norm(document.getElementById('nf-forn').value||'');
+  const nfNum=document.getElementById('nfm-num').value.trim()||'NF-'+Date.now();
+  const nfForn=norm(document.getElementById('nfm-forn').value||'');
   const data=document.getElementById('nf-data-f').value||td();
   const statusPag=document.querySelector('input[name="nf-pag"]:checked')?.value||'pago';
   const dup=ST.lancamentos.find(l=>l.nfNum===nfNum&&l.obraId===ob.id);
@@ -3318,7 +3303,7 @@ function selectDocCat(cat,el){
 }
 function limparL(){
   // Limpar campos do modo NF
-  ['nf-num','nf-forn'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['nfm-num','nfm-forn'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   nfItems=[];nfCat='';
   document.querySelectorAll('[data-nfcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   const niw=document.getElementById('nf-items-wrap');if(niw)niw.style.display='none';
@@ -3399,7 +3384,7 @@ function renderT(){
     return `<tr style="border-left:3px solid ${catClr}">
     <td><strong>${fD(l.data)}</strong>${l.nfNum?`<div style="font-size:9.5px;color:var(--blue)">🧾 ${l.nfNum}</div>`:''}${obraNm?`<div style="font-size:9px;color:var(--text3)">🏠 ${obraNm}</div>`:''}</td>
     <td><span class="badge" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${CL[l.cat]||l.cat}</span></td>
-    <td><strong>${l.desc}</strong>${l.fornecedor?`<div style="font-size:10px;color:var(--brand3)">🏢 ${l.fornecedor}</div>`:''}${l.obs?`<div style="font-size:10.5px;color:var(--text2)">${l.obs.slice(0,50)}</div>`:''}</td>
+    <td><strong>${l.desc||l.descricao||'—'}</strong>${l.fornecedor?`<div style="font-size:10px;color:var(--brand3)">🏢 ${l.fornecedor}</div>`:''}${l.obs?`<div style="font-size:10.5px;color:var(--text2)">${l.obs.slice(0,50)}</div>`:''}</td>
     <td style="color:var(--text2);font-size:11px">${l.subcat||'—'}</td>
     <td style="font-size:11px">${l.extra&&l.extra.qtd?l.extra.qtd+' '+(l.extra.un||''):'—'}</td>
     <td><div class="tdm">${fmtHtml(l.valor)}</div></td>
@@ -4017,7 +4002,7 @@ function gerarRelatorio(tipo){
     html+=`</div>`;
     html+=`<div class="rpt-section">Últimos 10 Lançamentos</div>
     <table class="rpt-table"><thead><tr><th>Data</th><th>Descrição</th><th>Fornecedor</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead><tbody>`;
-    ls.slice(0,10).forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${l.desc}</strong>${l.nfNum?`<br><span style="font-size:9px;color:#888">NF: ${l.nfNum}</span>`:''}</td><td>${l.fornecedor||'—'}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
+    ls.slice(0,10).forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${l.desc||l.descricao||'—'}</strong>${l.nfNum?`<br><span style="font-size:9px;color:#888">NF: ${l.nfNum}</span>`:''}</td><td>${l.fornecedor||'—'}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
     html+=`</tbody></table>`;
     html+=rptFooter();
   }
@@ -4051,7 +4036,7 @@ function gerarRelatorio(tipo){
     if(!items.length){html+='<p style="color:#888;text-align:center;padding:20px">Nenhuma conta a pagar no momento. ✅</p>';}
     else{
       html+=`<table class="rpt-table"><thead><tr><th>Data</th><th>Descrição</th><th>Fornecedor</th><th>Categoria</th><th>NF</th><th>Valor</th></tr></thead><tbody>`;
-      items.forEach(l=>{html+=`<tr><td>${fD(l.data)}</td><td><strong>${esc(l.desc)}</strong></td><td>${esc(l.fornecedor||'—')}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||esc(l.cat)}</span></td><td style="font-size:10px;color:#888">${esc(l.nfNum||'—')}</td><td style="font-weight:700;color:#C0392B">${fmtR(l.valor)}</td></tr>`;});
+      items.forEach(l=>{html+=`<tr><td>${fD(l.data)}</td><td><strong>${esc(l.desc||l.descricao||'—')}</strong></td><td>${esc(l.fornecedor||'—')}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||esc(l.cat)}</span></td><td style="font-size:10px;color:#888">${esc(l.nfNum||'—')}</td><td style="font-weight:700;color:#C0392B">${fmtR(l.valor)}</td></tr>`;});
       html+=`</tbody><tfoot><tr><td colspan="5" style="font-weight:700">TOTAL EM ABERTO</td><td style="color:#C0392B;font-weight:800;font-size:13px">${fmtR(tot)}</td></tr></tfoot></table>`;
     }
     html+=rptFooter();
@@ -4155,7 +4140,7 @@ function atualizarExtrato(){
   if(!items.length){html+='<p style="color:#888;text-align:center;padding:20px">Nenhum lançamento encontrado para os filtros selecionados.</p>';}
   else{
     html+=`<table class="rpt-table"><thead><tr><th>Data</th><th>Descrição</th><th>Fornecedor</th><th>NF</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead><tbody>`;
-    items.forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${l.desc}</strong>${l.obs?`<br><span style="font-size:9px;color:#888">${l.obs.slice(0,40)}</span>`:''}</td><td>${l.fornecedor||'—'}</td><td style="font-size:10px;color:#7D3C98">${l.nfNum||'—'}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
+    items.forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${l.desc||l.descricao||'—'}</strong>${l.obs?`<br><span style="font-size:9px;color:#888">${l.obs.slice(0,40)}</span>`:''}</td><td>${l.fornecedor||'—'}</td><td style="font-size:10px;color:#7D3C98">${l.nfNum||'—'}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
     html+=`</tbody><tfoot><tr><td colspan="4" style="font-weight:700">${items.length} lançamento${items.length!==1?'s':''}</td><td></td><td style="font-weight:800;font-size:13px">${fmtR(tot)}</td><td style="font-size:10px;color:#E67E22">${tot-pago>0?'A pagar: '+fmtR(tot-pago):''}</td></tr></tfoot></table>`;
   }
   const div=document.getElementById('rpt-extrato-body');if(div)div.innerHTML=html;
@@ -4194,7 +4179,7 @@ function initApp(){
   showPage('dashboard',null);
   updSB();updKpis();updGC();updBanners();
   renderT();renderCal();renderDocs();
-  checkAssinaturaAlert();checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
+  checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
   document.querySelectorAll('.nav-item[tabindex]').forEach(el=>{el.addEventListener('keydown',e=>{if(e.key==='Enter')el.click();});});
   // Inicializar Google Auth (com delay para garantir que o script GIS carregou)
   setTimeout(initGoogleAuth, 1500);
