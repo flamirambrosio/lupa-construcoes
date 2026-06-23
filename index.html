@@ -3893,7 +3893,7 @@ async function confirmarLimparTudo(){
   await limparTudo();
 }
 async function limparTudo(){
-  // 1. Limpar Google Sheets e desconectar se conectado
+  // 1. Limpar dados do Google Sheets (mantém Google conectado)
   if(gToken){
     toast('Limpando dados da planilha...','info');
     try{
@@ -3906,11 +3906,6 @@ async function limparTudo(){
         sheetsClear('AUDITLOG'),
       ]);
     }catch(e){ console.warn('Erro ao limpar Sheets:',e); }
-    gToken=null;
-    gDriveFolderId=null;
-    sessionStorage.removeItem('lupa_g_token');
-    sessionStorage.removeItem('lupa_drive_folder');
-    updGoogleUI();
   }
   // 2. Limpar localStorage
   try{
@@ -3918,7 +3913,7 @@ async function limparTudo(){
     localStorage.removeItem('lupa_theme');
     localStorage.removeItem('lupa_active_page');
   }catch(e){}
-  // 3. Resetar estado em memória
+  // 3. Resetar estado em memória (Google permanece conectado)
   ST={obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],auditLog:[],obraAtiva:null,google:{sheetsUrl:'',driveUrl:''}};
   toast('Todos os dados foram apagados. Recarregando...','info');
   setTimeout(function(){ location.reload(); }, 1500);
