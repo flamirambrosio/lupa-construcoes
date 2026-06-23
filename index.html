@@ -2154,7 +2154,8 @@ async function syncToSheets(){
 
 /* ══ SYNC FROM SHEETS ══ */
 async function syncFromSheets(){
-  if(!gToken)return;
+  if(!gToken||gSyncing)return;
+  gSyncing=true;
   try{
     const [obras,lancs,pends,recs,docs,audit]=await Promise.all([
       sheetsGet('OBRAS').catch(()=>null),
@@ -2196,6 +2197,8 @@ async function syncFromSheets(){
     checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
   }catch(e){
     console.error('syncFromSheets:',e);
+  }finally{
+    gSyncing=false;
   }
 }
 
@@ -4311,6 +4314,18 @@ function initApp(){
   // Inicializar Google Auth (com delay para garantir que o script GIS carregou)
   initFinInputs();
   setTimeout(initGoogleAuth, 1500);
+
+  // Multi-device sync: ao retornar ao app, busca dados frescos do Sheets
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState==='visible' && gToken && !gSyncing){
+      syncFromSheets();
+    }
+  });
+
+  // Polling a cada 30s — garante que celular e computador ficam sempre alinhados
+  setInterval(() => {
+    if(gToken && !gSyncing) syncFromSheets();
+  }, 30000);
 }
 
 (function(){
