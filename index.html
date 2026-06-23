@@ -3890,15 +3890,36 @@ async function confirmarLimparTudo(){
   }
   var conf = confirm('✅ Senha correta. Confirmar exclusão de TODOS os dados da LUPA Facilities? Esta ação é IRREVERSÍVEL.');
   if(!conf) return;
-  limparTudo();
+  await limparTudo();
 }
-function limparTudo(){
+async function limparTudo(){
+  // 1. Limpar Google Sheets e desconectar se conectado
+  if(gToken){
+    toast('Limpando dados da planilha...','info');
+    try{
+      await Promise.all([
+        sheetsClear('OBRAS'),
+        sheetsClear('LANCAMENTOS'),
+        sheetsClear('PENDENCIAS'),
+        sheetsClear('RECORRENTES'),
+        sheetsClear('DOCUMENTOS'),
+        sheetsClear('AUDITLOG'),
+      ]);
+    }catch(e){ console.warn('Erro ao limpar Sheets:',e); }
+    gToken=null;
+    gDriveFolderId=null;
+    sessionStorage.removeItem('lupa_g_token');
+    sessionStorage.removeItem('lupa_drive_folder');
+    updGoogleUI();
+  }
+  // 2. Limpar localStorage
   try{
     localStorage.removeItem(SK);
     localStorage.removeItem('lupa_theme');
     localStorage.removeItem('lupa_active_page');
   }catch(e){}
-  ST = {obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],obraAtiva:null,google:{sheetsUrl:'',driveUrl:''}};
+  // 3. Resetar estado em memória
+  ST={obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],auditLog:[],obraAtiva:null,google:{sheetsUrl:'',driveUrl:''}};
   toast('Todos os dados foram apagados. Recarregando...','info');
   setTimeout(function(){ location.reload(); }, 1500);
 }
