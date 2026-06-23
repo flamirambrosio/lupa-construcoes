@@ -1822,8 +1822,8 @@ const SK='lupa_macae_v5';
 const SCHEMA_VER=2;
 const MS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-const CL={material:'Materiais',funcionario:'Funcionários',mao_obra:'Mão de Obra',burocracia:'Burocracia',eletrica:'Elétrica',terreno:'Terreno',outro:'Outros'};
-const CC={material:'#E67E22',funcionario:'#2980B9',mao_obra:'#C0392B',burocracia:'#F1C40F',eletrica:'#16A085',terreno:'#27AE60',outro:'#8E44AD'};
+const CL={material:'Materiais',funcionario:'Funcionários',mao_obra:'Mão de Obra',burocracia:'Burocracia',eletrica:'Elétrica',terreno:'Terreno',corretagem:'Corretagem',outro:'Outros'};
+const CC={material:'#E67E22',funcionario:'#2980B9',mao_obra:'#C0392B',burocracia:'#F1C40F',eletrica:'#16A085',terreno:'#27AE60',corretagem:'#9B59B6',outro:'#8E44AD'};
 const TI={energia:'⚡',agua:'💧',prefeitura:'🏛️',corretor:'🤝',cartorio:'📜',fornecedor:'📦',outro:'📋'};
 const DI={terreno:'🏡',obra:'🏗️',prefeitura:'🏛️',financeiro:'💰',contrato:'📝',outro:'📦'};
 const SC={funcionario:['Diária','Semana','Quinzena','Mensal','Empreitada'],burocracia:['Conta de Água','Conta de Energia','IPTU','ISS','Taxa de Licença','Taxa de Habite-se','Cartório','Outro'],terreno:['ITBI','Escritura','Certidão de Matrícula','Certidão Negativa','Habite-se','Alvará','Averbação','Planta Aprovada','Outro']};
@@ -3865,6 +3865,26 @@ function salvarO(){
   const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFinVal(document.getElementById('cfg-orc')),area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,casas};
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
+  // ── Corretagem automática (5% do valor de venda) ──
+  casas.forEach(c=>{
+    const corrKey='CORR-'+c.id;
+    if(c.situacao==='disponivel'){
+      // Casa voltou para disponível — remove corretagem pendente
+      const ex=ST.lancamentos.find(l=>l.nfNum===corrKey);
+      if(ex&&ex.statusPag==='a_pagar')ST.lancamentos=ST.lancamentos.filter(l=>l.nfNum!==corrKey);
+    } else if(+c.valorVenda>0){
+      // Vendida na planta ou vendida — cria ou atualiza corretagem
+      const corrVal=Math.round(+c.valorVenda*0.05*100)/100;
+      const ex=ST.lancamentos.find(l=>l.nfNum===corrKey);
+      if(ex){
+        if(ex.statusPag==='a_pagar'&&ex.valor!==corrVal){ex.valor=corrVal;ex.obs='5% s/ '+fmt(+c.valorVenda);}
+      } else {
+        ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:'corretagem',subcat:'',desc:'Corretagem — '+c.nome,valor:corrVal,data:td(),obs:'5% s/ '+fmt(+c.valorVenda),comprovante:'',fileB64:'',fornecedor:'',statusPag:'a_pagar',nfNum:corrKey,extra:{},ts:Date.now()});
+        toast('Corretagem lançada: '+fmt(corrVal)+' (A Pagar)','info');
+        addAudit('Corretagem gerada',c.nome+' — '+fmt(corrVal));
+      }
+    }
+  });
   addAudit('Empreendimento salvo',nm+' ('+casas.length+' casa'+(casas.length>1?'s':'')+')');
   save();toast('Empreendimento salvo!');fecharFormObra();renderOA();updSB();updKpis();renderDash();
 }
