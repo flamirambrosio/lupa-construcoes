@@ -1888,7 +1888,10 @@ function initGoogleAuth(){
       syncFromSheets();
     }
   });
-  // Reconectar silenciosamente ao abrir o app
+  // Restaurar token salvo para manter UI conectada enquanto silentRefresh responde
+  const cachedToken=sessionStorage.getItem('lupa_g_token');
+  if(cachedToken){gToken=cachedToken;}
+  // Reconectar silenciosamente ao abrir o app (obtém token fresco em background)
   silentRefreshToken();
   updGoogleUI();
 }
@@ -3895,6 +3898,7 @@ async function confirmarLimparTudo(){
 async function limparTudo(){
   // 1. Limpar dados do Google Sheets (mantém Google conectado)
   if(gToken){
+    const savedToken=gToken; // salvar token antes — sheetsClear pode nullar em caso de 401
     toast('Limpando dados da planilha...','info');
     try{
       await Promise.all([
@@ -3906,6 +3910,10 @@ async function limparTudo(){
         sheetsClear('AUDITLOG'),
       ]);
     }catch(e){ console.warn('Erro ao limpar Sheets:',e); }
+    // Restaurar token e sessionStorage após clear (garante reconexão após reload)
+    gToken=savedToken;
+    sessionStorage.setItem('lupa_g_token',savedToken);
+    updGoogleUI();
   }
   // 2. Limpar localStorage
   try{
