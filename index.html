@@ -601,6 +601,25 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .page-hdr{flex-wrap:wrap;gap:8px}
 }
 
+/* ═══ OBRAS ADM — CARDS MOBILE ═══ */
+.obras-adm-cards{display:none;flex-direction:column;gap:10px;padding:4px 0}
+.oac{background:var(--card2,var(--card));border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.oac-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.oac-nome{font-weight:700;font-size:15px;color:var(--text);line-height:1.3;flex:1}
+.oac-acoes{display:flex;gap:6px;flex-shrink:0}
+.oac-end{font-size:12px;color:var(--text3);margin-top:-4px}
+.oac-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.oac-casas{font-size:12px;color:var(--text2)}
+.oac-fin{display:flex;gap:6px;flex-wrap:wrap;align-items:baseline;border-top:1px solid var(--border);padding-top:8px;margin-top:2px}
+.oac-kv{display:flex;flex-direction:column;gap:1px;flex:1;min-width:100px}
+.oac-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px}
+.oac-val{font-size:13px;font-weight:600;color:var(--text)}
+.oac-sep{width:1px;background:var(--border);align-self:stretch}
+@media(max-width:640px){
+  .obras-adm-cards{display:flex}
+  .obras-adm-table{display:none}
+}
+
 /* ═══ RESPONSIVE 480px ═══ */
 @media(max-width:480px){
   .g4,.g3,.g2{grid-template-columns:1fr}.obras-grid{grid-template-columns:1fr}
@@ -3960,16 +3979,54 @@ function delO(id){
 }
 function renderOA(){
   const div=document.getElementById('obras-adm');
-  if(!ST.obras.length){div.innerHTML='<p style="color:var(--text3);font-size:12.5px;padding:7px 0">Nenhum empreendimento cadastrado.</p>';return;}
-  div.innerHTML=`<div class="tw"><table role="grid"><thead><tr><th class="no-sort">Nome</th><th class="no-sort">Endereço</th><th class="no-sort">Construção</th><th class="no-sort">Casas</th><th class="no-sort">Orçamento</th><th class="no-sort">VGV</th><th class="no-sort">Início</th><th class="no-sort">Ações</th></tr></thead><tbody>${ST.obras.map(o=>{const r=empResumo(o);return `<tr>
-    <td><strong>${esc(o.nome)}</strong></td><td style="font-size:11.5px">${esc(o.endereco)}</td>
-    <td><span class="badge ${o.status==='concluida'?'b-green':'b-accent'}">${o.status==='concluida'?'Concluída':'Andamento'}</span></td>
-    <td>${r.nCasas} <span style="color:var(--text3);font-size:10px">(${r.vendidas+r.naPlanta} vend.)</span></td>
+  if(!ST.obras.length){div.innerHTML='<p style="color:var(--text3);font-size:12.5px;padding:7px 0">Nenhum empreendimento cadastrado. <a href="#" onclick="novaO();return false;">Cadastrar →</a></p>';return;}
+  const rows=ST.obras.map(o=>{
+    const r=empResumo(o);
+    const badgeCls=o.status==='concluida'?'b-green':'b-accent';
+    const badgeTxt=o.status==='concluida'?'Concluída':'Andamento';
+    const vgvHtml=r.vgvRealizado?fmt(r.vgvRealizado):'<span style="color:var(--text3)">—</span>';
+    const vendStr=`${r.nCasas} <span style="color:var(--text3);font-size:10px">(${r.vendidas+r.naPlanta} vend.)</span>`;
+    const acoes=`<button class="btn btn-sm" onclick="editO('${o.id}')" aria-label="Editar ${esc(o.nome)}">✏️</button><button class="btn btn-sm btn-d" onclick="delO('${o.id}')" aria-label="Remover ${esc(o.nome)}">✕</button>`;
+    return {o,r,badgeCls,badgeTxt,vgvHtml,vendStr,acoes};
+  });
+
+  // Tabela — desktop
+  const tableHtml=`<div class="tw obras-adm-table"><table role="grid"><thead><tr>
+    <th class="no-sort">Nome</th><th class="no-sort">Endereço</th><th class="no-sort">Construção</th>
+    <th class="no-sort">Casas</th><th class="no-sort">Orçamento</th><th class="no-sort">VGV</th>
+    <th class="no-sort">Início</th><th class="no-sort">Ações</th>
+  </tr></thead><tbody>${rows.map(({o,r,badgeCls,badgeTxt,vgvHtml,vendStr,acoes})=>`<tr>
+    <td><strong>${esc(o.nome)}</strong></td>
+    <td style="font-size:11.5px">${esc(o.endereco)}</td>
+    <td><span class="badge ${badgeCls}">${badgeTxt}</span></td>
+    <td>${vendStr}</td>
     <td class="tdm">${fmt(o.orcamento||0)}</td>
-    <td>${r.vgvRealizado?fmt(r.vgvRealizado):'<span style="color:var(--text3)">—</span>'}</td>
+    <td>${vgvHtml}</td>
     <td>${fD(o.inicio)}</td>
-    <td><div style="display:flex;gap:4px"><button class="btn btn-sm" onclick="editO('${o.id}')" aria-label="Editar empreendimento ${esc(o.nome)}">✏️</button><button class="btn btn-sm btn-d" onclick="delO('${o.id}')" aria-label="Remover empreendimento ${esc(o.nome)}">✕</button></div></td>
-  </tr>`;}).join('')}</tbody></table></div>`;
+    <td><div style="display:flex;gap:4px">${acoes}</div></td>
+  </tr>`).join('')}</tbody></table></div>`;
+
+  // Cards — mobile
+  const cardsHtml=`<div class="obras-adm-cards">${rows.map(({o,r,badgeCls,badgeTxt,vgvHtml,vendStr,acoes})=>`
+    <div class="oac">
+      <div class="oac-hdr">
+        <div class="oac-nome">${esc(o.nome)}</div>
+        <div class="oac-acoes">${acoes}</div>
+      </div>
+      ${o.endereco?`<div class="oac-end">${esc(o.endereco)}</div>`:''}
+      <div class="oac-meta">
+        <span class="badge ${badgeCls}">${badgeTxt}</span>
+        <span class="oac-casas">${r.nCasas} casa${r.nCasas!==1?'s':''} · ${r.vendidas+r.naPlanta} vendida${(r.vendidas+r.naPlanta)!==1?'s':''}</span>
+        ${o.inicio?`<span class="oac-casas">Início: ${fD(o.inicio)}</span>`:''}
+      </div>
+      <div class="oac-fin">
+        <div class="oac-kv"><span class="oac-lbl">Orçamento</span><span class="oac-val">${fmt(o.orcamento||0)}</span></div>
+        <div class="oac-sep"></div>
+        <div class="oac-kv"><span class="oac-lbl">VGV</span><span class="oac-val">${r.vgvRealizado?fmt(r.vgvRealizado):'—'}</span></div>
+      </div>
+    </div>`).join('')}</div>`;
+
+  div.innerHTML=tableHtml+cardsHtml;
 }
 
 /* ══ EXPORT / IMPORT ══ */
