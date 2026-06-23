@@ -3740,6 +3740,7 @@ function casaRowHTML(c){
   const i=++_casaSeq;
   const sit=c.situacao||'disponivel';
   const cls=sit==='vendida_planta'?'is-planta':(sit==='vendida'?'is-vend':'is-disp');
+  const vlLabel=sit==='disponivel'?'Valor de Tabela (R$)':'Valor de Venda (R$)';
   return `<div class="casa-row ${cls}" data-row="${i}">
     <div class="casa-row-top">
       <input type="text" class="casa-nome" placeholder="Nome da casa (ex: Casa 1)" value="${esc(c.nome||'')}">
@@ -3755,7 +3756,7 @@ function casaRowHTML(c){
         </select>
       </div>
       <div>
-        <span class="casa-mini-l">Valor de venda (R$)</span>
+        <span class="casa-mini-l casa-vl">${vlLabel}</span>
         <input type="number" class="casa-venda" min="0" step="0.01" placeholder="0,00" value="${c.valorVenda?c.valorVenda:''}">
       </div>
       <div class="casa-data">
@@ -3787,6 +3788,8 @@ function onCasaSit(sel){
   const row=sel.closest('.casa-row');
   row.classList.remove('is-disp','is-planta','is-vend');
   row.classList.add(sel.value==='vendida_planta'?'is-planta':(sel.value==='vendida'?'is-vend':'is-disp'));
+  const vl=row.querySelector('.casa-vl');
+  if(vl)vl.textContent=sel.value==='disponivel'?'Valor de Tabela (R$)':'Valor de Venda (R$)';
 }
 function readCasasForm(baseId){
   const rows=[...document.querySelectorAll('#casas-list .casa-row')];
