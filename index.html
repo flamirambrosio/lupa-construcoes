@@ -2085,7 +2085,7 @@ function fromRows(rows,nums=[]){
 /* ══ SYNC TO SHEETS ══ */
 async function syncToSheets(){
   if(!gToken||gSyncing)return;
-  gSyncing=true;updSyncBtnState('syncing');
+  gSyncing=true;
   try{
     await Promise.all([
       (async()=>{await sheetsClear('OBRAS');if(ST.obras.length)await sheetsUpdate('OBRAS',toRows(OBR_H,ST.obras.map(o=>({...o,casasJson:JSON.stringify((normCasas(o),o.casas||[]))}))));})(),
@@ -2108,8 +2108,6 @@ async function syncToSheets(){
 /* ══ SYNC FROM SHEETS ══ */
 async function syncFromSheets(){
   if(!gToken)return;
-  toast('Sincronizando dados...','info');
-  updSyncBtnState('syncing');
   try{
     const [obras,lancs,pends,recs,docs,audit]=await Promise.all([
       sheetsGet('OBRAS').catch(()=>null),
@@ -2149,12 +2147,8 @@ async function syncFromSheets(){
     updSB();updKpis();updGC();updBanners();
     renderT();renderCal();renderDocs();
     checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
-    toast('Dados sincronizados com sucesso!','success');
   }catch(e){
     console.error('syncFromSheets:',e);
-    if(e.message==='auth')toast('Sessão Google expirada. Reconecte.','warn');
-    else toast('Erro ao importar dados.','error');
-    updSyncBtnState('error');
   }
 }
 
