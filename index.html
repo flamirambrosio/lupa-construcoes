@@ -1889,7 +1889,7 @@ const GOOGLE_CLIENT_ID='629740512690-r6tbeqbsh8bghr80tpgog6dan68m3osr.apps.googl
 const SPREADSHEET_ID='1LnnFl0GsGTTycWt4wM7nzG4mSJjjqhcuRuurjcNnq4s';
 const SHEETS_SCOPE='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const DRIVE_FOLDER_ID='1k4dQGFGA1X2GUySjb7uorxWBxy14OQ64';
-let gToken=null,gTokenClient=null,gSyncing=false,gLastSync=null;
+let gToken=null,gTokenClient=null,gSyncing=false,gLastSync=null,gPendingWrite=false;
 let gDriveFolderId=DRIVE_FOLDER_ID;
 let gRefreshTimer=null;
 const G_TOKEN_KEY='lupa_g_token_v2'; // localStorage: {token, expiry}
@@ -2151,6 +2151,7 @@ function fromRows(rows,nums=[]){
 /* ══ SYNC TO SHEETS ══ */
 async function syncToSheets(){
   if(!gToken||gSyncing)return;
+  gPendingWrite=false; // assumindo a escrita — limpar flag antes de começar
   gSyncing=true;
   try{
     await Promise.all([
@@ -2164,6 +2165,7 @@ async function syncToSheets(){
     gLastSync=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     updGoogleUI();updSyncTime();
   }catch(e){
+    gPendingWrite=true; // escrita falhou — marcar para retry
     console.error('syncToSheets:',e);
     if(e.message==='auth')toast('Sessão Google expirada. Reconecte.','warn');
     else toast('Erro ao sincronizar: '+e.message,'error');
@@ -2174,6 +2176,8 @@ async function syncToSheets(){
 /* ══ SYNC FROM SHEETS ══ */
 async function syncFromSheets(){
   if(!gToken||gSyncing)return;
+  // Se há escrita pendente, enviar primeiro e aguardar próximo ciclo para ler
+  if(gPendingWrite){syncToSheets();return;}
   gSyncing=true;
   try{
     const [obras,lancs,pends,recs,docs,audit]=await Promise.all([
@@ -2184,6 +2188,8 @@ async function syncFromSheets(){
       sheetsGet('DOCUMENTOS').catch(()=>null),
       sheetsGet('AUDITLOG').catch(()=>null),
     ]);
+    // Se o usuário salvou ENQUANTO líamos o Sheets, não sobrescrever os dados locais
+    if(gPendingWrite){console.log('syncFromSheets: descartando leitura — escrita local pendente');return;}
     // null = erro de rede (não toca no ST local)
     // objeto sem .values = tab vazia no Sheets → zera ST local também
     const localL=[...ST.lancamentos];
@@ -2198,32 +2204,30 @@ async function syncFromSheets(){
           delete o.casasJson;normCasas(o);
         });
         ST.obras=arr;
-      } else {
-        ST.obras=[];ST.obraAtiva=null; // Sheets vazio — limpa local
-      }
+      } else {ST.obras=[];ST.obraAtiva=null;}
     }
     if(lancs!==null){
       if(lancs&&lancs.values){
         const arr=fromRows(lancs.values,['valor','qty']);
         ST.lancamentos=arr.map(l=>{const loc=localL.find(x=>x.id===l.id);if(loc&&loc.compBase64)l.compBase64=loc.compBase64;return l;});
-      } else { ST.lancamentos=[]; }
+      } else {ST.lancamentos=[];}
     }
-    if(pends!==null) ST.pendencias=(pends&&pends.values)?fromRows(pends.values):[];
+    if(pends!==null)ST.pendencias=(pends&&pends.values)?fromRows(pends.values):[];
     if(recs!==null){
       if(recs&&recs.values){ST.recorrentes=fromRows(recs.values,['valor','dia']);ST.recorrentes.forEach(r=>{r.ativo=r.ativo==='true';});}
-      else { ST.recorrentes=[]; }
+      else{ST.recorrentes=[];}
     }
     if(docs!==null){
       if(docs&&docs.values){
         const arr=fromRows(docs.values);
         ST.documentos=arr.map(d=>{const loc=localD.find(x=>x.id===d.id);if(loc&&loc.fileBase64)d.fileBase64=loc.fileBase64;return d;});
-      } else { ST.documentos=[]; }
+      } else{ST.documentos=[];}
     }
-    if(audit!==null) ST.auditLog=(audit&&audit.values)?fromRows(audit.values):[];
-    save();
+    if(audit!==null)ST.auditLog=(audit&&audit.values)?fromRows(audit.values):[];
+    // Salvar no localStorage SEM chamar syncToSheets (dados já vieram do Sheets)
+    try{localStorage.setItem(SK,JSON.stringify({__v:SCHEMA_VER,obras:ST.obras,lancamentos:ST.lancamentos,pendencias:ST.pendencias,recorrentes:ST.recorrentes,documentos:ST.documentos,obraAtiva:ST.obraAtiva,google:ST.google,auditLog:ST.auditLog||[]}));}catch(e){}
     gLastSync=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     updGoogleUI();updSyncTime();
-    // Refresh UI
     updSB();updKpis();updGC();updBanners();
     renderT();renderCal();renderDocs();
     checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
@@ -2231,6 +2235,8 @@ async function syncFromSheets(){
     console.error('syncFromSheets:',e);
   }finally{
     gSyncing=false;
+    // Se o usuário salvou durante a leitura, enviar agora
+    if(gPendingWrite&&gToken)syncToSheets();
   }
 }
 
@@ -2274,8 +2280,9 @@ function save(){
       toast('⚠️ Armazenamento local quase cheio. Exporte um backup.','warn');
     }
   }
-  // Sync to Google Sheets (async, non-blocking)
-  if(gToken)syncToSheets();
+  // Marcar como escrita pendente — se syncToSheets for bloqueado, será reexecutado
+  gPendingWrite=true;
+  if(gToken&&!gSyncing)syncToSheets();
 }
 function load(){
   try{
@@ -3855,7 +3862,7 @@ function casaRowHTML(c){
   const sit=c.situacao||'disponivel';
   const cls=sit==='vendida_planta'?'is-planta':(sit==='vendida'?'is-vend':'is-disp');
   const vlLabel=sit==='disponivel'?'Valor de Tabela (R$)':'Valor de Venda (R$)';
-  return `<div class="casa-row ${cls}" data-row="${i}">
+  return `<div class="casa-row ${cls}" data-row="${i}" data-id="${esc(c.id||'')}">
     <div class="casa-row-top">
       <input type="text" class="casa-nome" placeholder="Nome da casa (ex: Casa 1)" value="${esc(c.nome||'')}">
       <button type="button" class="casa-del" onclick="delCasaRow(this)" aria-label="Remover casa" title="Remover casa">✕</button>
@@ -3911,8 +3918,9 @@ function readCasasForm(baseId){
   const rows=[...document.querySelectorAll('#casas-list .casa-row')];
   return rows.map((r,i)=>{
     const sit=r.querySelector('.casa-sit').value;
+    const existingId=r.dataset.id||''; // preservar ID original da casa
     return {
-      id:baseId+'-c'+(i+1),
+      id:existingId||(baseId+'-c'+(i+1)),
       nome:norm(r.querySelector('.casa-nome').value)||('Casa '+(i+1)),
       situacao:sit,
       valorVenda:parseFinVal(r.querySelector('.casa-venda')),
@@ -3955,6 +3963,14 @@ function salvarO(){
   const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFinVal(document.getElementById('cfg-orc')),area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,casas};
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
+  // ── Limpar corretagens de casas deletadas ──
+  const casaIdsRestantes=new Set(casas.map(c=>c.id));
+  ST.lancamentos=ST.lancamentos.filter(l=>{
+    if(l.obraId===id&&l.nfNum&&l.nfNum.startsWith('CORR-')){
+      return casaIdsRestantes.has(l.nfNum.slice(5)); // manter só se casa ainda existe
+    }
+    return true;
+  });
   // ── Corretagem automática (5% do valor de venda) ──
   casas.forEach(c=>{
     const corrKey='CORR-'+c.id;
