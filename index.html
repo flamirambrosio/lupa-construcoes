@@ -1872,8 +1872,31 @@ const SHEETS_SCOPE='https://www.googleapis.com/auth/spreadsheets https://www.goo
 const DRIVE_FOLDER_ID='1k4dQGFGA1X2GUySjb7uorxWBxy14OQ64';
 let gToken=null,gTokenClient=null,gSyncing=false,gLastSync=null;
 let gDriveFolderId=DRIVE_FOLDER_ID;
-
 let gRefreshTimer=null;
+const G_TOKEN_KEY='lupa_g_token_v2'; // localStorage: {token, expiry}
+
+function gSaveToken(token){
+  gToken=token;
+  const expiry=Date.now()+58*60*1000; // 58min (token dura 1h)
+  sessionStorage.setItem('lupa_g_token',token);
+  try{localStorage.setItem(G_TOKEN_KEY,JSON.stringify({token,expiry}));}catch(e){}
+}
+function gRestoreToken(){
+  // 1. sessionStorage (tab ativa)
+  const ss=sessionStorage.getItem('lupa_g_token');
+  if(ss){gToken=ss;return true;}
+  // 2. localStorage com validade (persiste entre sessões — essencial no mobile)
+  try{
+    const d=JSON.parse(localStorage.getItem(G_TOKEN_KEY)||'null');
+    if(d&&d.token&&Date.now()<d.expiry){gToken=d.token;sessionStorage.setItem('lupa_g_token',d.token);return true;}
+  }catch(e){}
+  return false;
+}
+function gClearToken(){
+  gToken=null;gDriveFolderId=null;
+  sessionStorage.removeItem('lupa_g_token');
+  try{localStorage.removeItem(G_TOKEN_KEY);}catch(e){}
+}
 
 function initGoogleAuth(){
   if(typeof google==='undefined'||!google.accounts)return;
@@ -1882,25 +1905,24 @@ function initGoogleAuth(){
     scope:SHEETS_SCOPE,
     callback:(resp)=>{
       if(resp.error){
-        // Falha silenciosa — usuário ainda não autorizou ou revogou
         if(resp.error==='interaction_required'||resp.error==='access_denied'||resp.error==='immediate_failed'){
-          updGoogleUI();return;
+          // Falha silenciosa — frequente no mobile (sem third-party cookies)
+          // Se ainda temos token válido em storage, mantemos conectado
+          if(!gToken)updGoogleUI();
+          return;
         }
         toast('Erro Google: '+resp.error,'error');updGoogleUI();return;
       }
-      gToken=resp.access_token;
-      sessionStorage.setItem('lupa_g_token',gToken);
-      // Renovar automaticamente antes de expirar (tokens duram 1h)
+      gSaveToken(resp.access_token);
       if(gRefreshTimer)clearTimeout(gRefreshTimer);
       gRefreshTimer=setTimeout(()=>silentRefreshToken(),55*60*1000);
       updGoogleUI();
       syncFromSheets();
     }
   });
-  // Restaurar token salvo para manter UI conectada enquanto silentRefresh responde
-  const cachedToken=sessionStorage.getItem('lupa_g_token');
-  if(cachedToken){gToken=cachedToken;}
-  // Reconectar silenciosamente ao abrir o app (obtém token fresco em background)
+  // Restaurar token persistido (sessionStorage ou localStorage)
+  gRestoreToken();
+  // Tentar renovar em background (pode falhar no mobile — não bloqueia)
   silentRefreshToken();
   updGoogleUI();
 }
@@ -1912,9 +1934,7 @@ function silentRefreshToken(){
 
 function toggleGoogleAuth(){
   if(gToken){
-    gToken=null;
-    gDriveFolderId=null;
-    sessionStorage.removeItem('lupa_g_token');
+    gClearToken();
     sessionStorage.removeItem('lupa_drive_folder');
     updGoogleUI();
     toast('Google desconectado','info');
@@ -2068,20 +2088,20 @@ function updGoogleBanner(){
 async function sheetsGet(range){
   const url=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
   const r=await fetch(url,{headers:{Authorization:`Bearer ${gToken}`}});
-  if(r.status===401){gToken=null;updGoogleUI();throw new Error('auth');}
+  if(r.status===401){gClearToken();silentRefreshToken();updGoogleUI();throw new Error('auth');}
   if(!r.ok)throw new Error('GET '+r.status);
   return r.json();
 }
 async function sheetsClear(sheet){
   const url=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheet)}:clear`;
   const r=await fetch(url,{method:'POST',headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'}});
-  if(r.status===401){gToken=null;updGoogleUI();throw new Error('auth');}
+  if(r.status===401){gClearToken();silentRefreshToken();updGoogleUI();throw new Error('auth');}
   if(!r.ok)throw new Error('CLEAR '+r.status);
 }
 async function sheetsUpdate(range,values){
   const url=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`;
   const r=await fetch(url,{method:'PUT',headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},body:JSON.stringify({range,majorDimension:'ROWS',values})});
-  if(r.status===401){gToken=null;updGoogleUI();throw new Error('auth');}
+  if(r.status===401){gClearToken();silentRefreshToken();updGoogleUI();throw new Error('auth');}
   if(!r.ok)throw new Error('UPDATE '+r.status);
 }
 
@@ -3994,9 +4014,8 @@ async function limparTudo(){
         sheetsClear('AUDITLOG'),
       ]);
     }catch(e){ console.warn('Erro ao limpar Sheets:',e); }
-    // Restaurar token e sessionStorage após clear (garante reconexão após reload)
-    gToken=savedToken;
-    sessionStorage.setItem('lupa_g_token',savedToken);
+    // Restaurar token após clear (garante reconexão após reload — inclusive no mobile)
+    gSaveToken(savedToken);
     updGoogleUI();
   }
   // 2. Limpar localStorage
