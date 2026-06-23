@@ -2059,7 +2059,7 @@ async function sheetsUpdate(range,values){
 }
 
 /* ══ SERIALIZE / DESERIALIZE ══ */
-const OBR_H=['id','nome','endereco','status','orcamento','area','inicio','conclusao','socio','casasJson'];
+const OBR_H=['id','nome','endereco','status','orcamento','area','inicio','previsao','socio','casasJson'];
 const LAN_H=['id','obraId','data','fornecedor','nfNum','cat','mat','qty','unit','valor','statusPag','createdBy','createdAt'];
 const PEN_H=['id','texto','prazo','status','prioridade','createdAt'];
 const REC_H=['id','texto','valor','dia','cat','ativo','createdAt'];
@@ -2188,7 +2188,7 @@ function migrateSchema(d){
     if(l.fornecedor===undefined)l.fornecedor='';
   });
   if(d.documentos)d.documentos.forEach(doc=>{if(!doc.validade)doc.validade='';});
-  if(d.obras)d.obras.forEach(o=>{if(!o.area)o.area=0;normCasas(o);});
+  if(d.obras)d.obras.forEach(o=>{if(!o.area)o.area=0;if(o.conclusao&&!o.previsao){o.previsao=o.conclusao;delete o.conclusao;}normCasas(o);});
 }
 /* Garante que todo empreendimento tenha casas[]. Migra obras antigas (1 obra = 1 casa). */
 function normCasas(o){
@@ -2689,18 +2689,18 @@ function renderDetail(ob){
   const saldo=(ob.orcamento||0)-tot;
   const pct=ob.orcamento?Math.min(100,Math.round(tot/ob.orcamento*100)):0;
   const dias=ob.inicio?Math.max(0,dif(ob.inicio,td())):0;
-  const diasFim=ob.conclusao&&ob.status==='andamento'?dif(td(),ob.conclusao):null;
+  const diasFim=ob.previsao&&ob.status==='andamento'?dif(td(),ob.previsao):null;
   const burnRate=dias>30?tot/Math.floor(dias/30):null;
   const cpM2=ob.area&&tot?Math.round(tot/ob.area):null;
   const res=empResumo(ob);
   const roi=res.custoTotal&&res.vgvRealizado?Math.round(res.margemTotal/res.custoTotal*100):null;
   document.getElementById('kpi-obra').innerHTML=`
-    <div class="kc cb"><div class="ki b" aria-hidden="true">📅</div><div class="kl">Dias em Obra</div><div class="kv b">${dias}</div><div class="kd">${fD(ob.inicio)} → ${fD(ob.conclusao)}</div></div>
+    <div class="kc cb"><div class="ki b" aria-hidden="true">📅</div><div class="kl">Dias em Obra</div><div class="kv b">${dias}</div><div class="kd">${fD(ob.inicio)} → ${fD(ob.previsao)}</div></div>
     <div class="kc cr"><div class="ki r" aria-hidden="true">💸</div><div class="kl">Total Gasto</div><div class="kv r">${fmt(tot)}</div><div class="kd">${ls.length} lançamentos</div></div>
     <div class="kc cy"><div class="ki y" aria-hidden="true">🎯</div><div class="kl">Orçamento Usado</div><div class="kv y">${pct}%</div><div class="kd">${fmt(ob.orcamento||0)} limite</div></div>
     <div class="kc cg"><div class="ki g" aria-hidden="true">💰</div><div class="kl">Saldo</div><div class="kv ${saldo>=0?'g':'r'}">${fmtS(saldo)}</div><div class="kd">${saldo>=0?'Dentro do limite':'⚠️ Estourado'}</div></div>
     ${res.vgvRealizado?`<div class="kc ca"><div class="ki a" aria-hidden="true">📈</div><div class="kl">VGV Realizado</div><div class="kv a">${fmtS(res.vgvRealizado)}</div><div class="kd">Lucro ${ob.status==='concluida'?'':'est. '}${fmtS(res.margemTotal)}</div></div>`:''}
-    ${diasFim!==null?`<div class="kc ${diasFim<0?'cr':diasFim<30?'cy':'cg'}"><div class="ki ${diasFim<0?'r':diasFim<30?'y':'g'}" aria-hidden="true">⏱️</div><div class="kl">Dias Restantes</div><div class="kv ${diasFim<0?'r':diasFim<30?'y':'g'}">${diasFim<0?'Atrasado':diasFim+'d'}</div><div class="kd">Conclusão: ${fD(ob.conclusao)}</div></div>`:''}
+    ${diasFim!==null?`<div class="kc ${diasFim<0?'cr':diasFim<30?'cy':'cg'}"><div class="ki ${diasFim<0?'r':diasFim<30?'y':'g'}" aria-hidden="true">⏱️</div><div class="kl">Dias Restantes</div><div class="kv ${diasFim<0?'r':diasFim<30?'y':'g'}">${diasFim<0?'Atrasado':diasFim+'d'}</div><div class="kd">Conclusão: ${fD(ob.previsao)}</div></div>`:''}
     ${burnRate?`<div class="kc ca"><div class="ki a" aria-hidden="true">🔥</div><div class="kl">Burn Rate Mensal</div><div class="kv a">${fmtS(burnRate)}</div><div class="kd">Média últimos meses</div></div>`:''}
     ${cpM2?`<div class="kc cb"><div class="ki b" aria-hidden="true">📐</div><div class="kl">Custo por m²</div><div class="kv b">${fmt(cpM2)}</div><div class="kd">${ob.area}m² construídos</div></div>`:''}
     ${roi!==null?`<div class="kc cg"><div class="ki g" aria-hidden="true">📊</div><div class="kl">ROI Estimado</div><div class="kv ${roi>=0?'g':'r'}">${roi}%</div><div class="kd">Sobre o custo das vendidas</div></div>`:''}
@@ -3822,7 +3822,7 @@ function editO(id){
   document.getElementById('cfg-id').value=id;
   document.getElementById('cfg-nm').value=ob.nome||'';document.getElementById('cfg-end').value=ob.endereco||'';
   document.getElementById('cfg-ini').value=ob.inicio||'';document.getElementById('cfg-orc').value=ob.orcamento||'';
-  document.getElementById('cfg-area').value=ob.area||'';document.getElementById('cfg-concl').value=ob.conclusao||'';
+  document.getElementById('cfg-area').value=ob.area||'';document.getElementById('cfg-concl').value=ob.previsao||ob.conclusao||'';
   document.getElementById('cfg-soc').value=ob.socio||'';document.getElementById('cfg-st').value=(ob.status==='concluida'?'concluida':'andamento');
   renderCasasForm(ob.casas);
   document.getElementById('fo-title').textContent='✏️ Editando: '+ob.nome;
@@ -3836,7 +3836,7 @@ function salvarO(){
   const id=document.getElementById('cfg-id').value||uid();
   const casas=readCasasForm(id);
   if(!casas.length){toast('Adicione pelo menos 1 casa.','error');return;}
-  const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFloat(document.getElementById('cfg-orc').value)||0,area:parseFloat(document.getElementById('cfg-area').value)||0,conclusao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,casas};
+  const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFloat(document.getElementById('cfg-orc').value)||0,area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,casas};
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
   addAudit('Empreendimento salvo',nm+' ('+casas.length+' casa'+(casas.length>1?'s':'')+')');
