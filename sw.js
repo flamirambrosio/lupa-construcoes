@@ -1,5 +1,6 @@
 // LUPA Controle Financeiro — Service Worker
-const CACHE = 'lupa-v5';
+// Versão bumped a cada deploy para forçar reinstalação no mobile
+const CACHE = 'lupa-v6-20260622';
 const APP_SHELL = ['/lupa-construcoes/', '/lupa-construcoes/index.html'];
 
 // Instala e faz cache do app shell
@@ -21,7 +22,7 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Estratégia: Network ALWAYS FIRST — cache só como fallback offline
+// Estratégia: Network ALWAYS FIRST com reload completo — cache só como fallback offline
 self.addEventListener('fetch', e => {
   const url = e.request.url;
 
@@ -32,7 +33,23 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // App shell — network first, atualiza cache, fallback offline
+  // index.html — sempre busca versão fresca, ignora cache HTTP completamente
+  if (url.includes('/lupa-construcoes/') && e.request.method === 'GET') {
+    e.respondWith(
+      fetch(e.request, {cache: 'reload'})
+        .then(resp => {
+          if (resp && resp.status === 200) {
+            const clone = resp.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+          }
+          return resp;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Demais recursos — network first, fallback cache
   e.respondWith(
     fetch(e.request, {cache: 'no-cache'})
       .then(resp => {
