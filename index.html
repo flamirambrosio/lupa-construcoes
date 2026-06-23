@@ -2224,6 +2224,8 @@ async function syncFromSheets(){
       } else{ST.documentos=[];}
     }
     if(audit!==null)ST.auditLog=(audit&&audit.values)?fromRows(audit.values):[];
+    // Garantir integridade após sync
+    cleanOrphans();
     // Salvar no localStorage SEM chamar syncToSheets (dados já vieram do Sheets)
     try{localStorage.setItem(SK,JSON.stringify({__v:SCHEMA_VER,obras:ST.obras,lancamentos:ST.lancamentos,pendencias:ST.pendencias,recorrentes:ST.recorrentes,documentos:ST.documentos,obraAtiva:ST.obraAtiva,google:ST.google,auditLog:ST.auditLog||[]}));}catch(e){}
     gLastSync=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
@@ -2292,7 +2294,25 @@ function load(){
     // Schema migration
     if(!d.__v||d.__v<SCHEMA_VER){migrateSchema(d);}
     Object.assign(ST,{obras:d.obras||[],lancamentos:d.lancamentos||[],pendencias:d.pendencias||[],recorrentes:d.recorrentes||[],documentos:d.documentos||[],obraAtiva:d.obraAtiva||null,google:d.google||{sheetsUrl:'',driveUrl:''},auditLog:d.auditLog||[]});
+    // Limpeza de integridade: remover dados órfãos de obras deletadas
+    cleanOrphans();
   }catch(e){console.warn('Load error:',e);}
+}
+function cleanOrphans(){
+  const ids=new Set(ST.obras.map(o=>o.id));
+  if(!ids.size)return; // sem obras: não limpar (pode ser carga inicial)
+  ST.lancamentos=ST.lancamentos.filter(l=>ids.has(l.obraId));
+  ST.pendencias=ST.pendencias.filter(p=>!p.obraId||ids.has(p.obraId));
+  ST.recorrentes=ST.recorrentes.filter(r=>!r.obraId||ids.has(r.obraId));
+  ST.documentos=ST.documentos.filter(d=>!d.obraId||ids.has(d.obraId));
+  // Remover corretagens de casas que não existem mais
+  ST.obras.forEach(o=>{
+    const casaIds=new Set((o.casas||[]).map(c=>c.id));
+    ST.lancamentos=ST.lancamentos.filter(l=>{
+      if(l.obraId===o.id&&l.nfNum&&l.nfNum.startsWith('CORR-'))return casaIds.has(l.nfNum.slice(5));
+      return true;
+    });
+  });
 }
 function migrateSchema(d){
   if(d.lancamentos)d.lancamentos.forEach(l=>{
