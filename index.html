@@ -2184,29 +2184,42 @@ async function syncFromSheets(){
       sheetsGet('DOCUMENTOS').catch(()=>null),
       sheetsGet('AUDITLOG').catch(()=>null),
     ]);
+    // null = erro de rede (não toca no ST local)
+    // objeto sem .values = tab vazia no Sheets → zera ST local também
     const localL=[...ST.lancamentos];
     const localD=[...ST.documentos];
-    if(obras&&obras.values){
-      const localO=[...ST.obras];
-      const arr=fromRows(obras.values,['orcamento','area']);
-      arr.forEach(o=>{
-        if(o.casasJson){try{o.casas=JSON.parse(o.casasJson);}catch(e){o.casas=null;}}
-        if(!o.casas||!o.casas.length){const loc=localO.find(x=>x.id===o.id);if(loc&&loc.casas)o.casas=loc.casas;}
-        delete o.casasJson;normCasas(o);
-      });
-      ST.obras=arr;
+    if(obras!==null){
+      if(obras&&obras.values){
+        const localO=[...ST.obras];
+        const arr=fromRows(obras.values,['orcamento','area']);
+        arr.forEach(o=>{
+          if(o.casasJson){try{o.casas=JSON.parse(o.casasJson);}catch(e){o.casas=null;}}
+          if(!o.casas||!o.casas.length){const loc=localO.find(x=>x.id===o.id);if(loc&&loc.casas)o.casas=loc.casas;}
+          delete o.casasJson;normCasas(o);
+        });
+        ST.obras=arr;
+      } else {
+        ST.obras=[];ST.obraAtiva=null; // Sheets vazio — limpa local
+      }
     }
-    if(lancs&&lancs.values){
-      const arr=fromRows(lancs.values,['valor','qty']);
-      ST.lancamentos=arr.map(l=>{const loc=localL.find(x=>x.id===l.id);if(loc&&loc.compBase64)l.compBase64=loc.compBase64;return l;});
+    if(lancs!==null){
+      if(lancs&&lancs.values){
+        const arr=fromRows(lancs.values,['valor','qty']);
+        ST.lancamentos=arr.map(l=>{const loc=localL.find(x=>x.id===l.id);if(loc&&loc.compBase64)l.compBase64=loc.compBase64;return l;});
+      } else { ST.lancamentos=[]; }
     }
-    if(pends&&pends.values)ST.pendencias=fromRows(pends.values);
-    if(recs&&recs.values){ST.recorrentes=fromRows(recs.values,['valor','dia']);ST.recorrentes.forEach(r=>{r.ativo=r.ativo==='true';});}
-    if(docs&&docs.values){
-      const arr=fromRows(docs.values);
-      ST.documentos=arr.map(d=>{const loc=localD.find(x=>x.id===d.id);if(loc&&loc.fileBase64)d.fileBase64=loc.fileBase64;return d;});
+    if(pends!==null) ST.pendencias=(pends&&pends.values)?fromRows(pends.values):[];
+    if(recs!==null){
+      if(recs&&recs.values){ST.recorrentes=fromRows(recs.values,['valor','dia']);ST.recorrentes.forEach(r=>{r.ativo=r.ativo==='true';});}
+      else { ST.recorrentes=[]; }
     }
-    if(audit&&audit.values)ST.auditLog=fromRows(audit.values);
+    if(docs!==null){
+      if(docs&&docs.values){
+        const arr=fromRows(docs.values);
+        ST.documentos=arr.map(d=>{const loc=localD.find(x=>x.id===d.id);if(loc&&loc.fileBase64)d.fileBase64=loc.fileBase64;return d;});
+      } else { ST.documentos=[]; }
+    }
+    if(audit!==null) ST.auditLog=(audit&&audit.values)?fromRows(audit.values):[];
     save();
     gLastSync=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     updGoogleUI();updSyncTime();
