@@ -585,7 +585,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 
 /* ═══ RESPONSIVE 900px ═══ */
 @media(max-width:900px){
-  .sidebar{transform:translateX(-252px);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+  .sidebar{transform:translateX(-252px);transition:transform .28s cubic-bezier(.4,0,.2,1);padding-bottom:calc(68px + env(safe-area-inset-bottom))}
   .sidebar.open{transform:translateX(0)}
   .main-wrap{margin-left:0}.hamburger{display:flex!important}
   .kpi-pill{display:none}.main-content{padding:12px 12px 76px}
@@ -1030,6 +1030,37 @@ input,select,textarea{min-height:44px}
 </div>
 </div>
 
+<div class="modal-ov" id="as-modal" role="dialog" aria-label="Alterar senha">
+<div class="modal-box" style="max-width:380px;padding:28px 24px">
+  <div class="modal-hdr" style="margin-bottom:18px">
+    <div class="modal-title">🔑 Alterar Senha</div>
+    <button class="modal-close" onclick="closeAlterarSenha()" aria-label="Fechar">✕</button>
+  </div>
+  <div id="as-user-label" style="font-size:12px;color:var(--text2);background:var(--surface2);border-radius:7px;padding:7px 10px;margin-bottom:16px;font-weight:500"></div>
+  <div class="fgg" style="margin-bottom:11px;text-align:left">
+    <label class="fl">Senha atual</label>
+    <input type="password" id="as-cur-pass" placeholder="Digite sua senha atual" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')document.getElementById('as-new-pass').focus()">
+  </div>
+  <div class="fgg" style="margin-bottom:11px;text-align:left">
+    <label class="fl">Nova senha</label>
+    <input type="password" id="as-new-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"
+      onkeydown="if(event.key==='Enter')document.getElementById('as-conf-pass').focus()">
+  </div>
+  <div class="fgg" style="margin-bottom:14px;text-align:left">
+    <label class="fl">Confirmar nova senha</label>
+    <input type="password" id="as-conf-pass" placeholder="Repita a nova senha" autocomplete="new-password"
+      onkeydown="if(event.key==='Enter')salvarNovaSenha()">
+  </div>
+  <div class="login-error" id="as-error" style="display:none;margin-bottom:10px"></div>
+  <div id="as-success" style="display:none;background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.3);border-radius:7px;padding:9px 12px;font-size:12.5px;color:#27ae60;margin-bottom:10px;font-weight:600"></div>
+  <div style="display:flex;gap:10px;margin-top:4px">
+    <button onclick="closeAlterarSenha()" style="flex:1;height:42px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+    <button onclick="salvarNovaSenha()" style="flex:1;height:42px;border:none;background:linear-gradient(135deg,var(--brand2),var(--brand3));color:#fff;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(41,128,185,.35)">Salvar</button>
+  </div>
+</div>
+</div>
+
 <div class="modal-ov" id="import-modal" role="dialog" aria-label="Importar backup">
 <div class="modal-box import-modal">
   <div class="modal-hdr"><div class="modal-title">📥 Importar Backup JSON</div><button class="modal-close" onclick="closeImport()">✕</button></div>
@@ -1138,6 +1169,7 @@ input,select,textarea{min-height:44px}
       <span id="sb-user-name" style="flex:1;font-weight:500">—</span>
       <button onclick="logout()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;padding:2px 4px" aria-label="Sair do sistema">Sair</button>
     </div>
+    <button onclick="openAlterarSenha()" style="width:100%;height:33px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);border-radius:7px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:5px" aria-label="Alterar senha de acesso">🔑 Alterar Senha</button>
     <button class="theme-btn" onclick="toggleTheme()" aria-label="Alternar tema">
       <span id="theme-lbl" style="font-size:11.5px;color:var(--text2)">🌙 Modo Escuro</span>
       <div class="tog-track" aria-hidden="true"><div class="tog-thumb"></div></div>
@@ -1818,6 +1850,13 @@ const USERS=[
   {id:'flamir',nome:'Flamir Ambrosio',role:'admin',hash:'cf593d3a80104fd6844418e6fe9bfe3eb3c03a1efa8461c72db9522f4fc614bc'},
   {id:'socio',nome:'Paulo Santos',role:'user',hash:'cf593d3a80104fd6844418e6fe9bfe3eb3c03a1efa8461c72db9522f4fc614bc'}
 ];
+// Carrega senhas personalizadas salvas (sobrescreve hash padrão se o usuário já alterou)
+(function loadCustomPasswords(){
+  try{
+    const saved=localStorage.getItem('lupa_passwords_v1');
+    if(saved){const p=JSON.parse(saved);USERS.forEach(u=>{if(p[u.id])u.hash=p[u.id];});}
+  }catch(e){}
+})();
 let currentUser=null;
 async function sha256(str){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
@@ -1845,6 +1884,48 @@ function logout(){
 }
 function closeLogoutModal(){document.getElementById('logout-modal').classList.remove('open');}
 function confirmarLogout(){sessionStorage.removeItem('lupa_user');location.reload();}
+
+/* ══ ALTERAR SENHA ══ */
+function openAlterarSenha(){
+  document.getElementById('as-cur-pass').value='';
+  document.getElementById('as-new-pass').value='';
+  document.getElementById('as-conf-pass').value='';
+  document.getElementById('as-error').style.display='none';
+  document.getElementById('as-success').style.display='none';
+  const lbl=document.getElementById('as-user-label');
+  if(lbl&&currentUser)lbl.textContent='👤 Alterando senha de: '+currentUser.nome;
+  document.getElementById('as-modal').classList.add('open');
+  setTimeout(()=>{const f=document.getElementById('as-cur-pass');if(f)f.focus();},120);
+}
+function closeAlterarSenha(){
+  document.getElementById('as-modal').classList.remove('open');
+}
+async function salvarNovaSenha(){
+  const errEl=document.getElementById('as-error');
+  const okEl=document.getElementById('as-success');
+  errEl.style.display='none';okEl.style.display='none';
+  const cur=document.getElementById('as-cur-pass').value;
+  const nw=document.getElementById('as-new-pass').value;
+  const cf=document.getElementById('as-conf-pass').value;
+  function showErr(msg){errEl.textContent=msg;errEl.style.display='block';}
+  if(!cur||!nw||!cf){showErr('❌ Preencha todos os campos.');return;}
+  if(nw!==cf){showErr('❌ Nova senha e confirmação não coincidem.');return;}
+  if(nw.length<6){showErr('❌ A nova senha deve ter pelo menos 6 caracteres.');return;}
+  const curHash=await sha256(cur);
+  if(curHash!==currentUser.hash){showErr('❌ Senha atual incorreta.');document.getElementById('as-cur-pass').value='';return;}
+  const newHash=await sha256(nw);
+  currentUser.hash=newHash;
+  try{
+    const saved=JSON.parse(localStorage.getItem('lupa_passwords_v1')||'{}');
+    saved[currentUser.id]=newHash;
+    localStorage.setItem('lupa_passwords_v1',JSON.stringify(saved));
+  }catch(e){}
+  okEl.textContent='✅ Senha alterada com sucesso!';okEl.style.display='block';
+  document.getElementById('as-cur-pass').value='';
+  document.getElementById('as-new-pass').value='';
+  document.getElementById('as-conf-pass').value='';
+  setTimeout(closeAlterarSenha,1800);
+}
 
 const SK='lupa_macae_v5';
 const SCHEMA_VER=2;
@@ -2080,12 +2161,7 @@ async function uploadToDrive(file, nomeArquivo, obraId, tipo){
     });
     if(!r.ok){const err=await r.text();console.error('Drive upload error:',err);return null;}
     const data=await r.json();
-    // Tornar arquivo acessível por link
-    await fetch(`https://www.googleapis.com/drive/v3/files/${data.id}/permissions`,{
-      method:'POST',
-      headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
-      body:JSON.stringify({role:'reader',type:'anyone'})
-    });
+    // Acesso restrito: apenas o proprietário da conta Google tem acesso (nenhuma permissão pública)
     return{id:data.id,url:data.webViewLink};
   }catch(e){console.error('uploadToDrive:',e);return null;}
 }
