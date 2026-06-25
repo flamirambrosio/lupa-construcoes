@@ -14,6 +14,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <style>
 /* ═══ THEME ═══ */
 :root,[data-theme="dark"]{
@@ -980,36 +983,23 @@ input,select,textarea{min-height:44px}
   </div>
 </div></div>
 
-<!-- GOOGLE MODAL -->
-<div class="modal-ov" id="g-modal" role="dialog" aria-label="Integração Google Sheets">
+<!-- OCR MODAL -->
+<div class="modal-ov" id="g-modal" role="dialog" aria-label="Google OCR">
 <div class="modal-box gm">
-  <div class="modal-hdr"><div class="modal-title">🔗 Google Sheets — Sincronização</div><button class="modal-close" onclick="closeGM()">✕</button></div>
+  <div class="modal-hdr"><div class="modal-title">📷 Google OCR — Leitura de NF</div><button class="modal-close" onclick="closeGM()">✕</button></div>
 
-  <!-- Status conectado/desconectado -->
   <div class="gm-status-row" id="gm-status-row">
     <span id="gm-status-dot" style="width:9px;height:9px;border-radius:50%;background:var(--text3);flex-shrink:0"></span>
-    <span id="gm-status-text">Não conectado ao Google</span>
-    <span id="gm-last-sync" style="margin-left:auto;font-size:10.5px;color:var(--text3)"></span>
+    <span id="gm-status-text">Não conectado (OCR indisponível)</span>
   </div>
 
-  <!-- Botão conectar/desconectar -->
   <button class="gm-connect-btn" id="gm-connect-btn" onclick="toggleGoogleAuth()">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
     <span id="gm-connect-label">Conectar com Google</span>
   </button>
 
-  <!-- Ações de sync (visíveis só quando conectado) -->
-  <div id="gm-sync-actions" style="display:none">
-    <div style="display:flex;gap:7px;margin-bottom:10px">
-      <button class="btn btn-p btn-sm" onclick="syncFromSheets()" style="flex:1">⬇️ Importar do Sheets</button>
-      <button class="btn btn-sm" onclick="syncToSheets()" style="flex:1">⬆️ Exportar para Sheets</button>
-    </div>
-    <button class="btn btn-sm" onclick="abrirSheets()" style="width:100%;justify-content:center">📊 Abrir Planilha no Google ↗</button>
-    <div id="gm-drive-link" style="margin-top:8px;text-align:center"></div>
-  </div>
-
   <div style="font-size:10.5px;color:var(--text3);margin-top:12px;line-height:1.5">
-    Dados sincronizados automaticamente com Google Sheets. Comprovantes e documentos enviados para o Google Drive.
+    O Google é necessário <strong>apenas para o OCR</strong> (leitura automática de notas fiscais por foto). Os dados do app são sincronizados automaticamente via Firebase — sem necessidade de conexão Google.
   </div>
 </div></div>
 
@@ -1196,15 +1186,12 @@ input,select,textarea{min-height:44px}
     <div class="kpi-pill" id="pill-gasto"><div class="kpi-pv" id="tb-gasto">—</div><div class="kpi-pl">Gasto</div></div>
     <div class="kpi-pill" id="pill-pct"><div class="kpi-pv" id="tb-pct">—</div><div class="kpi-pl">Orçamento</div></div>
     <!-- Botão tema mobile (removido do topbar) -->
-    <button class="btn-conn gsync-btn" id="btn-sheets" onclick="openGM()" aria-label="Sincronizar Google Sheets" style="display:none">
+    <button class="btn-conn gsync-btn" id="btn-sheets" onclick="openGM()" aria-label="Google OCR" style="display:none">
       <span class="gsync-dot"></span><span id="gsync-label">●</span>
     </button>
     <div class="tb-btns">
-      <button class="btn-conn gsync-btn" id="btn-sheets-desk" onclick="openGM()" aria-label="Sincronizar Google Sheets">
-        <span class="gsync-dot"></span><span id="gsync-label-desk">Sheets</span>
-      </button>
-      <button class="btn-sync" id="btn-sync" onclick="manualSync()" aria-label="Sincronizar agora" title="Sincronizar com Google Sheets agora">
-        <span class="sync-ic">↻</span><span class="sync-time" id="sync-time"></span>
+      <button class="btn-conn gsync-btn" id="btn-sheets-desk" onclick="openGM()" aria-label="Google OCR">
+        <span class="gsync-dot"></span><span id="gsync-label-desk">OCR</span>
       </button>
       <button class="btn-conn" onclick="gerarPDF()" aria-label="Gerar relatório PDF">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF
@@ -1298,7 +1285,6 @@ input,select,textarea{min-height:44px}
 
 <!-- LANÇAMENTOS -->
 <div id="page-lancamentos" class="page" role="main">
-  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — conecte para salvar dados. <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr">
     <div><div class="page-title">Lançamentos</div><div class="page-sub">Registre gastos por categoria</div></div>
   </div>
@@ -1456,7 +1442,6 @@ input,select,textarea{min-height:44px}
 
 <!-- PENDÊNCIAS -->
 <div id="page-pendencias" class="page" role="main">
-  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr">
     <div><div class="page-title">Pendências da Obra</div><div class="page-sub">Calendário de prazos e tarefas</div></div>
     <div class="pend-top-btns">
@@ -1533,7 +1518,6 @@ input,select,textarea{min-height:44px}
 
 <!-- DOCUMENTOS -->
 <div id="page-documentos" class="page" role="main">
-  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr">
     <div><div class="page-title">Documentos Oficiais</div><div class="page-sub">Contratos, alvarás, certidões e documentos de obras</div></div>
   </div>
@@ -1610,7 +1594,6 @@ input,select,textarea{min-height:44px}
 
 <!-- CADASTRO -->
 <div id="page-cadastro" class="page" role="main">
-  <div class="g-required-banner" style="display:none"><span>🔴</span><span>Google não conectado — <button onclick="openGM()" style="background:none;border:none;color:var(--red);text-decoration:underline;cursor:pointer;font-size:12px;padding:0">Conectar agora</button></span></div>
   <div class="page-hdr"><div><div class="page-title">Empreendimentos</div><div class="page-sub">Terreno com uma ou mais casas — Macaé e região, RJ</div></div><button class="btn btn-p btn-sm" onclick="novaO()" aria-label="Novo empreendimento">+ Novo Empreendimento</button></div>
   <div class="card" id="form-obra" style="margin-bottom:14px;display:none">
     <div class="card-title" style="margin-bottom:12px" id="fo-title">📐 Dados da Obra</div>
@@ -1970,7 +1953,7 @@ const MATS=[
   {n:'EPI Kit completo',c:'Segurança'},{n:'Andaime metálico',c:'Segurança'},{n:'Lona plástica',c:'Segurança'}
 ];
 
-let ST={obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],obraAtiva:null,google:{sheetsUrl:'',driveUrl:''},auditLog:[]};
+let ST={obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],obraAtiva:null,auditLog:[]};
 let selMat=null,cFile=null,cFileB64=null,docF=null,docFB64=null,nfF=null,nfFB64=null,importFileData=null;
 let calY=new Date().getFullYear(),calM=new Date().getMonth();
 let pFiltro='todas',sortCol='data',sortDir='desc',lancPage=0;
@@ -1982,15 +1965,19 @@ const IDLE_MS=30*60*1000; // 30 min
 const LANC_PG=50;
 let loginAttempts=0,loginLockUntil=0;
 
-/* ══ GOOGLE SHEETS CONFIG ══ */
+/* ══ FIREBASE + CLOUDINARY CONFIG ══ */
+const FIREBASE_CONFIG={apiKey:"AIzaSyDS--CANz28HldfoX1iw09MWQnoYppR6OY",authDomain:"lupa-facilities.firebaseapp.com",projectId:"lupa-facilities",storageBucket:"lupa-facilities.firebasestorage.app",messagingSenderId:"73278242506",appId:"1:73278242506:web:0745201ed92bd71b3abe33"};
+const CLOUDINARY_CLOUD='dxbiyenud';
+const CLOUDINARY_PRESET='lupa_upload';
+let fbDb=null,fbUnsub=null,fbReady=false,fbWriting=false;
+
+/* ══ GOOGLE OCR CONFIG (opcional — só para OCR de notas fiscais) ══ */
 const GOOGLE_CLIENT_ID='629740512690-r6tbeqbsh8bghr80tpgog6dan68m3osr.apps.googleusercontent.com';
-const SPREADSHEET_ID='1LnnFl0GsGTTycWt4wM7nzG4mSJjjqhcuRuurjcNnq4s';
-const SHEETS_SCOPE='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const DRIVE_FOLDER_ID='1k4dQGFGA1X2GUySjb7uorxWBxy14OQ64';
-let gToken=null,gTokenClient=null,gSyncing=false,gLastSync=null,gPendingWrite=false;
-let gDriveFolderId=DRIVE_FOLDER_ID;
+const OCR_SCOPE='https://www.googleapis.com/auth/drive.file';
+let gToken=null,gTokenClient=null;
 let gRefreshTimer=null;
-const G_TOKEN_KEY='lupa_g_token_v2'; // localStorage: {token, expiry}
+const G_TOKEN_KEY='lupa_g_token_v2';
 
 function gSaveToken(token){
   gToken=token;
@@ -2019,12 +2006,10 @@ function initGoogleAuth(){
   if(typeof google==='undefined'||!google.accounts)return;
   gTokenClient=google.accounts.oauth2.initTokenClient({
     client_id:GOOGLE_CLIENT_ID,
-    scope:SHEETS_SCOPE,
+    scope:OCR_SCOPE,
     callback:(resp)=>{
       if(resp.error){
         if(resp.error==='interaction_required'||resp.error==='access_denied'||resp.error==='immediate_failed'){
-          // Falha silenciosa — frequente no mobile (sem third-party cookies)
-          // Se ainda temos token válido em storage, mantemos conectado
           if(!gToken)updGoogleUI();
           return;
         }
@@ -2034,12 +2019,9 @@ function initGoogleAuth(){
       if(gRefreshTimer)clearTimeout(gRefreshTimer);
       gRefreshTimer=setTimeout(()=>silentRefreshToken(),55*60*1000);
       updGoogleUI();
-      syncFromSheets();
     }
   });
-  // Restaurar token persistido (sessionStorage ou localStorage)
   gRestoreToken();
-  // Tentar renovar em background (pode falhar no mobile — não bloqueia)
   silentRefreshToken();
   updGoogleUI();
 }
@@ -2069,180 +2051,111 @@ function updGoogleUI(){
   const connectLbl=document.getElementById('gm-connect-label');
   const statusDot=document.getElementById('gm-status-dot');
   const statusText=document.getElementById('gm-status-text');
-  const lastSync=document.getElementById('gm-last-sync');
-  const actions=document.getElementById('gm-sync-actions');
   const cls=gToken?'btn-conn gsync-btn connected':'btn-conn gsync-btn';
   const dotTxt=gToken?'●':'○';
   if(btn){btn.className=cls;if(lbl)lbl.textContent=dotTxt;}
-  if(btnDesk){btnDesk.className=cls;if(lblDesk)lblDesk.textContent=gToken?'Google ✓':'Sheets';}
+  if(btnDesk){btnDesk.className=cls;if(lblDesk)lblDesk.textContent=gToken?'OCR ✓':'OCR';}
   if(connectLbl)connectLbl.textContent=gToken?'Desconectar do Google':'Conectar com Google';
   if(statusDot)statusDot.style.background=gToken?'var(--green)':'var(--text3)';
-  if(statusText)statusText.textContent=gToken?'Conectado — Sheets + Drive':'Não conectado';
-  if(actions)actions.style.display=gToken?'block':'none';
-  if(lastSync)lastSync.textContent=(gToken&&gLastSync)?'Último sync: '+gLastSync:'';
-  const driveLink=document.getElementById('gm-drive-link');
-  if(driveLink)driveLink.innerHTML=gToken?`<a href="https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}" target="_blank" style="color:var(--brand3);font-size:11.5px">📁 Abrir pasta de arquivos no Drive ↗</a>`:'';
-  updGoogleBanner();
+  if(statusText)statusText.textContent=gToken?'Conectado — OCR ativo':'Não conectado (OCR indisponível)';
 }
+function updGC(){updGoogleUI();}
+function updGoogleBanner(){}
 
-function updSyncTime(){
-  const btn=document.getElementById('btn-sync');
-  const lbl=document.getElementById('sync-time');
-  if(!btn)return;
-  if(gLastSync){btn.className='btn-sync ok';if(lbl)lbl.textContent=gLastSync;}
-  else{btn.className='btn-sync';if(lbl)lbl.textContent='';}
-}
-async function manualSync(){
-  if(!gToken){toast('Conecte o Google primeiro.','warn');return;}
-  if(gSyncing)return;
-  const btn=document.getElementById('btn-sync');
-  const lbl=document.getElementById('sync-time');
-  if(btn)btn.className='btn-sync syncing';
-  if(lbl)lbl.textContent='';
-  await syncToSheets();
-  await syncFromSheets();
-  updSyncTime();
-}
-function updSyncBtnState(state){
-  const btn=document.getElementById('btn-sheets');
-  const lbl=document.getElementById('gsync-label');
-  const btnDesk=document.getElementById('btn-sheets-desk');
-  const lblDesk=document.getElementById('gsync-label-desk');
-  const cls={'syncing':'btn-conn gsync-btn syncing','error':'btn-conn gsync-btn error'};
-  const txt={'syncing':'⟳','error':'!'};
-  if(state==='syncing'||state==='error'){
-    if(btn){btn.className=cls[state];if(lbl)lbl.textContent=txt[state];}
-    if(btnDesk){btnDesk.className=cls[state];if(lblDesk)lblDesk.textContent=state==='syncing'?'Sincronizando...':'Erro sync';}
-  } else {updGoogleUI();}
-}
-
-/* ══ DRIVE API ══ */
-async function initDriveFolder(){
-  return DRIVE_FOLDER_ID;
-}
-
-// Cache de IDs de subpastas: { 'obraId/tipo': folderId }
-const _driveFolderCache={};
-
-async function getDriveSubfolder(parentId, nome){
-  const cacheKey=parentId+'|'+nome;
-  if(_driveFolderCache[cacheKey])return _driveFolderCache[cacheKey];
-  // Verifica se já existe
-  const q=encodeURIComponent(`name='${nome}' and '${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`);
-  const res=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,{
-    headers:{Authorization:`Bearer ${gToken}`}
-  });
-  const data=await res.json();
-  if(data.files&&data.files.length>0){
-    _driveFolderCache[cacheKey]=data.files[0].id;
-    return data.files[0].id;
-  }
-  // Cria a pasta
-  const cr=await fetch('https://www.googleapis.com/drive/v3/files',{
-    method:'POST',
-    headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
-    body:JSON.stringify({name:nome,mimeType:'application/vnd.google-apps.folder',parents:[parentId]})
-  });
-  const folder=await cr.json();
-  _driveFolderCache[cacheKey]=folder.id;
-  return folder.id;
-}
-
-async function getObraFolder(obraId, tipo){
-  // Estrutura: LUPA/ <Nome da Obra>/ <Comprovantes|Documentos>/
-  const rootId=await initDriveFolder();
-  const obra=ST.obras.find(o=>o.id===obraId);
-  const obraNome=obra?obra.nome:('Obra-'+obraId);
-  const obraFolderId=await getDriveSubfolder(rootId, obraNome);
-  const tipoNome=tipo==='comprovante'?'Comprovantes':'Documentos';
-  return await getDriveSubfolder(obraFolderId, tipoNome);
-}
-
-async function uploadToDrive(file, nomeArquivo, obraId, tipo){
-  if(!gToken||!file)return null;
+/* ══ CLOUDINARY UPLOAD ══ */
+async function uploadToCloudinary(file, obraId, tipo){
+  if(!file)return null;
   try{
-    let folderId;
-    if(obraId){
-      folderId=await getObraFolder(obraId, tipo||'comprovante');
-    }else{
-      folderId=await initDriveFolder();
-    }
-    const meta={name:nomeArquivo,parents:[folderId]};
-    const form=new FormData();
-    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
-    form.append('file',file);
-    const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',{
-      method:'POST',
-      headers:{Authorization:`Bearer ${gToken}`},
-      body:form
-    });
-    if(!r.ok){const err=await r.text();console.error('Drive upload error:',err);return null;}
-    const data=await r.json();
-    // Acesso restrito: apenas o proprietário da conta Google tem acesso (nenhuma permissão pública)
-    return{id:data.id,url:data.webViewLink};
-  }catch(e){console.error('uploadToDrive:',e);return null;}
+    const pasta=tipo==='comprovante'?'comprovantes':'documentos';
+    const folder=`lupa-facilities/obras/${obraId||'geral'}/${pasta}`;
+    const fd=new FormData();
+    fd.append('file',file);
+    fd.append('upload_preset',CLOUDINARY_PRESET);
+    fd.append('folder',folder);
+    const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`,{method:'POST',body:fd});
+    if(!r.ok)throw new Error('Upload falhou: '+r.status);
+    const d=await r.json();
+    return{url:d.secure_url,publicId:d.public_id};
+  }catch(e){console.error('uploadToCloudinary:',e);return null;}
 }
 
-/* ══ GOOGLE OBRIGATÓRIO ══ */
+/* ══ FIREBASE FIRESTORE ══ */
+async function initFirebase(){
+  try{
+    const app=firebase.initializeApp(FIREBASE_CONFIG);
+    fbDb=firebase.firestore(app);
+    await firebase.auth(app).signInAnonymously();
+    startFirestoreListener();
+  }catch(e){console.error('Firebase init:',e);}
+}
+
+function startFirestoreListener(){
+  if(fbUnsub)fbUnsub();
+  fbUnsub=fbDb.doc('lupa_data/main').onSnapshot(snap=>{
+    if(fbWriting)return;
+    if(!snap.exists)return;
+    mergeFromFirestore(snap.data());
+  },err=>console.error('Firestore listener:',err));
+  fbReady=true;
+}
+
+function mergeFromFirestore(data){
+  if(!data)return;
+  const localL=[...ST.lancamentos];
+  const localD=[...ST.documentos];
+  ST.obras=data.obras||[];
+  ST.pendencias=data.pendencias||[];
+  ST.recorrentes=data.recorrentes||[];
+  ST.auditLog=data.auditLog||[];
+  ST.obraAtiva=data.obraAtiva||null;
+  ST.lancamentos=(data.lancamentos||[]).map(l=>{
+    const loc=localL.find(x=>x.id===l.id);
+    if(loc&&loc.fileB64)l.fileB64=loc.fileB64;
+    return l;
+  });
+  ST.documentos=(data.documentos||[]).map(d=>{
+    const loc=localD.find(x=>x.id===d.id);
+    if(loc&&loc.fileBase64)d.fileBase64=loc.fileBase64;
+    return d;
+  });
+  cleanOrphans();
+  try{localStorage.setItem(SK,JSON.stringify({__v:SCHEMA_VER,...ST}));}catch(e){}
+  updSB();updKpis();updGC();updBanners();
+  renderT();renderCal();renderDocs();
+  checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
+}
+
+async function saveToFirestore(){
+  if(!fbDb||!fbReady)return;
+  fbWriting=true;
+  try{
+    const data={
+      obras:ST.obras,
+      lancamentos:ST.lancamentos.map(({fileB64,...l})=>l),
+      pendencias:ST.pendencias,
+      recorrentes:ST.recorrentes,
+      documentos:ST.documentos.map(({fileBase64,...d})=>d),
+      auditLog:ST.auditLog||[],
+      obraAtiva:ST.obraAtiva||null,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    await fbDb.doc('lupa_data/main').set(data);
+  }catch(e){
+    console.error('saveToFirestore:',e);
+    toast('Erro ao salvar na nuvem.','error');
+  }finally{
+    setTimeout(()=>{fbWriting=false;},1500);
+  }
+}
+
 function requireGoogle(){
   if(gToken)return true;
-  toast('⚠️ Conecte o Google antes de salvar. Clique em "● Sheets" no topo.','warn');
+  toast('⚠️ Conecte o Google para usar o OCR. Clique em "OCR" no topo.','warn');
   openGM();
   return false;
 }
-function updGoogleBanner(){
-  document.querySelectorAll('.g-required-banner').forEach(el=>{
-    el.style.display=gToken?'none':'flex';
-  });
-}
 
-/* ══ SHEETS API HELPERS ══ */
-async function sheetsApiFetch(url,opts){
-  // Retry com backoff exponencial: rede instável ou rate-limit (429/5xx)
-  const MAX=3;let delay=800;
-  for(let i=0;i<=MAX;i++){
-    try{
-      const r=await fetch(url,opts);
-      if((r.status===429||r.status>=500)&&i<MAX){await new Promise(res=>setTimeout(res,delay));delay*=2;continue;}
-      return r;
-    }catch(e){
-      if(i===MAX)throw e;
-      await new Promise(res=>setTimeout(res,delay));delay*=2;
-    }
-  }
-}
-async function sheetsGet(range){
-  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
-  const r=await sheetsApiFetch(url,{headers:{Authorization:`Bearer ${gToken}`}});
-  if(r.status===401){gClearToken();silentRefreshToken();updGoogleUI();throw new Error('auth');}
-  if(!r.ok)throw new Error('GET '+r.status);
-  return r.json();
-}
-async function sheetsClear(sheet){
-  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheet)}:clear`;
-  const r=await sheetsApiFetch(url,{method:'POST',headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'}});
-  if(r.status===401){gClearToken();silentRefreshToken();updGoogleUI();throw new Error('auth');}
-  if(!r.ok)throw new Error('CLEAR '+r.status);
-}
-async function sheetsUpdate(range,values){
-  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`;
-  const r=await sheetsApiFetch(url,{method:'PUT',headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},body:JSON.stringify({range,majorDimension:'ROWS',values})});
-  if(r.status===401){gClearToken();silentRefreshToken();updGoogleUI();throw new Error('auth');}
-  if(!r.ok)throw new Error('UPDATE '+r.status);
-}
-// Sync mais seguro: escreve primeiro, depois limpa linhas excedentes (zero gap de perda de dados)
-async function sheetsReplace(sheet,headers,objRows){
-  const allRows=toRows(headers,objRows); // [headers, ...dataRows]
-  await sheetsUpdate(sheet,allRows);
-  // Limpa linhas antigas que possam ter sobrado (best-effort — não crítico)
-  const nextRow=allRows.length+1;
-  try{
-    await sheetsApiFetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheet+'!A'+nextRow+':Z50000')}:clear`,
-      {method:'POST',headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'}}
-    );
-  }catch(e){}
-}
+/* ══ SERIALIZE / DESERIALIZE (mantido para compatibilidade de backup/import) ══ */
 
 /* ══ SERIALIZE / DESERIALIZE ══ */
 const OBR_H=['id','nome','endereco','status','orcamento','area','inicio','previsao','socio','casasJson'];
@@ -2269,98 +2182,6 @@ function fromRows(rows,nums=[]){
 }
 
 /* ══ SYNC TO SHEETS ══ */
-async function syncToSheets(){
-  if(!gToken||gSyncing)return;
-  gPendingWrite=false; // assumindo a escrita — limpar flag antes de começar
-  gSyncing=true;
-  try{
-    await Promise.all([
-      sheetsReplace('OBRAS',OBR_H,ST.obras.map(o=>({...o,casasJson:JSON.stringify((normCasas(o),o.casas||[]))}))),
-      sheetsReplace('LANCAMENTOS',LAN_H,ST.lancamentos),
-      sheetsReplace('PENDENCIAS',PEN_H,ST.pendencias),
-      sheetsReplace('RECORRENTES',REC_H,ST.recorrentes),
-      sheetsReplace('DOCUMENTOS',DOC_H,ST.documentos),
-      sheetsReplace('AUDITLOG',AUD_H,ST.auditLog||[]),
-    ]);
-    gLastSync=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    updGoogleUI();updSyncTime();
-  }catch(e){
-    gPendingWrite=true; // escrita falhou — marcar para retry
-    console.error('syncToSheets:',e);
-    if(e.message==='auth')toast('Sessão Google expirada. Reconecte.','warn');
-    else toast('Erro ao sincronizar: '+e.message,'error');
-    updSyncBtnState('error');
-  }finally{gSyncing=false;if(gToken)updGoogleUI();}
-}
-
-/* ══ SYNC FROM SHEETS ══ */
-async function syncFromSheets(){
-  if(!gToken||gSyncing)return;
-  // Se há escrita pendente, enviar primeiro e aguardar próximo ciclo para ler
-  if(gPendingWrite){syncToSheets();return;}
-  gSyncing=true;
-  try{
-    const [obras,lancs,pends,recs,docs,audit]=await Promise.all([
-      sheetsGet('OBRAS').catch(()=>null),
-      sheetsGet('LANCAMENTOS').catch(()=>null),
-      sheetsGet('PENDENCIAS').catch(()=>null),
-      sheetsGet('RECORRENTES').catch(()=>null),
-      sheetsGet('DOCUMENTOS').catch(()=>null),
-      sheetsGet('AUDITLOG').catch(()=>null),
-    ]);
-    // Se o usuário salvou ENQUANTO líamos o Sheets, não sobrescrever os dados locais
-    if(gPendingWrite){console.log('syncFromSheets: descartando leitura — escrita local pendente');return;}
-    // null = erro de rede (não toca no ST local)
-    // objeto sem .values = tab vazia no Sheets → zera ST local também
-    const localL=[...ST.lancamentos];
-    const localD=[...ST.documentos];
-    if(obras!==null){
-      if(obras&&obras.values){
-        const localO=[...ST.obras];
-        const arr=fromRows(obras.values,['orcamento','area']);
-        arr.forEach(o=>{
-          if(o.casasJson){try{o.casas=JSON.parse(o.casasJson);}catch(e){o.casas=null;}}
-          if(!o.casas||!o.casas.length){const loc=localO.find(x=>x.id===o.id);if(loc&&loc.casas)o.casas=loc.casas;}
-          delete o.casasJson;normCasas(o);
-        });
-        ST.obras=arr;
-      } else {ST.obras=[];ST.obraAtiva=null;}
-    }
-    if(lancs!==null){
-      if(lancs&&lancs.values){
-        const arr=fromRows(lancs.values,['valor','qty']);
-        ST.lancamentos=arr.map(l=>{const loc=localL.find(x=>x.id===l.id);if(loc&&loc.fileB64)l.fileB64=loc.fileB64;return l;});
-      } else {ST.lancamentos=[];}
-    }
-    if(pends!==null)ST.pendencias=(pends&&pends.values)?fromRows(pends.values):[];
-    if(recs!==null){
-      if(recs&&recs.values){ST.recorrentes=fromRows(recs.values,['valor','dia']);ST.recorrentes.forEach(r=>{r.ativo=r.ativo==='true';});}
-      else{ST.recorrentes=[];}
-    }
-    if(docs!==null){
-      if(docs&&docs.values){
-        const arr=fromRows(docs.values);
-        ST.documentos=arr.map(d=>{const loc=localD.find(x=>x.id===d.id);if(loc&&loc.fileBase64)d.fileBase64=loc.fileBase64;return d;});
-      } else{ST.documentos=[];}
-    }
-    if(audit!==null)ST.auditLog=(audit&&audit.values)?fromRows(audit.values):[];
-    // Garantir integridade após sync
-    cleanOrphans();
-    // Salvar no localStorage SEM chamar syncToSheets (dados já vieram do Sheets)
-    try{localStorage.setItem(SK,JSON.stringify({__v:SCHEMA_VER,obras:ST.obras,lancamentos:ST.lancamentos,pendencias:ST.pendencias,recorrentes:ST.recorrentes,documentos:ST.documentos,obraAtiva:ST.obraAtiva,google:ST.google,auditLog:ST.auditLog||[]}));}catch(e){}
-    gLastSync=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    updGoogleUI();updSyncTime();
-    updSB();updKpis();updGC();updBanners();
-    renderT();renderCal();renderDocs();
-    checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
-  }catch(e){
-    console.error('syncFromSheets:',e);
-  }finally{
-    gSyncing=false;
-    // Se o usuário salvou durante a leitura, enviar agora
-    if(gPendingWrite&&gToken)syncToSheets();
-  }
-}
 
 /* ══ SMART FINANCIAL INPUTS ══ */
 function parseKM(str){
@@ -2395,16 +2216,14 @@ function initFinInputs(root){
 /* ══ STORAGE ══ */
 function save(){
   try{
-    const data={__v:SCHEMA_VER,obras:ST.obras,lancamentos:ST.lancamentos,pendencias:ST.pendencias,recorrentes:ST.recorrentes,documentos:ST.documentos,obraAtiva:ST.obraAtiva,google:ST.google,auditLog:ST.auditLog||[]};
+    const data={__v:SCHEMA_VER,obras:ST.obras,lancamentos:ST.lancamentos,pendencias:ST.pendencias,recorrentes:ST.recorrentes,documentos:ST.documentos,obraAtiva:ST.obraAtiva,auditLog:ST.auditLog||[]};
     localStorage.setItem(SK,JSON.stringify(data));
   }catch(e){
     if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'){
       toast('⚠️ Armazenamento local quase cheio. Exporte um backup.','warn');
     }
   }
-  // Marcar como escrita pendente — se syncToSheets for bloqueado, será reexecutado
-  gPendingWrite=true;
-  if(gToken&&!gSyncing)syncToSheets();
+  saveToFirestore();
 }
 function load(){
   try{
@@ -2413,7 +2232,7 @@ function load(){
     const d=JSON.parse(r);
     // Schema migration
     if(!d.__v||d.__v<SCHEMA_VER){migrateSchema(d);}
-    Object.assign(ST,{obras:d.obras||[],lancamentos:d.lancamentos||[],pendencias:d.pendencias||[],recorrentes:d.recorrentes||[],documentos:d.documentos||[],obraAtiva:d.obraAtiva||null,google:d.google||{sheetsUrl:'',driveUrl:''},auditLog:d.auditLog||[]});
+    Object.assign(ST,{obras:d.obras||[],lancamentos:d.lancamentos||[],pendencias:d.pendencias||[],recorrentes:d.recorrentes||[],documentos:d.documentos||[],obraAtiva:d.obraAtiva||null,auditLog:d.auditLog||[]});
     // Limpeza de integridade: remover dados órfãos de obras deletadas
     cleanOrphans();
   }catch(e){console.warn('Load error:',e);}
@@ -3507,7 +3326,6 @@ function onNFComp(e){
   }
 }
 async function salvarNFMulti(){
-  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
@@ -3517,27 +3335,22 @@ async function salvarNFMulti(){
   const statusPag=document.querySelector('input[name="nf-pag"]:checked')?.value||'pago';
   const dup=ST.lancamentos.find(l=>l.nfNum===nfNum&&l.obraId===ob.id);
   if(dup&&!confirm(`NF "${nfNum}" já existe nesta obra. Inserir mesmo assim?`))return;
-  // Upload comprovante para Drive
-  let driveUrl='',driveId='';
-  if(cFile&&gToken){
-    toast('Enviando comprovante para o Drive...','info');
-    const nome='LUPA-NF-'+slug(nfNum)+'-'+slug(nfForn)+'-'+data+extOf(cFile.name);
-    const result=await uploadToDrive(cFile,nome,ob.id,'comprovante');
-    if(result){driveUrl=result.url;driveId=result.id;}
+  // Upload comprovante para Cloudinary
+  let cloudinaryUrl='';
+  if(cFile){
+    toast('Enviando comprovante...','info');
+    const result=await uploadToCloudinary(cFile,ob.id,'comprovante');
+    if(result)cloudinaryUrl=result.url;
   }
   nfItems.forEach(x=>{
     ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:nfCat,subcat:'',desc:norm(x.desc),valor:x.valor,
       data,obs:'NF: '+nfNum,comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',
-      driveUrl,driveId,fornecedor:nfForn,statusPag,nfNum,extra:x.extra||{},ts:Date.now()});
+      cloudinaryUrl,fornecedor:nfForn,statusPag,nfNum,extra:x.extra||{},ts:Date.now()});
   });
   addAudit('NF inserida','NF '+nfNum+' — '+nfItems.length+' item(s) · '+nfCat);
   const total=nfItems.reduce((a,x)=>a+x.valor,0);
-  if(cFile&&driveUrl){
-    toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! ☁️ Comprovante no Drive.','success');
-  } else if(cFile){
-    const nome='LUPA-NF-'+slug(nfNum)+'-'+slug(nfForn)+'-'+data+extOf(cFile.name);
-    autoDownload(cFile,nome);
-    toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! 📥 NF arquivada em Downloads.','success');
+  if(cFile&&cloudinaryUrl){
+    toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! ☁️ Comprovante na nuvem.','success');
   } else {
     toast(nfItems.length+' item(s) · '+fmt(total)+' da NF '+nfNum+' salvos!','success');
   }
@@ -3657,7 +3470,7 @@ function renderT(keepPage=false){
   </div>`:'';
   w.innerHTML=`<table role="grid"><thead><tr>${thBtn('data','Data')}${thBtn('cat','Categoria')}${thBtn('desc','Descrição')}<th class="no-sort">Subcategoria</th><th class="no-sort">Qtd</th>${thBtn('valor','Valor')}<th class="no-sort">Pagamento</th><th class="no-sort">Comprovante</th><th class="no-sort" style="width:80px">Ações</th></tr></thead><tbody>${pageItems.map(l=>{
     const isPago=(l.statusPag||'pago')==='pago';
-    const compCell=l.driveUrl?`<a href="${l.driveUrl}" target="_blank" style="color:var(--brand3);font-size:11px" title="Ver no Google Drive">☁️ ${(l.comprovante||'Drive').slice(0,18)}</a>`:l.fileB64?`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" style="color:var(--green);font-size:11px" title="Baixar ${l.comprovante}">📎 ${(l.comprovante||'arquivo').slice(0,20)}</a>`:(l.comprovante?`<span style="color:var(--green);font-size:11px">📎 ${l.comprovante}</span>`:'<span style="color:var(--text3)">—</span>');
+    const compCell=l.cloudinaryUrl?`<a href="${l.cloudinaryUrl}" target="_blank" style="color:var(--brand3);font-size:11px" title="Ver comprovante">☁️ ${(l.comprovante||'Ver').slice(0,18)}</a>`:l.fileB64?`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" style="color:var(--green);font-size:11px" title="Baixar ${l.comprovante}">📎 ${(l.comprovante||'arquivo').slice(0,20)}</a>`:(l.comprovante?`<span style="color:var(--green);font-size:11px">📎 ${l.comprovante}</span>`:'<span style="color:var(--text3)">—</span>');
     const obraNm=todasObras?ST.obras.find(o=>o.id===l.obraId)?.nome:'';
     const catClr=CC[l.cat]||'#888';
     return `<tr style="border-left:3px solid ${catClr}">
@@ -3942,26 +3755,20 @@ function onDocF(e){
   }
 }
 async function salvarDoc(){
-  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const tipo=document.getElementById('d-tipo').value.trim();if(!tipo){toast('Informe o tipo.','error');return;}
   if(!docF){toast('Selecione um arquivo.','error');return;}
-  // Upload para Drive
-  let driveUrl='',driveId='';
-  if(gToken){
-    toast('Enviando documento para o Drive...','info');
-    const nomeArqDoc='LUPA-DOC-'+slug(tipo)+'-'+slug(document.getElementById('d-data').value||td())+extOf(docF.name);
-    const result=await uploadToDrive(docF,nomeArqDoc,ob.id,'documento');
-    if(result){driveUrl=result.url;driveId=result.id;}
-  }
-  ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:document.getElementById('d-data').value,validade:document.getElementById('d-validade').value||'',fileName:docF.name,fileB64:docFB64||'',driveUrl,driveId,ts:Date.now()});
+  // Upload para Cloudinary
+  let cloudinaryUrl='';
+  toast('Enviando documento...','info');
+  const result=await uploadToCloudinary(docF,ob.id,'documento');
+  if(result)cloudinaryUrl=result.url;
+  ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:document.getElementById('d-data').value,validade:document.getElementById('d-validade').value||'',fileName:docF.name,fileB64:docFB64||'',cloudinaryUrl,ts:Date.now()});
   addAudit('Documento salvo',tipo);
-  if(driveUrl){
-    toast('Documento salvo! ☁️ Arquivado no Google Drive.','success');
+  if(cloudinaryUrl){
+    toast('Documento salvo! ☁️ Arquivado na nuvem.','success');
   } else {
-    const nomeArqDoc='LUPA-DOC-'+slug(tipo)+'-'+slug(document.getElementById('d-data').value||td())+extOf(docF.name);
-    autoDownload(docF,nomeArqDoc);
-    toast('Documento salvo! 📥 Arquivado em Downloads.','success');
+    toast('Documento salvo!','success');
   }
   save();
   ['d-tipo','d-desc','d-data','d-validade'].forEach(id=>document.getElementById(id).value='');
@@ -3997,7 +3804,7 @@ function renderDocs(){
       ${expBadge?`<div style="margin-top:6px">${expBadge}</div>`:''}
       ${d.fileName?`<div style="font-size:9.5px;color:var(--text3);word-break:break-all;margin-top:2px">📎 ${d.fileName}</div>`:''}
       <div class="doc-card-acts" style="margin-top:8px">
-        ${d.driveUrl?`<a href="${d.driveUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Ver ${d.tipo} no Drive">☁️ Drive</a>`:d.fileB64?`<a href="${d.fileB64}" download="${d.fileName||d.tipo}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Baixar ${d.tipo}">⬇ Baixar</a>`:''}
+        ${d.cloudinaryUrl?`<a href="${d.cloudinaryUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Ver ${d.tipo}">☁️ Ver</a>`:d.fileB64?`<a href="${d.fileB64}" download="${d.fileName||d.tipo}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Baixar ${d.tipo}">⬇ Baixar</a>`:''}
         <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${d.tipo}">🗑 Remover</button>
       </div>
     </div>`;
@@ -4247,23 +4054,15 @@ async function confirmarLimparTudo(){
   await limparTudo();
 }
 async function limparTudo(){
-  // 1. Limpar dados do Google Sheets (mantém Google conectado)
-  if(gToken){
-    const savedToken=gToken; // salvar token antes — sheetsClear pode nullar em caso de 401
-    toast('Limpando dados da planilha...','info');
+  // 1. Limpar Firestore
+  if(fbDb&&fbReady){
+    toast('Limpando dados da nuvem...','info');
     try{
-      await Promise.all([
-        sheetsClear('OBRAS'),
-        sheetsClear('LANCAMENTOS'),
-        sheetsClear('PENDENCIAS'),
-        sheetsClear('RECORRENTES'),
-        sheetsClear('DOCUMENTOS'),
-        sheetsClear('AUDITLOG'),
-      ]);
-    }catch(e){ console.warn('Erro ao limpar Sheets:',e); }
-    // Restaurar token após clear (garante reconexão após reload — inclusive no mobile)
-    gSaveToken(savedToken);
-    updGoogleUI();
+      await fbDb.doc('lupa_data/main').set({
+        obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],auditLog:[],obraAtiva:null,
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }catch(e){console.warn('Erro ao limpar Firestore:',e);}
   }
   // 2. Limpar localStorage
   try{
@@ -4271,8 +4070,8 @@ async function limparTudo(){
     localStorage.removeItem('lupa_theme');
     localStorage.removeItem('lupa_active_page');
   }catch(e){}
-  // 3. Resetar estado em memória (Google permanece conectado)
-  ST={obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],auditLog:[],obraAtiva:null,google:{sheetsUrl:'',driveUrl:''}};
+  // 3. Resetar estado em memória
+  ST={obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],auditLog:[],obraAtiva:null};
   toast('Todos os dados foram apagados. Recarregando...','info');
   setTimeout(function(){ location.reload(); }, 1500);
 }
@@ -4296,7 +4095,7 @@ function executarImport(){
   const lancInvalido=d.lancamentos.find(l=>typeof l.valor!=='number'&&typeof l.valor!=='string');
   if(lancInvalido){toast('Backup contém lançamentos com formato inválido.','error');return;}
   if(!confirm('Substituir TODOS os dados atuais pelo conteúdo do backup? Esta ação não pode ser desfeita.'))return;
-  Object.assign(ST,{obras:d.obras||[],lancamentos:d.lancamentos||[],pendencias:d.pendencias||[],recorrentes:d.recorrentes||[],documentos:d.documentos||[],obraAtiva:d.obraAtiva||null,google:d.google||{sheetsUrl:'',driveUrl:''}});
+  Object.assign(ST,{obras:d.obras||[],lancamentos:d.lancamentos||[],pendencias:d.pendencias||[],recorrentes:d.recorrentes||[],documentos:d.documentos||[],obraAtiva:d.obraAtiva||null});
   save();toast('Backup importado com sucesso!');closeImport();
   updSB();updKpis();renderDash();renderT();renderCal();renderDocs();updBanners();updGC();
 }
@@ -4304,9 +4103,7 @@ function executarImport(){
 /* ══ GOOGLE ══ */
 function openGM(){document.getElementById('g-modal').classList.add('open');updGoogleUI();}
 function closeGM(){document.getElementById('g-modal').classList.remove('open');}
-function updGC(){updGoogleUI();}
 function salvarGoogle(){}
-function abrirSheets(){window.open('https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID,'_blank');}
 function abrirDrive(){}
 
 /* ══ AUDITORIA ══ */
@@ -4573,22 +4370,11 @@ function initApp(){
   renderT();renderCal();renderDocs();
   checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
   document.querySelectorAll('.nav-item[tabindex]').forEach(el=>{el.addEventListener('keydown',e=>{if(e.key==='Enter')el.click();});});
-  // Inicializar Google Auth (com delay para garantir que o script GIS carregou)
   initFinInputs();
+  // Firebase — banco de dados em tempo real (substitui Google Sheets)
+  initFirebase();
+  // Google Auth opcional — apenas para OCR de notas fiscais
   setTimeout(initGoogleAuth, 1500);
-
-  // Multi-device sync: ao retornar ao app, busca dados frescos do Sheets
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState==='visible' && gToken && !gSyncing){
-      syncFromSheets();
-    }
-  });
-
-  // Polling a cada 30s — garante que celular e computador ficam sempre alinhados
-  setInterval(() => {
-    if(gToken && !gSyncing) syncFromSheets();
-  }, 30000);
-
   initIdleTimer();
 }
 
