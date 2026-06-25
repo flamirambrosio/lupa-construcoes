@@ -770,6 +770,11 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .btn-sync .sync-time{font-size:10px;opacity:.8}
 .gsync-btn.error{background:rgba(231,76,60,.2);border-color:rgba(231,76,60,.5);color:#FF8A7A}
 .gsync-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;box-shadow:0 0 5px currentColor}
+.fb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .4s}
+.fb-dot.connecting{background:#F1C40F;box-shadow:0 0 6px #F1C40F;animation:pulse 1.2s infinite}
+.fb-dot.ok{background:#27AE60;box-shadow:0 0 6px #27AE60}
+.fb-dot.error{background:#E74C3C;box-shadow:0 0 6px #E74C3C}
+.fb-status-btn{display:flex;align-items:center;gap:5px;padding:5px 9px;border-radius:8px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);font-size:11px;font-weight:600;color:rgba(255,255,255,.55);cursor:default;white-space:nowrap}
 .sync-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;margin-bottom:14px;background:var(--green-bg);border:1px solid rgba(39,174,96,.25);border-radius:8px;font-size:11.5px;color:var(--green)}
 .sync-bar.warn{background:var(--yellow-bg);border-color:rgba(241,196,15,.25);color:var(--yellow)}
 .sync-bar.error{background:var(--red-bg);border-color:rgba(231,76,60,.25);color:var(--red)}
@@ -1189,6 +1194,9 @@ input,select,textarea{min-height:44px}
     <button class="btn-conn gsync-btn" id="btn-sheets" onclick="openGM()" aria-label="Google OCR" style="display:none">
       <span class="gsync-dot"></span><span id="gsync-label">●</span>
     </button>
+    <div class="fb-status-btn" id="fb-status-btn" title="Firebase (banco de dados)">
+      <span class="fb-dot connecting" id="fb-dot"></span><span id="fb-label">DB</span>
+    </div>
     <div class="tb-btns">
       <button class="btn-conn gsync-btn" id="btn-sheets-desk" onclick="openGM()" aria-label="Google OCR">
         <span class="gsync-dot"></span><span id="gsync-label-desk">OCR</span>
@@ -2080,22 +2088,39 @@ async function uploadToCloudinary(file, obraId, tipo){
 }
 
 /* ══ FIREBASE FIRESTORE ══ */
+function updFbDot(state){
+  const dot=document.getElementById('fb-dot');
+  const lbl=document.getElementById('fb-label');
+  if(!dot)return;
+  dot.className='fb-dot '+state;
+  lbl.textContent=state==='ok'?'DB ✓':state==='error'?'DB ✗':'DB';
+}
+
 async function initFirebase(){
+  updFbDot('connecting');
   try{
     const app=firebase.initializeApp(FIREBASE_CONFIG);
     fbDb=firebase.firestore(app);
+    fbDb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
     await firebase.auth(app).signInAnonymously();
     startFirestoreListener();
-  }catch(e){console.error('Firebase init:',e);}
+  }catch(e){
+    console.error('Firebase init:',e);
+    updFbDot('error');
+  }
 }
 
 function startFirestoreListener(){
   if(fbUnsub)fbUnsub();
   fbUnsub=fbDb.doc('lupa_data/main').onSnapshot(snap=>{
+    updFbDot('ok');
     if(fbWriting)return;
     if(!snap.exists)return;
     mergeFromFirestore(snap.data());
-  },err=>console.error('Firestore listener:',err));
+  },err=>{
+    console.error('Firestore listener:',err);
+    updFbDot('error');
+  });
   fbReady=true;
 }
 
