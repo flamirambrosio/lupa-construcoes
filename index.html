@@ -2150,6 +2150,11 @@ function mergeFromFirestore(data){
   updSB();updKpis();updGC();updBanners();
   renderT();renderCal();renderDocs();
   checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
+  const _pg=localStorage.getItem('lupa_active_page')||'dashboard';
+  if(_pg==='dashboard')renderDash();
+  else if(_pg==='pendencias'){renderLP();renderRC();}
+  else if(_pg==='cadastro')renderOA();
+  else if(_pg==='auditoria')renderAudit();
 }
 
 async function saveToFirestore(){
