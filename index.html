@@ -673,6 +673,8 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .obra-banner .obra-banner-nome{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
   /* Data — remover estilo nativo e igualar visualmente aos outros inputs */
   input[type="date"]{-webkit-appearance:none!important;appearance:none!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;height:44px!important;min-height:0!important;padding:8px 11px!important;background:var(--bg3)!important;border:1px solid var(--border2)!important;border-radius:7px!important;color:var(--text)!important;font-size:16px!important;font-family:'DM Sans',sans-serif!important}
+  /* iOS Safari: força alinhamento à esquerda no valor exibido do date input */
+  input[type="date"]::-webkit-date-and-time-value{text-align:left!important;font-size:14px;padding:0;margin:0;min-height:1.4em}
   /* NF form mobile */
   .nf-cat-row{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:6px}
   .nf-cat-tile{padding:8px 6px!important;font-size:11px!important}
@@ -782,7 +784,18 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #lanc-form-card.sheet-open .obra-banner-end{display:none}
   #lanc-form-card.sheet-open .obra-banner-plate{flex:1;padding:4px 10px;border:none;border-left:3px solid var(--brand2);background:none;border-radius:0}
   #lanc-form-card.sheet-open .obra-banner-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #lanc-form-card.sheet-open .obra-banner-warn{font-size:10px;padding:4px 8px;flex-shrink:0}
+  #lanc-form-card.sheet-open .obra-banner-warn{display:none}
+  /* categoria: scroll horizontal no sheet — evita 2 linhas */
+  #lanc-form-card.sheet-open .cat-picker{
+    display:flex!important;flex-wrap:nowrap!important;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;gap:8px!important;
+    padding-bottom:6px;grid-template-columns:unset!important
+  }
+  #lanc-form-card.sheet-open .cat-picker::-webkit-scrollbar{display:none}
+  #lanc-form-card.sheet-open .cat-tile{
+    flex:0 0 80px;min-width:80px;padding:10px 6px 8px!important
+  }
   /* sticky save bar at bottom of sheet */
   #lanc-form-card.sheet-open .form-footer-bar{
     position:sticky;bottom:0;
