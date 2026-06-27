@@ -765,7 +765,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* bottom sheet mode */
   #lanc-form-card.sheet-open{
     display:block;position:fixed;bottom:0;left:0;right:0;
-    max-height:92dvh;overflow-y:auto;z-index:499;
+    max-height:94dvh;overflow-y:auto;z-index:499;
     border-radius:18px 18px 0 0;border:none;
     margin:0!important;
     animation:sheetUp .3s cubic-bezier(.4,0,.2,1);
@@ -795,6 +795,16 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #lanc-form-card.sheet-open .cat-picker::-webkit-scrollbar{display:none}
   #lanc-form-card.sheet-open .cat-tile{
     flex:0 0 80px;min-width:80px;padding:10px 6px 8px!important
+  }
+  /* espaço abaixo das categorias para não colar no rodapé do sheet */
+  #lanc-form-card.sheet-open .cat-picker{
+    padding-top:4px!important;
+    padding-bottom:8px!important;
+    margin-bottom:calc(env(safe-area-inset-bottom) + 20px)!important
+  }
+  /* itens NF: espaço antes do footer sticky para conteúdo não sumir atrás */
+  #lanc-form-card.sheet-open #nf-items-wrap>.fsec{
+    padding-bottom:calc(env(safe-area-inset-bottom) + 130px)
   }
   /* sticky save bar at bottom of sheet */
   #lanc-form-card.sheet-open .form-footer-bar{
