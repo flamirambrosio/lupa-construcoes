@@ -764,7 +764,8 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #lanc-form-card.sheet-open{
     display:block;position:fixed;bottom:0;left:0;right:0;
     max-height:92dvh;overflow-y:auto;z-index:499;
-    border-radius:18px 18px 0 0;border:none;margin:0;
+    border-radius:18px 18px 0 0;border:none;
+    margin:0!important;
     animation:sheetUp .3s cubic-bezier(.4,0,.2,1);
     -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     padding-bottom:env(safe-area-inset-bottom)
@@ -780,7 +781,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #lanc-form-card.sheet-open .obra-banner-top{display:none}
   #lanc-form-card.sheet-open .obra-banner-end{display:none}
   #lanc-form-card.sheet-open .obra-banner-plate{flex:1;padding:4px 10px;border:none;border-left:3px solid var(--brand2);background:none;border-radius:0}
-  #lanc-form-card.sheet-open .obra-banner-name{font-size:13px}
+  #lanc-form-card.sheet-open .obra-banner-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #lanc-form-card.sheet-open .obra-banner-warn{font-size:10px;padding:4px 8px;flex-shrink:0}
   /* sticky save bar at bottom of sheet */
   #lanc-form-card.sheet-open .form-footer-bar{
@@ -2593,6 +2594,12 @@ function updBanners(){
 function openLancSheet(){
   const card=document.getElementById('lanc-form-card');
   const bd=document.getElementById('lanc-backdrop');
+  // will-change:transform no .page cria containing block quebrado para position:fixed
+  // animation-fill-mode:forwards mantém transform:translateY(0) no .page
+  // Esse transform (mesmo identity) cria containing block para position:fixed
+  // Única solução: setar animation:none para limpar o fill mode
+  const page=document.getElementById('page-lancamentos');
+  if(page){page.style.animation='none';page.style.willChange='auto';}
   if(card){card.classList.add('sheet-open');card.scrollTop=0;}
   if(bd)bd.classList.add('show');
   document.body.style.overflow='hidden';
@@ -2603,6 +2610,8 @@ function closeLancSheet(){
   if(card)card.classList.remove('sheet-open');
   if(bd)bd.classList.remove('show');
   document.body.style.overflow='';
+  const page=document.getElementById('page-lancamentos');
+  if(page){page.style.animation='';page.style.willChange='';}
 }
 function updKpis(){
   const ob=getOA();
