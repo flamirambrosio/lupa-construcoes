@@ -746,6 +746,53 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .budget-alert-text{font-size:11px}
   .budget-alert-text strong{font-size:11.5px}
 }
+/* ═══ LANCAMENTO BOTTOM SHEET ═══ */
+#lanc-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:498;display:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);transition:opacity .25s}
+#lanc-backdrop.show{display:block}
+.sheet-handle-bar{display:none;flex-direction:column;align-items:center;padding:10px 18px 10px;border-bottom:1px solid var(--border);background:var(--surface);border-radius:18px 18px 0 0;margin:-18px -18px 14px;position:sticky;top:0;z-index:10;flex-shrink:0}
+.sheet-drag-pill{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin-bottom:10px}
+.sheet-hdr-row{display:flex;align-items:center;justify-content:space-between;width:100%}
+.sheet-hdr-title{font-size:15px;font-weight:700;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif}
+.sheet-close-btn{background:rgba(255,255,255,.08);border:1px solid var(--border2);color:var(--text2);font-size:14px;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.sheet-close-btn:hover{background:rgba(255,255,255,.14)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@media(max-width:900px){
+  /* form card hidden on mobile by default — opens as bottom sheet */
+  #lanc-form-card{display:none}
+  #btn-novo-lanc{display:inline-flex!important}
+  /* bottom sheet mode */
+  #lanc-form-card.sheet-open{
+    display:block;position:fixed;bottom:0;left:0;right:0;
+    max-height:92dvh;overflow-y:auto;z-index:499;
+    border-radius:18px 18px 0 0;border:none;margin:0;
+    animation:sheetUp .3s cubic-bezier(.4,0,.2,1);
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding-bottom:env(safe-area-inset-bottom)
+  }
+  #lanc-form-card.sheet-open .sheet-handle-bar{display:flex}
+  /* compact obra banner inside sheet */
+  #lanc-form-card.sheet-open .obra-banner{
+    flex-direction:row;align-items:center;gap:8px;
+    padding:8px 0;margin-bottom:10px;
+    background:none;border:none;border-bottom:1px solid var(--border);border-radius:0
+  }
+  #lanc-form-card.sheet-open .obra-banner::before{display:none}
+  #lanc-form-card.sheet-open .obra-banner-top{display:none}
+  #lanc-form-card.sheet-open .obra-banner-end{display:none}
+  #lanc-form-card.sheet-open .obra-banner-plate{flex:1;padding:4px 10px;border:none;border-left:3px solid var(--brand2);background:none;border-radius:0}
+  #lanc-form-card.sheet-open .obra-banner-name{font-size:13px}
+  #lanc-form-card.sheet-open .obra-banner-warn{font-size:10px;padding:4px 8px;flex-shrink:0}
+  /* sticky save bar at bottom of sheet */
+  #lanc-form-card.sheet-open .form-footer-bar{
+    position:sticky;bottom:0;
+    background:var(--bg2);
+    border-top:1px solid var(--border2);
+    padding:10px 0 calc(12px + env(safe-area-inset-bottom));
+    margin:8px -18px -18px;
+    padding-left:18px;padding-right:18px;
+    z-index:5;box-shadow:0 -6px 20px rgba(0,0,0,.4)
+  }
+}
 /* ═══ LOGIN ═══ */
 .login-ov{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;transition:background .3s}
 .login-error{background:var(--red-bg);border:1px solid rgba(231,76,60,.3);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--red);margin-bottom:12px;display:none;text-align:left}
@@ -1295,10 +1342,18 @@ input,select,textarea{min-height:44px}
 <div id="page-lancamentos" class="page" role="main">
   <div class="page-hdr">
     <div><div class="page-title">Lançamentos</div><div class="page-sub">Registre gastos por categoria</div></div>
+    <button id="btn-novo-lanc" onclick="openLancSheet()" class="btn" style="display:none;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;border:none;font-size:13px;font-weight:600;padding:0 20px;height:40px;border-radius:9px;box-shadow:0 3px 10px rgba(39,174,96,.3)" aria-label="Nova NF">+ Nova NF</button>
   </div>
   <div id="apagar-alert-wrap"></div>
 
-  <div class="card" style="margin-bottom:14px">
+  <div class="card" id="lanc-form-card" style="margin-bottom:14px">
+    <div class="sheet-handle-bar">
+      <div class="sheet-drag-pill"></div>
+      <div class="sheet-hdr-row">
+        <span class="sheet-hdr-title">📋 Nova NF</span>
+        <button class="sheet-close-btn" onclick="closeLancSheet()" aria-label="Fechar formulário">✕</button>
+      </div>
+    </div>
     <div class="obra-banner" role="status" aria-live="polite">
       <div class="obra-banner-top">
         <span class="obra-banner-badge">🏗️ Obra Ativa</span>
@@ -1403,7 +1458,7 @@ input,select,textarea{min-height:44px}
             <span id="nf-comp-nm" style="font-size:11.5px;color:var(--text2)"></span>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
-            <button class="btn" onclick="limparL()" style="height:34px;padding:0 18px;font-size:12.5px;color:var(--text2)">✕ Cancelar</button>
+            <button class="btn" onclick="limparL();closeLancSheet()" style="height:34px;padding:0 18px;font-size:12.5px;color:var(--text2)">✕ Cancelar</button>
             <button id="btn-salvar-nf" onclick="salvarNFMulti()" style="height:36px;padding:0 24px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif">💾 Salvar NF — 0 itens</button>
           </div>
         </div>
@@ -2524,7 +2579,7 @@ document.addEventListener('click',e=>{
 
 /* keyboard shortcuts */
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeNF();closeEditLanc();closeEditPend();closeGM();closeImport();closeGS();}
+  if(e.key==='Escape'){closeNF();closeEditLanc();closeEditPend();closeGM();closeImport();closeGS();closeLancSheet();}
   if((e.ctrlKey||e.metaKey)&&e.key==='p'){e.preventDefault();window.print();}
   if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();document.getElementById('gs-input').focus();}
 });
@@ -2533,6 +2588,21 @@ function updBanners(){
   const ob=getOA();const nm=ob?ob.nome:'—';const end=ob?ob.endereco:'—';
   ['conf-ob-nm','pend-ob-nm','doc-ob-nm'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=nm;});
   const ce=document.getElementById('conf-ob-end');if(ce)ce.textContent=end?'📍 '+end:'';
+}
+/* ── Bottom sheet lançamento ── */
+function openLancSheet(){
+  const card=document.getElementById('lanc-form-card');
+  const bd=document.getElementById('lanc-backdrop');
+  if(card){card.classList.add('sheet-open');card.scrollTop=0;}
+  if(bd)bd.classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeLancSheet(){
+  const card=document.getElementById('lanc-form-card');
+  const bd=document.getElementById('lanc-backdrop');
+  if(card)card.classList.remove('sheet-open');
+  if(bd)bd.classList.remove('show');
+  document.body.style.overflow='';
 }
 function updKpis(){
   const ob=getOA();
@@ -3001,7 +3071,7 @@ function salvarL(){
   } else {
     toast('Lançamento salvo!');
   }
-  save();limparL();renderT();updKpis();checkBudgetAlert();updAPagar();
+  save();limparL();closeLancSheet();renderT();updKpis();checkBudgetAlert();updAPagar();
 }
 /* ══ MODO LANÇAMENTOS ══ */
 let lancMode='nf',nfItems=[],nfCat='';
@@ -3420,7 +3490,7 @@ async function salvarNFMulti(){
     toast(nfItems.length+' item(s) · '+fmt(total)+' da NF '+nfNum+' salvos!','success');
   }
   nfItems=[];nfCat='';
-  limparL();save();renderT();updKpis();checkBudgetAlert();updAPagar();
+  limparL();closeLancSheet();save();renderT();updKpis();checkBudgetAlert();updAPagar();
 }
 function selectCat(cat,el){
   document.getElementById('f-cat').value=cat;
@@ -4467,5 +4537,6 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+<div id="lanc-backdrop" onclick="closeLancSheet()"></div>
 </body>
 </html>
