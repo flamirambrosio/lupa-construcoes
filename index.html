@@ -3555,7 +3555,7 @@ function openEditLanc(id){
 function closeEditLanc(){document.getElementById('edit-lanc-modal').classList.remove('open');}
 function salvarEditLanc(){
   if(_savingEL)return;_savingEL=true;setTimeout(()=>_savingEL=false,1500);
-  if(!requireGoogle()){_savingEL=false;return;}
+  // Google não é necessário para editar — apenas para OCR
   const id=document.getElementById('el-id').value;
   const l=ST.lancamentos.find(x=>x.id===id);if(!l){_savingEL=false;return;}
   const v=parseFinVal(document.getElementById('el-valor'));
@@ -3646,7 +3646,6 @@ function updSl(){const n=parseInt(document.getElementById('p-sl').value);documen
 function togPF(){const e=document.getElementById('pf-wrap');e.style.display=e.style.display==='none'?'block':'none';if(e.style.display==='block')updSl();}
 function togRF(){const e=document.getElementById('rf-wrap');e.style.display=e.style.display==='none'?'block':'none';}
 function salvarP(){
-  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const tit=document.getElementById('p-tit').value.trim();if(!tit){toast('Informe o título.','error');return;}
   const dias=parseInt(document.getElementById('p-sl').value);const prazo=addD(td(),dias);
@@ -3659,7 +3658,6 @@ function salvarP(){
   renderCal();renderLP();renderDash();checkOverdueBanner();
 }
 function salvarR(){
-  if(!requireGoogle())return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const nm=document.getElementById('r-nm').value.trim();if(!nm){toast('Informe o nome.','error');return;}
   const dia=parseInt(document.getElementById('r-sl').value);
@@ -3740,7 +3738,6 @@ function openEditPend(id){
 }
 function closeEditPend(){document.getElementById('edit-pend-modal').classList.remove('open');}
 function salvarEditPend(){
-  if(!requireGoogle())return;
   const id=document.getElementById('ep-id').value;
   const p=ST.pendencias.find(x=>x.id===id);if(!p)return;
   const titulo=document.getElementById('ep-titulo').value.trim();
@@ -3951,7 +3948,7 @@ function editO(id){
 }
 function salvarO(){
   if(_savingO)return;_savingO=true;setTimeout(()=>_savingO=false,1500);
-  if(!requireGoogle()){_savingO=false;return;}
+  // Google não é necessário para salvar obra — apenas para OCR
   const nm=norm(document.getElementById('cfg-nm').value),end=document.getElementById('cfg-end').value.trim();
   if(!nm||!end){_savingO=false;toast('Nome e endereço são obrigatórios.','error');return;}
   const id=document.getElementById('cfg-id').value||uid();
