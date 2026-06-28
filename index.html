@@ -1490,7 +1490,14 @@ input,select,textarea{min-height:44px}
           </div>
         </div>
       </div>
-      <button id="btn-salvar-rapido" onclick="salvarRapido()" style="margin-top:14px">⚡ Salvar Rápido</button>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:14px">
+        <label for="rl-comp" class="btn-ocr" title="Foto do comprovante" aria-label="Anexar foto do comprovante" style="flex-shrink:0">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </label>
+        <input type="file" id="rl-comp" style="display:none" accept="image/*" capture="environment" onchange="onRLComp(event)">
+        <span id="rl-comp-nm" style="font-size:10.5px;color:var(--green);font-weight:600;flex:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px"></span>
+        <button id="btn-salvar-rapido" onclick="salvarRapido()" style="flex:1">⚡ Salvar Rápido</button>
+      </div>
     </div>
 
     <!-- ═══ LANÇAMENTOS (NF) ═══ -->
@@ -2770,6 +2777,18 @@ function setRLPag(val){
   document.getElementById('rl-opt-apagar').classList.toggle('sel-apagar',val==='a_pagar');
   document.getElementById('rl-opt-apagar').classList.remove('sel-pago');
 }
+let rlFile=null,rlFileB64=null;
+function onRLComp(e){
+  rlFile=e.target.files[0];rlFileB64=null;
+  const nm=document.getElementById('rl-comp-nm');
+  if(rlFile){
+    if(nm)nm.textContent='📎 '+rlFile.name.substring(0,18)+(rlFile.name.length>18?'…':'');
+    if(rlFile.size<=2097152)readB64(rlFile,b64=>{rlFileB64=b64;});
+    else toast('Imagem maior que 2MB — salvo apenas o nome.','warn');
+  } else {
+    if(nm)nm.textContent='';
+  }
+}
 async function salvarRapido(){
   const ob=getOA();if(!ob){toast('Selecione uma obra antes de lançar.','error');return;}
   const val=parseFinVal(document.getElementById('rl-val'));
@@ -2777,16 +2796,26 @@ async function salvarRapido(){
   if(!rlCat){toast('Selecione a categoria.','error');return;}
   const desc=(document.getElementById('rl-desc').value||'').trim()||({material:'Material',funcionario:'Funcionário',burocracia:'Burocracia',terreno:'Terreno',outro:'Despesa'}[rlCat]);
   const statusPag=document.querySelector('input[name="rl-pag"]:checked')?.value||'pago';
+  let cloudUrl='';
+  if(rlFile){
+    try{
+      toast('Enviando comprovante...','info');
+      const res=await uploadToCloudinary(rlFile,ob.id,'comprovante');
+      if(res)cloudUrl=res;
+    }catch(e){}
+  }
   ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:rlCat,subcat:'',desc:norm(desc),valor:val,
-    data:td(),obs:'Lançamento rápido',comprovante:'',fileB64:'',cloudinaryUrl:'',
+    data:td(),obs:'Lançamento rápido',comprovante:rlFile?rlFile.name:'',fileB64:rlFileB64||'',cloudinaryUrl:cloudUrl,
     fornecedor:'',statusPag,nfNum:'',extra:{},ts:Date.now()});
   addAudit('Lançamento rápido',desc+' — '+fmt(val));
-  // Save to recent history
   saveRecentEntry(rlCat, desc, val);
   toast(`✅ ${desc} · ${fmt(val)} salvo!`,'success');
   // Reset
   document.getElementById('rl-val').value='';
   document.getElementById('rl-desc').value='';
+  const rlCompEl=document.getElementById('rl-comp');if(rlCompEl)rlCompEl.value='';
+  const rlCompNm=document.getElementById('rl-comp-nm');if(rlCompNm)rlCompNm.textContent='';
+  rlFile=null;rlFileB64=null;
   rlCat='';
   document.querySelectorAll('[data-rlcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   setRLPag('pago');
@@ -3844,7 +3873,9 @@ function limparL(){
   const btn=document.getElementById('btn-salvar-nf');if(btn)btn.textContent='💾 Salvar NF — 0 itens';
   const tb=document.getElementById('nf-total-bar');if(tb)tb.style.display='none';
   setNFPag('pago');
-  clrM();cFile=null;cFileB64=null;
+  clrM();cFile=null;cFileB64=null;rlFile=null;rlFileB64=null;
+  const rlci=document.getElementById('rl-comp');if(rlci)rlci.value='';
+  const rlcn=document.getElementById('rl-comp-nm');if(rlcn)rlcn.textContent='';
   // Limpar OCR e restaurar botões
   window._ocrItens=null;
   const op=document.getElementById('ocr-preview');if(op){op.classList.remove('open');op.innerHTML='';}
