@@ -512,7 +512,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .nf-total-val .tcurr{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--text3);letter-spacing:.2px}
 .nf-total-val .tamt{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.5px;font-variant-numeric:tabular-nums}
 /* ═══ CAT PICKER ═══ */
-.cat-picker{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:4px;width:100%;box-sizing:border-box}
+.cat-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;width:100%;box-sizing:border-box}
 .cat-tile{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px 10px;background:var(--surface2);border:2px solid var(--border2);border-radius:12px;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;user-select:none;-webkit-user-select:none;min-width:0;overflow:hidden}
 .cat-tile:hover{background:var(--surface3);border-color:rgba(41,128,185,.5);transform:translateY(-1px)}
 .cat-tile.active{border-color:var(--brand2);background:rgba(41,128,185,.1);box-shadow:0 0 0 3px rgba(41,128,185,.12)}
@@ -716,10 +716,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* Grupos de botões — empilhar em coluna no mobile */
   .obra-btns-group{flex-direction:column;gap:8px}
   .obra-btns-group .btn{width:100%!important;justify-content:center;min-height:44px;font-size:14px}
-  .form-footer-bar{flex-direction:column;align-items:stretch;gap:8px}
-  .form-footer-bar>div{width:100%}
-  .form-footer-bar .btn-salvar-doc,.form-footer-bar #btn-salvar-nf{width:100%!important;justify-content:center!important;box-sizing:border-box}
-  .form-footer-bar>button{width:100%!important;justify-content:center!important}
+  .form-footer-bar .btn-salvar-doc{width:100%!important;justify-content:center!important;box-sizing:border-box}
   .form-btns-row{flex-direction:column;gap:8px}
   .form-btns-row .btn{width:100%!important;justify-content:center;min-height:44px}
   /* Pendências — filtros em grade 2×2 */
@@ -796,16 +793,14 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #lanc-form-card.sheet-open .obra-banner-plate{flex:1;padding:4px 10px;border:none;border-left:3px solid var(--brand2);background:none;border-radius:0}
   #lanc-form-card.sheet-open .obra-banner-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #lanc-form-card.sheet-open .obra-banner-warn{display:none}
-  /* categoria: scroll horizontal no sheet — evita 2 linhas */
+  /* categoria: grid 3 colunas no sheet — todas visíveis, sem scroll horizontal */
   #lanc-form-card.sheet-open .cat-picker{
-    display:flex!important;flex-wrap:nowrap!important;
-    overflow-x:auto;-webkit-overflow-scrolling:touch;
-    scrollbar-width:none;gap:8px!important;
-    padding-bottom:6px;grid-template-columns:unset!important
+    display:grid!important;grid-template-columns:repeat(3,1fr)!important;
+    flex-wrap:unset!important;overflow-x:unset!important;
+    gap:8px!important;padding-bottom:6px
   }
-  #lanc-form-card.sheet-open .cat-picker::-webkit-scrollbar{display:none}
   #lanc-form-card.sheet-open .cat-tile{
-    flex:0 0 80px;min-width:80px;padding:10px 6px 8px!important
+    min-width:0;padding:10px 6px 8px!important
   }
   /* espaço abaixo das categorias para não colar no rodapé do sheet */
   #lanc-form-card.sheet-open .cat-picker{
@@ -831,7 +826,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 /* ═══ MODO RÁPIDO ═══ */
 .mode-switch{display:flex;gap:0;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:3px;margin-bottom:14px}
 .mode-sw-btn{flex:1;padding:7px 10px;border:none;background:transparent;color:var(--text2);font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
-.mode-sw-btn.active{background:var(--surface2);color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.25)}
+.mode-sw-btn.active{background:var(--surface2);color:var(--brand3);box-shadow:0 1px 6px rgba(0,0,0,.25);font-weight:700}
 #mode-rapido{display:none}
 .rapido-val-wrap{position:relative;margin-bottom:16px}
 .rapido-val-lbl{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
@@ -1533,7 +1528,7 @@ input,select,textarea{min-height:44px}
         </div>
       </div>
 
-      <div class="fsec-title">Categoria desta nota fiscal — escolha uma vez</div>
+      <div class="fsec-title" id="fsec-cat-title">Categoria desta nota fiscal — escolha uma vez</div>
       <div class="cat-picker" role="radiogroup">
         <button type="button" class="cat-tile" data-nfcat="material" onclick="selectNFCat('material',this)"><span class="cat-tile-ico">🧱</span><span class="cat-tile-label">Materiais</span></button>
         <button type="button" class="cat-tile" data-nfcat="funcionario" onclick="selectNFCat('funcionario',this)"><span class="cat-tile-ico">👷</span><span class="cat-tile-label">Funcionários</span></button>
@@ -1574,17 +1569,13 @@ input,select,textarea{min-height:44px}
             <span class="nf-total-val" id="nf-total-val">R$ 0,00</span>
           </div>
         </div>
-        <div class="form-footer-bar">
-          <div style="display:flex;align-items:center;gap:8px">
-            <!-- Anexar manual — some quando OCR foi usado -->
-            <label for="nf-comp" id="lbl-nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 14px">📎 Anexar NF</label>
-            <input type="file" id="nf-comp" style="display:none" accept="image/*,application/pdf" onchange="onNFComp(event)">
-            <span id="nf-comp-nm" style="font-size:11.5px;color:var(--text2)"></span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <button class="btn" onclick="limparL();closeLancSheet()" style="height:34px;padding:0 18px;font-size:12.5px;color:var(--text2)">✕ Cancelar</button>
-            <button id="btn-salvar-nf" onclick="salvarNFMulti()" style="height:36px;padding:0 24px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif">💾 Salvar NF — 0 itens</button>
-          </div>
+        <div class="form-footer-bar" style="display:flex;align-items:center;gap:8px">
+          <button class="btn" onclick="limparL();closeLancSheet()" style="height:34px;padding:0 14px;font-size:12.5px;color:var(--text2);flex-shrink:0">✕</button>
+          <!-- Anexar manual — some quando OCR foi usado -->
+          <label for="nf-comp" id="lbl-nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 12px;flex-shrink:0" title="Anexar NF">📎</label>
+          <input type="file" id="nf-comp" style="display:none" accept="image/*,application/pdf" onchange="onNFComp(event)">
+          <span id="nf-comp-nm" style="font-size:11px;color:var(--text2);flex:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px"></span>
+          <button id="btn-salvar-nf" onclick="salvarNFMulti()" style="flex:1;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif">⚠️ Adicione itens para salvar</button>
         </div>
       </div>
     </div>
@@ -3633,7 +3624,10 @@ function selectNFCat(cat,el){
   document.getElementById('nf-row-mat').style.display=cat==='material'?'':'none';
   document.getElementById('nf-row-gen').style.display=cat!=='material'?'':'none';
   const title=document.getElementById('nf-items-title');
-  if(title)title.textContent='Itens da NF — '+({material:'🧱 Materiais',funcionario:'👷 Funcionários',burocracia:'📋 Burocracia',terreno:'🏡 Terreno',outro:'📦 Outros'}[cat]||cat);
+  const catNames={material:'🧱 Materiais',funcionario:'👷 Funcionários',burocracia:'📋 Burocracia',terreno:'🏡 Terreno',outro:'📦 Outros'};
+  if(title)title.textContent='Itens da NF — '+(catNames[cat]||cat);
+  const secTitle=document.getElementById('fsec-cat-title');
+  if(secTitle)secTitle.textContent='Categoria: '+(catNames[cat]||cat)+' ✓';
   // Se tem itens do OCR, importa automaticamente
   if(window._ocrItens&&window._ocrItens.length){
     nfItems=window._ocrItens.map(it=>({id:uid(),desc:norm(it.desc),valor:it.valor,extra:{}}));
@@ -3761,9 +3755,11 @@ function renderNFItems(){
   </div>`;}).join('');
   const btn=document.getElementById('btn-salvar-nf');
   if(btn){
-    btn.textContent=nfItems.length?`💾 Salvar NF — ${nfItems.length} item${nfItems.length!==1?'s':''} · ${fmt(total)}`:'💾 Salvar NF — 0 itens';
+    btn.textContent=nfItems.length?`💾 Salvar NF — ${nfItems.length} item${nfItems.length!==1?'s':''} · ${fmt(total)}`:'⚠️ Adicione itens para salvar';
     btn.style.background=nfItems.length?'linear-gradient(135deg,#27AE60,#1E8449)':'linear-gradient(135deg,#7F8C8D,#6C7A7D)';
     btn.style.boxShadow=nfItems.length?'0 3px 12px rgba(39,174,96,.35)':'none';
+    btn.style.cursor=nfItems.length?'pointer':'not-allowed';
+    btn.style.opacity=nfItems.length?'1':'0.75';
   }
 }
 function onNFComp(e){
