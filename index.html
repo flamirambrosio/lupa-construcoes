@@ -1490,14 +1490,15 @@ input,select,textarea{min-height:44px}
           </div>
         </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:14px">
-        <label for="rl-comp" class="btn-ocr" title="Foto do comprovante" aria-label="Anexar foto do comprovante" style="flex-shrink:0">
-          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        </label>
-        <input type="file" id="rl-comp" style="display:none" accept="image/*" capture="environment" onchange="onRLComp(event)">
-        <span id="rl-comp-nm" style="font-size:10.5px;color:var(--green);font-weight:600;flex:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px"></span>
-        <button id="btn-salvar-rapido" onclick="salvarRapido()" style="flex:1">⚡ Salvar Rápido</button>
-      </div>
+      <div style="padding-bottom:80px"></div><!-- espaço para footer sticky não cobrir conteúdo -->
+    </div>
+    <!-- footer sticky do modo Rápido — igual ao NF Completa -->
+    <div class="form-footer-bar" id="rapido-footer-bar">
+      <input type="file" id="rl-comp" style="display:none" accept="image/*" capture="environment" onchange="onRLComp(event)">
+      <label for="rl-comp" class="btn btn-sm" style="cursor:pointer;height:36px;padding:0 14px;gap:6px;flex-shrink:0;font-size:12.5px" title="Foto do comprovante (obrigatório)">
+        📷 <span id="rl-comp-nm" style="font-size:11px;color:var(--green);font-weight:600;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span><span id="rl-comp-placeholder">Foto <span style="color:var(--red)">*</span></span>
+      </label>
+      <button id="btn-salvar-rapido" onclick="salvarRapido()" style="flex:1;height:36px;font-size:13px;padding:0;display:flex;align-items:center;justify-content:center">⚡ Salvar Rápido</button>
     </div>
 
     <!-- ═══ LANÇAMENTOS (NF) ═══ -->
@@ -2763,6 +2764,8 @@ function setLancMode(mode){
   document.getElementById('mode-nf').style.display=isRapido?'none':'block';
   document.getElementById('msw-rapido').classList.toggle('active',isRapido);
   document.getElementById('msw-nf').classList.toggle('active',!isRapido);
+  const rf=document.getElementById('rapido-footer-bar');
+  if(rf)rf.style.display=isRapido?'flex':'none';
   if(isRapido){renderRecentesRapido();setTimeout(()=>document.getElementById('rl-val').focus(),80);}
 }
 function selectRLCat(cat,el){
@@ -2781,12 +2784,16 @@ let rlFile=null,rlFileB64=null;
 function onRLComp(e){
   rlFile=e.target.files[0];rlFileB64=null;
   const nm=document.getElementById('rl-comp-nm');
+  const ph=document.getElementById('rl-comp-placeholder');
   if(rlFile){
-    if(nm)nm.textContent='📎 '+rlFile.name.substring(0,18)+(rlFile.name.length>18?'…':'');
+    if(nm)nm.textContent='✓ ';
+    if(ph)ph.textContent='';
     if(rlFile.size<=2097152)readB64(rlFile,b64=>{rlFileB64=b64;});
     else toast('Imagem maior que 2MB — salvo apenas o nome.','warn');
+    toast('📷 Foto anexada!','success');
   } else {
     if(nm)nm.textContent='';
+    if(ph)ph.textContent='Foto';
   }
 }
 async function salvarRapido(){
@@ -2794,6 +2801,7 @@ async function salvarRapido(){
   const val=parseFinVal(document.getElementById('rl-val'));
   if(!val||val<=0){toast('Informe o valor.','error');document.getElementById('rl-val').focus();return;}
   if(!rlCat){toast('Selecione a categoria.','error');return;}
+  if(!rlFile){toast('📷 Anexe uma foto do comprovante.','error');document.getElementById('rl-comp').click();return;}
   const desc=(document.getElementById('rl-desc').value||'').trim()||({material:'Material',funcionario:'Funcionário',burocracia:'Burocracia',terreno:'Terreno',outro:'Despesa'}[rlCat]);
   const statusPag=document.querySelector('input[name="rl-pag"]:checked')?.value||'pago';
   let cloudUrl='';
@@ -3876,6 +3884,7 @@ function limparL(){
   clrM();cFile=null;cFileB64=null;rlFile=null;rlFileB64=null;
   const rlci=document.getElementById('rl-comp');if(rlci)rlci.value='';
   const rlcn=document.getElementById('rl-comp-nm');if(rlcn)rlcn.textContent='';
+  const rlph=document.getElementById('rl-comp-placeholder');if(rlph)rlph.textContent='Foto';
   // Limpar OCR e restaurar botões
   window._ocrItens=null;
   const op=document.getElementById('ocr-preview');if(op){op.classList.remove('open');op.innerHTML='';}
