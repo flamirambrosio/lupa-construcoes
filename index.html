@@ -814,6 +814,11 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #lanc-form-card.sheet-open #nf-items-wrap>.fsec{
     padding-bottom:calc(env(safe-area-inset-bottom) + 130px)
   }
+  /* no mobile em sheet, autocomplete abre para CIMA evitando clipping pelo overflow */
+  #lanc-form-card.sheet-open #nf-mat-dd,
+  #lanc-form-card.sheet-open #nf-gen-dd{
+    top:auto;bottom:calc(100% + 4px);margin-top:0;margin-bottom:0;max-height:180px
+  }
   /* sticky save bar at bottom of sheet */
   #lanc-form-card.sheet-open .form-footer-bar{
     position:sticky;bottom:0;
@@ -3673,7 +3678,16 @@ function selectNFCat(cat,el){
     nfItems=[];
   }
   renderNFItems();
-  setTimeout(()=>{const f=document.getElementById(cat==='material'?'nf-mat-s':'nf-gen-desc');if(f)f.focus();},120);
+  // Auto-scroll: foca no input primeiro, depois ajusta posição (evita footer cobrir seção de itens)
+  setTimeout(()=>{
+    const f=document.getElementById(cat==='material'?'nf-mat-s':'nf-gen-desc');
+    if(f)f.focus();
+    setTimeout(()=>{
+      const card=document.getElementById('lanc-form-card');
+      const itemsWrap=document.getElementById('nf-items-wrap');
+      if(card&&itemsWrap)card.scrollTop=Math.max(0,itemsWrap.offsetTop-60);
+    },80);
+  },150);
 }
 /* Busca material para modo NF */
 function oNFMat(){fNFMat2('');}
