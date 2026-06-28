@@ -793,15 +793,17 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   #lanc-form-card.sheet-open .obra-banner-plate{flex:1;padding:4px 10px;border:none;border-left:3px solid var(--brand2);background:none;border-radius:0}
   #lanc-form-card.sheet-open .obra-banner-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #lanc-form-card.sheet-open .obra-banner-warn{display:none}
-  /* categoria: grid 3 colunas no sheet — todas visíveis, sem scroll horizontal */
+  /* categoria: 5 em linha, ícones menores — cabe no mobile sem scroll */
   #lanc-form-card.sheet-open .cat-picker{
-    display:grid!important;grid-template-columns:repeat(3,1fr)!important;
+    display:grid!important;grid-template-columns:repeat(5,1fr)!important;
     flex-wrap:unset!important;overflow-x:unset!important;
-    gap:8px!important;padding-bottom:6px
+    gap:6px!important;padding-bottom:6px
   }
   #lanc-form-card.sheet-open .cat-tile{
-    min-width:0;padding:10px 6px 8px!important
+    min-width:0;padding:8px 2px 6px!important
   }
+  #lanc-form-card.sheet-open .cat-tile-ico{font-size:18px!important}
+  #lanc-form-card.sheet-open .cat-tile-label{font-size:9px!important}
   /* espaço abaixo das categorias para não colar no rodapé do sheet */
   #lanc-form-card.sheet-open .cat-picker{
     padding-top:4px!important;
@@ -1424,10 +1426,7 @@ input,select,textarea{min-height:44px}
       <div class="sheet-drag-pill"></div>
       <div class="sheet-hdr-row">
         <span class="sheet-hdr-title">📋 Nova NF</span>
-        <div style="display:flex;gap:8px;align-items:center">
-          <label for="ocr-input" class="sheet-ocr-btn" title="Escanear NF com câmera" aria-label="Escanear nota fiscal com câmera">📷</label>
-          <button class="sheet-close-btn" onclick="closeLancSheet()" aria-label="Fechar formulário">✕</button>
-        </div>
+        <button class="sheet-close-btn" onclick="closeLancSheet()" aria-label="Fechar formulário">✕</button>
       </div>
     </div>
     <div class="obra-banner" role="status" aria-live="polite">
