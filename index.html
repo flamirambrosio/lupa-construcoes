@@ -1010,6 +1010,33 @@ input,select,textarea{min-height:44px}
   .login-box{padding:24px 16px}
   .tw{font-size:11px}
 }
+/* ══ LANÇAMENTOS — CARDS ══ */
+.lanc-cards{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.lanc-card{background:var(--surface2);border-radius:10px;padding:12px 14px;border-left:4px solid #888}
+.lanc-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.lanc-card-desc{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.3}
+.lanc-card-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.lanc-card-meta{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.lanc-card-meta span{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lanc-card-valor{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap}
+.lanc-card-actions{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.lanc-card-comp{font-size:11.5px;color:var(--brand3);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lanc-act-btn{background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 9px;font-size:11.5px;cursor:pointer;color:var(--text2);font-family:'DM Sans',sans-serif}
+.lanc-act-btn.pay{color:var(--green);border-color:rgba(39,174,96,.4)}
+.lanc-act-btn.del{color:var(--red);border-color:rgba(231,76,60,.3)}
+.lanc-summary-bar{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);margin-bottom:8px;flex-wrap:wrap}
+.lanc-summary-bar strong{color:var(--text)}
+.lanc-pg-ctrl{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0;font-size:12px;color:var(--text2);margin-top:4px}
+/* ══ CAT CHIPS ══ */
+.cat-chips-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:8px 0 4px}
+.cat-chips-wrap::-webkit-scrollbar{display:none}
+.cat-chips{display:flex;gap:6px;padding:2px 0}
+.cat-chip{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.cat-chip.active{background:rgba(41,128,185,.15);border-color:var(--brand2);color:var(--brand2);font-weight:600}
+/* ══ COMPACT A PAGAR BANNER ══ */
+.apagar-compact{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:9px;background:rgba(241,196,15,.1);border:1.5px solid rgba(241,196,15,.35);margin-bottom:10px;cursor:pointer;text-align:left;width:100%;box-sizing:border-box}
+.apagar-compact-text{flex:1;font-size:12.5px;color:var(--text);line-height:1.4}
+.apagar-compact-action{font-size:11.5px;color:var(--brand2);font-weight:600;white-space:nowrap;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -1421,8 +1448,8 @@ input,select,textarea{min-height:44px}
 <!-- LANÇAMENTOS -->
 <div id="page-lancamentos" class="page" role="main">
   <div class="page-hdr">
-    <div><div class="page-title">Lançamentos</div><div class="page-sub">Registre gastos por categoria</div></div>
-    <button id="btn-novo-lanc" onclick="openLancSheet()" class="btn" style="display:none;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;border:none;font-size:13px;font-weight:600;padding:0 20px;height:40px;border-radius:9px;box-shadow:0 3px 10px rgba(39,174,96,.3)" aria-label="Nova NF">+ Nova NF</button>
+    <div><div class="page-title">Lançamentos</div></div>
+    <button id="btn-novo-lanc" onclick="openLancSheet()" class="btn" style="display:none;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;border:none;font-size:13px;font-weight:600;padding:0 20px;height:40px;border-radius:9px;box-shadow:0 3px 10px rgba(39,174,96,.3)" aria-label="Novo lançamento">+ Lançar</button>
   </div>
   <div id="apagar-alert-wrap"></div>
 
@@ -1596,19 +1623,33 @@ input,select,textarea{min-height:44px}
   <!-- HISTÓRICO -->
   <div class="card">
     <div class="card-hdr">
-      <div class="card-title">Histórico de Lançamentos</div>
-      <button class="btn btn-sm" onclick="exportCSV()" aria-label="Exportar CSV">⬇ CSV</button>
+      <div class="card-title">Histórico</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-sm" onclick="exportCSV()" aria-label="Exportar CSV" title="Exportar CSV" style="padding:0 10px;font-size:11.5px">⬇ CSV</button>
+      </div>
     </div>
     <div class="tbl-filters" role="search">
       <div class="tbl-filters-row1">
         <input type="text" id="tbl-search" placeholder="🔍 Buscar..." oninput="renderT()" aria-label="Buscar lançamentos">
         <button class="btn-filtros-toggle" onclick="togFiltros()" id="btn-filtros" aria-expanded="false" aria-controls="filtros-panel">⚙ Filtros <span class="fil-badge" id="fil-badge" style="display:none">0</span></button>
       </div>
+      <!-- Chips de categoria — sempre visíveis -->
+      <div class="cat-chips-wrap">
+        <div class="cat-chips" id="lanc-cat-chips">
+          <button class="cat-chip active" data-cat="" onclick="setCatFil(this,'')">Todas</button>
+          <button class="cat-chip" data-cat="material" onclick="setCatFil(this,'material')">🧱 Materiais</button>
+          <button class="cat-chip" data-cat="funcionario" onclick="setCatFil(this,'funcionario')">👷 Funcionários</button>
+          <button class="cat-chip" data-cat="burocracia" onclick="setCatFil(this,'burocracia')">📋 Burocracia</button>
+          <button class="cat-chip" data-cat="terreno" onclick="setCatFil(this,'terreno')">🏡 Terreno</button>
+          <button class="cat-chip" data-cat="outro" onclick="setCatFil(this,'outro')">📦 Outros</button>
+        </div>
+      </div>
       <div class="filtros-panel" id="filtros-panel" style="display:none">
-        <select id="fil-cat" onchange="renderT();updFilBadge()">
+        <!-- Select oculto — mantido para compatibilidade com renderT() -->
+        <select id="fil-cat" style="display:none" onchange="renderT();updFilBadge()">
           <option value="">Todas as categorias</option>
-          <option value="material">🧱 Materiais</option><option value="funcionario">👷 Funcionários</option>
-          <option value="burocracia">📋 Burocracia</option><option value="terreno">🏡 Terreno</option><option value="outro">📦 Outros</option>
+          <option value="material">Materiais</option><option value="funcionario">Funcionários</option>
+          <option value="burocracia">Burocracia</option><option value="terreno">Terreno</option><option value="outro">Outros</option>
         </select>
         <div class="fil-datas">
           <div class="fil-date-grp">
@@ -1620,8 +1661,15 @@ input,select,textarea{min-height:44px}
             <input type="date" id="fil-ate" onchange="renderT();updFilBadge()" title="Até">
           </div>
         </div>
-        <select id="fil-pag" onchange="renderT();updFilBadge()">
-          <option value="">Todos pagamentos</option><option value="pago">✅ Pago</option><option value="a_pagar">⏳ A Pagar</option>
+        <!-- Chips de pagamento -->
+        <div class="cat-chips" style="margin:0">
+          <button class="cat-chip active" id="fil-pag-chip-todos" onclick="setPagFil(this,'')">Todos</button>
+          <button class="cat-chip" id="fil-pag-chip-pago" onclick="setPagFil(this,'pago')">✅ Pago</button>
+          <button class="cat-chip" id="fil-pag-chip-apagar" onclick="setPagFil(this,'a_pagar')">⏳ A Pagar</button>
+        </div>
+        <!-- Select oculto — mantido para compatibilidade -->
+        <select id="fil-pag" style="display:none" onchange="renderT();updFilBadge()">
+          <option value="">Todos pagamentos</option><option value="pago">Pago</option><option value="a_pagar">A Pagar</option>
         </select>
         <div class="fil-row-btns">
           <label class="tbl-fil-todas" id="lbl-todas-obras">
@@ -1632,7 +1680,7 @@ input,select,textarea{min-height:44px}
         </div>
       </div>
     </div>
-    <div class="tw" id="tabela" role="region"></div>
+    <div id="tabela" role="region"></div>
   </div>
 </div>
 
@@ -2981,19 +3029,20 @@ function updAPagar(){
   }
   pill.style.display=n>0?'':'none';
   const tbAP=document.getElementById('tb-apagar');if(tbAP&&!valoresOcultos)tbAP.textContent=fmtS(tot);
-  // Alert banner in lancamentos page
+  // Banner compacto na aba Lançamentos
   const wrap=document.getElementById('apagar-alert-wrap');
   if(wrap){
     if(n>0){
       const obItems=ob?items.filter(l=>l.obraId===ob.id):items;
       const totOb=obItems.reduce((a,l)=>a+l.valor,0);
-      wrap.innerHTML=`<div class="budget-alert" style="background:rgba(241,196,15,.1);border-color:rgba(241,196,15,.35)" role="alert">
-        <div class="budget-alert-icon">⏳</div>
-        <div class="budget-alert-text">
-          <strong style="color:var(--yellow)">${n} lançamento(s) pendente(s) de pagamento</strong> — total geral: <strong>${fmt(tot)}</strong>${ob&&obItems.length?` · nesta obra: <strong>${fmt(totOb)}</strong>`:''}.
-          <span style="font-size:11px;color:var(--text2)">Filtre por <em>A Pagar</em> abaixo para ver todos.</span>
-        </div>
-      </div>`;
+      const valDisplay=ob&&obItems.length?fmt(totOb):fmt(tot);
+      const nDisplay=ob&&obItems.length?obItems.length:n;
+      wrap.innerHTML=`<button class="apagar-compact" onclick="setPagFil(document.getElementById('fil-pag-chip-apagar'),'a_pagar')" role="alert">
+        <span style="font-size:16px;flex-shrink:0">⏳</span>
+        <span class="apagar-compact-text"><strong style="color:var(--yellow)">${nDisplay} a pagar</strong> · <strong>${valDisplay}</strong>${ob&&obItems.length&&n>obItems.length?` <span style="color:var(--text3);font-size:11px">(${n} no total)</span>`:''}
+        </span>
+        <span class="apagar-compact-action">Ver →</span>
+      </button>`;
     } else {
       wrap.innerHTML='';
     }
@@ -3937,6 +3986,14 @@ function limparFiltros(){
   const fp=document.getElementById('fil-pag');if(fp)fp.value='';
   const fto=document.getElementById('fil-todas-obras');if(fto)fto.checked=false;
   document.getElementById('lbl-todas-obras')?.classList.remove('ativa');
+  // Reset cat chips
+  document.querySelectorAll('#lanc-cat-chips .cat-chip').forEach(c=>c.classList.remove('active'));
+  const allChip=document.querySelector('#lanc-cat-chips .cat-chip[data-cat=""]');
+  if(allChip)allChip.classList.add('active');
+  // Reset pag chips
+  document.querySelectorAll('[id^="fil-pag-chip"]').forEach(c=>c.classList.remove('active'));
+  const allPagChip=document.getElementById('fil-pag-chip-todos');
+  if(allPagChip)allPagChip.classList.add('active');
   updFilBadge();
   renderT();
 }
@@ -3962,36 +4019,67 @@ function renderT(keepPage=false){
     if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0;
   });
   const w=document.getElementById('tabela');
-  if(!items.length){w.innerHTML='<p style="padding:13px;color:var(--text3);font-size:12.5px">Nenhum lançamento encontrado.</p>';return;}
-  const totalFil=items.reduce((a,l)=>a+l.valor,0);
-  const aPagar=items.filter(l=>(l.statusPag||'pago')==='a_pagar').reduce((a,l)=>a+l.valor,0);
-  // Paginação
+  if(!items.length){w.innerHTML='<p style="color:var(--text3);text-align:center;padding:24px;font-size:13px">Nenhum lançamento encontrado.</p>';return;}
+  const totalFil=items.reduce((a,l)=>a+(+l.valor||0),0);
+  const aPagar=items.filter(l=>(l.statusPag||'pago')==='a_pagar').reduce((a,l)=>a+(+l.valor||0),0);
   const totalPages=Math.ceil(items.length/LANC_PG)||1;
   if(lancPage>=totalPages)lancPage=totalPages-1;
   const pageItems=items.slice(lancPage*LANC_PG,(lancPage+1)*LANC_PG);
-  function thBtn(col,label){const isCur=sortCol===col;return `<th onclick="sortT('${col}')" class="${isCur?'sort-'+sortDir:''}" aria-sort="${isCur?(sortDir==='asc'?'ascending':'descending'):'none'}">${label}</th>`;}
-  const pgCtrl=totalPages>1?`<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 0;font-size:12px;color:var(--text2)">
+  const summaryBar=`<div class="lanc-summary-bar">
+    <span>${items.length} lançamento${items.length!==1?'s':''}</span>
+    <span style="opacity:.4">·</span>
+    <strong>${fmt(totalFil)}</strong>
+    ${(aPagar>0&&filPag!=='a_pagar')?`<span style="opacity:.4">·</span><span style="color:var(--yellow)">⏳ ${fmt(aPagar)} a pagar</span>`:''}
+  </div>`;
+  const cards=pageItems.map(l=>{
+    const isPago=(l.statusPag||'pago')==='pago';
+    const catClr=CC[l.cat]||'#888';
+    const obraNm=todasObras?ST.obras.find(o=>o.id===l.obraId)?.nome:'';
+    const desc=l.desc||l.descricao||'—';
+    const obsDisplay=(l.obs&&l.obs!=='Lançamento rápido')?l.obs:'';
+    let compBtn='';
+    if(l.cloudinaryUrl)compBtn=`<a href="${l.cloudinaryUrl}" target="_blank" class="lanc-card-comp" title="Ver comprovante">☁️ Ver comprovante</a>`;
+    else if(l.fileB64)compBtn=`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" class="lanc-card-comp">📎 ${esc((l.comprovante||'arquivo').slice(0,28))}</a>`;
+    else if(l.comprovante)compBtn=`<span class="lanc-card-comp">📎 ${esc(l.comprovante.slice(0,28))}</span>`;
+    const meta=[fD(l.data),l.fornecedor?'🏢 '+l.fornecedor:'',l.nfNum?'🧾 '+l.nfNum:'',obraNm?'🏠 '+obraNm:'',l.extra?.qtd?(l.extra.qtd+' '+(l.extra.un||'')):'',obsDisplay].filter(Boolean);
+    return `<div class="lanc-card" style="border-left-color:${catClr}">
+      <div class="lanc-card-top">
+        <span class="badge" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${CL[l.cat]||l.cat}</span>
+        <span class="badge ${isPago?'b-pago':'b-apagar'}">${isPago?'✅ Pago':'⏳ A Pagar'}</span>
+      </div>
+      <div class="lanc-card-desc">${esc(desc)}</div>
+      <div class="lanc-card-bottom">
+        <div class="lanc-card-meta">${meta.map(m=>`<span>${esc(m)}</span>`).join('')}</div>
+        <div class="lanc-card-valor">${fmt(l.valor)}</div>
+      </div>
+      <div class="lanc-card-actions">
+        ${compBtn||'<span class="lanc-card-comp" style="color:var(--text3)">Sem comprovante</span>'}
+        <div style="display:flex;gap:5px;flex-shrink:0">
+          ${!isPago?`<button class="lanc-act-btn pay" onclick="marcarPago('${l.id}')" title="Marcar como pago">✓ Pago</button>`:''}
+          <button class="lanc-act-btn" onclick="openEditLanc('${l.id}')" title="Editar">✏️</button>
+          <button class="lanc-act-btn del" onclick="delL('${l.id}')" title="Remover">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const pgCtrl=totalPages>1?`<div class="lanc-pg-ctrl">
     <button class="btn btn-sm" onclick="lancGoPage(${lancPage-1})" ${lancPage===0?'disabled':''}>← Anterior</button>
-    <span>Página <strong>${lancPage+1}</strong> de <strong>${totalPages}</strong> &nbsp;·&nbsp; ${items.length} lançamento${items.length!==1?'s':''}</span>
+    <span>${lancPage+1}/${totalPages} · ${items.length} item${items.length!==1?'s':''}</span>
     <button class="btn btn-sm" onclick="lancGoPage(${lancPage+1})" ${lancPage>=totalPages-1?'disabled':''}>Próxima →</button>
   </div>`:'';
-  w.innerHTML=`<table role="grid"><thead><tr>${thBtn('data','Data')}${thBtn('cat','Categoria')}${thBtn('desc','Descrição')}<th class="no-sort">Subcategoria</th><th class="no-sort">Qtd</th>${thBtn('valor','Valor')}<th class="no-sort">Pagamento</th><th class="no-sort">Comprovante</th><th class="no-sort" style="width:80px">Ações</th></tr></thead><tbody>${pageItems.map(l=>{
-    const isPago=(l.statusPag||'pago')==='pago';
-    const compCell=l.cloudinaryUrl?`<a href="${l.cloudinaryUrl}" target="_blank" style="color:var(--brand3);font-size:11px" title="Ver comprovante">☁️ ${(l.comprovante||'Ver').slice(0,18)}</a>`:l.fileB64?`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" style="color:var(--green);font-size:11px" title="Baixar ${l.comprovante}">📎 ${(l.comprovante||'arquivo').slice(0,20)}</a>`:(l.comprovante?`<span style="color:var(--green);font-size:11px">📎 ${l.comprovante}</span>`:'<span style="color:var(--text3)">—</span>');
-    const obraNm=todasObras?ST.obras.find(o=>o.id===l.obraId)?.nome:'';
-    const catClr=CC[l.cat]||'#888';
-    return `<tr style="border-left:3px solid ${catClr}">
-    <td><strong>${fD(l.data)}</strong>${l.nfNum?`<div style="font-size:9.5px;color:var(--blue)">🧾 ${l.nfNum}</div>`:''}${obraNm?`<div style="font-size:9px;color:var(--text3)">🏠 ${obraNm}</div>`:''}</td>
-    <td><span class="badge" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${CL[l.cat]||l.cat}</span></td>
-    <td><strong>${l.desc||l.descricao||'—'}</strong>${l.fornecedor?`<div style="font-size:10px;color:var(--brand3)">🏢 ${l.fornecedor}</div>`:''}${l.obs?`<div style="font-size:10.5px;color:var(--text2)">${l.obs.slice(0,50)}</div>`:''}</td>
-    <td style="color:var(--text2);font-size:11px">${l.subcat||'—'}</td>
-    <td style="font-size:11px">${l.extra&&l.extra.qtd?l.extra.qtd+' '+(l.extra.un||''):'—'}</td>
-    <td><div class="tdm">${fmtHtml(l.valor)}</div></td>
-    <td><span class="badge ${isPago?'b-pago':'b-apagar'}">${isPago?'✅ Pago':'⏳ A Pagar'}</span></td>
-    <td>${compCell}</td>
-    <td><div class="act-grp">${!isPago?`<button class="act-pay" onclick="marcarPago('${l.id}')" title="Marcar como Pago" aria-label="Marcar como pago">✓</button>`:''}
-    <button onclick="openEditLanc('${l.id}')" title="Editar" aria-label="Editar lançamento">✏️</button><button class="act-del" onclick="delL('${l.id}')" title="Remover" aria-label="Remover lançamento">🗑</button></div></td>
-  </tr>`;}).join('')}</tbody><tfoot><tr><td colspan="5" style="font-weight:600;color:var(--text)">${totalPages>1?`Mostrando ${pageItems.length} de ${items.length} lançamentos`:items.length+' lançamento'+(items.length!==1?'s':'')}</td><td><div class="tdm">${fmtHtml(totalFil)}</div></td><td colspan="3" style="font-size:10.5px;color:var(--yellow)">${aPagar>0?'⏳ '+fmt(aPagar)+' a pagar':''}</td></tr></tfoot></table>${pgCtrl}`;
+  w.innerHTML=summaryBar+`<div class="lanc-cards">${cards}</div>`+pgCtrl;
+}
+function setCatFil(el,cat){
+  document.querySelectorAll('#lanc-cat-chips .cat-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('fil-cat').value=cat;
+  renderT();updFilBadge();
+}
+function setPagFil(el,pag){
+  document.querySelectorAll('[id^="fil-pag-chip"]').forEach(c=>c.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('fil-pag').value=pag;
+  renderT();updFilBadge();
 }
 function lancGoPage(n){const max=Math.ceil(ST.lancamentos.length/LANC_PG)-1;lancPage=Math.max(0,Math.min(n,max));renderT(true);}
 
