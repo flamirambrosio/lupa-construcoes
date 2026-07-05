@@ -1,0 +1,21 @@
+# Segredos e credenciais — nunca commitar
+.env
+.env.local
+.env.*.local
+*.secret.*
+*.key
+*.pem
+credentials/
+secrets/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Dependências (caso venham a existir)
+node_modules/
+
+# Editores
+.vscode/
+.idea/
+*.swp
