@@ -2208,7 +2208,9 @@ let loginAttempts=0,loginLockUntil=0;
 const FIREBASE_CONFIG={apiKey:"AIzaSyDS--CAn2z8HldfoX1iw09MWQnoYppR6OY",authDomain:"lupa-facilities.firebaseapp.com",projectId:"lupa-facilities",storageBucket:"lupa-facilities.firebasestorage.app",messagingSenderId:"73278242506",appId:"1:73278242506:web:0745201ed92bd71b3abe33"};
 const CLOUDINARY_CLOUD='dxbiyenud';
 const CLOUDINARY_PRESET='lupa_upload';
-let fbDb=null,fbUnsub=null,fbReady=false,fbWriting=false;
+const FB_DEV_MODE=location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.protocol==='file:';
+const FB_DOC_PATH=FB_DEV_MODE?'lupa_data/dev':'lupa_data/main';
+let fbDb=null,fbUnsub=null,fbReady=false,fbWriting=false,fbSavePending=false;
 let valoresOcultos=false;
 
 /* ══ GOOGLE OCR CONFIG (opcional — só para OCR de notas fiscais) ══ */
@@ -2326,17 +2328,19 @@ function updFbDot(state){
   const bar=document.getElementById('fb-loading-bar');
   if(!dot)return;
   dot.className='fb-dot '+state;
+  const icon=FB_DEV_MODE?'🧪 DEV':'☁';
   if(state==='ok'){
     const now=new Date();
     const t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-    lbl.textContent='☁ '+t;
+    lbl.textContent=icon+' '+t;
     if(bar)bar.classList.remove('active');
   } else {
-    lbl.textContent='☁';
+    lbl.textContent=icon;
     if(bar)bar.classList.add('active');
   }
   const btn=document.getElementById('fb-status-btn');
-  if(btn)btn.title=state==='ok'?'Sincronizado com a nuvem':state==='error'?'Sem conexão com a nuvem — verifique sua internet':'Conectando à nuvem...';
+  const baseTitle=state==='ok'?'Sincronizado com a nuvem':state==='error'?'Sem conexão com a nuvem — verifique sua internet':'Conectando à nuvem...';
+  if(btn)btn.title=FB_DEV_MODE?baseTitle+' (MODO DEV — não afeta produção)':baseTitle;
 }
 
 /* ══ OCULTAR/REVELAR VALORES FINANCEIROS ══ */
@@ -2392,7 +2396,7 @@ async function initFirebase(){
 
 function startFirestoreListener(){
   if(fbUnsub)fbUnsub();
-  fbUnsub=fbDb.doc('lupa_data/main').onSnapshot(snap=>{
+  fbUnsub=fbDb.doc(FB_DOC_PATH).onSnapshot(snap=>{
     updFbDot('ok');
     if(fbWriting)return;
     if(!snap.exists)return;
@@ -2435,8 +2439,9 @@ function mergeFromFirestore(data){
   else if(_pg==='auditoria')renderAudit();
 }
 
-async function saveToFirestore(){
+async function saveToFirestore(attempt=0){
   if(!fbDb||!fbReady)return;
+  if(fbWriting){fbSavePending=true;return;} // já tem escrita em andamento — só marca pra reenviar no final, evita .set() concorrentes fora de ordem
   fbWriting=true;
   try{
     const data={
@@ -2449,13 +2454,18 @@ async function saveToFirestore(){
       obraAtiva:ST.obraAtiva||null,
       updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
     };
-    await fbDb.doc('lupa_data/main').set(data);
+    await fbDb.doc(FB_DOC_PATH).set(data);
+    fbWriting=false;
   }catch(e){
     console.error('saveToFirestore:',e);
-    toast('Erro ao salvar na nuvem.','error');
-  }finally{
-    setTimeout(()=>{fbWriting=false;},1500);
+    if(attempt<3){
+      setTimeout(()=>{fbWriting=false;saveToFirestore(attempt+1);},Math.pow(2,attempt)*1000);
+      return;
+    }
+    fbWriting=false;
+    toast('Erro ao salvar na nuvem. Verifique sua conexão.','error');
   }
+  if(fbSavePending){fbSavePending=false;saveToFirestore();}
 }
 
 function requireGoogle(){
@@ -3089,9 +3099,9 @@ function gerarPDF(){
   const[de,ate]=getPeriodoDates();
   const periodoTxt=de?'Período: '+fD(de)+' a '+fD(ate):'Período: Total';
   const catRows=Object.entries(bycat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${CL[k]||k}</td><td style="text-align:right;font-weight:700">${fmt(v)}</td><td style="text-align:right;color:#888">${tot?Math.round(v/tot*100):0}%</td></tr>`).join('');
-  const lancRows=ls.slice(0,50).map(l=>`<tr><td>${fD(l.data)}</td><td>${l.desc||l.descricao||'—'}</td><td>${l.fornecedor||'—'}</td><td style="text-align:right;font-weight:700">${fmt(l.valor)}</td><td>${(l.statusPag||'pago')==='pago'?'Pago':'A Pagar'}</td></tr>`).join('');
+  const lancRows=ls.slice(0,50).map(l=>`<tr><td>${fD(l.data)}</td><td>${esc(l.desc||l.descricao||'—')}</td><td>${esc(l.fornecedor||'—')}</td><td style="text-align:right;font-weight:700">${fmt(l.valor)}</td><td>${(l.statusPag||'pago')==='pago'?'Pago':'A Pagar'}</td></tr>`).join('');
   const win=window.open('','_blank','width=900,height=700');
-  win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório LUPA — ${ob.nome}</title>
+  win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório LUPA — ${esc(ob.nome)}</title>
   <style>body{font-family:Arial,sans-serif;color:#1A2040;margin:0;padding:24px;font-size:13px}
   .header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #2980B9;padding-bottom:14px;margin-bottom:20px}
   .logo{width:60px;height:60px;border-radius:12px;overflow:hidden}
@@ -3114,8 +3124,8 @@ function gerarPDF(){
     <div><h1>LUPA Facilities</h1><h2>RELATÓRIO FINANCEIRO DE OBRA</h2><div class="sub">📍 Macaé, RJ · Emitido em ${fD(td())} por ${currentUser?currentUser.nome:'—'}</div></div>
   </div>
   <div style="background:#EEF2F8;border-radius:8px;padding:12px 16px;margin-bottom:16px">
-    <strong style="font-size:15px">${ob.nome}</strong><br>
-    <span style="font-size:11px;color:#4A5580">📍 ${ob.endereco} &nbsp;·&nbsp; ${periodoTxt}</span>
+    <strong style="font-size:15px">${esc(ob.nome)}</strong><br>
+    <span style="font-size:11px;color:#4A5580">📍 ${esc(ob.endereco)} &nbsp;·&nbsp; ${periodoTxt}</span>
   </div>
   <div class="kpis">
     <div class="kpi"><div class="kpi-v">${fmt(tot)}</div><div class="kpi-l">Total Investido</div></div>
@@ -3276,7 +3286,7 @@ function renderDetail(ob){
     <div class="cbr-val">${fmt(v)}</div><div class="cbr-pct">${tot?Math.round(v/tot*100):0}%</div></div>`).join('');
   const ld=document.getElementById('dash-last');
   ld.innerHTML=ls.length?ls.slice(0,6).map(l=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
-    <div><div style="font-size:13px;font-weight:500">${l.desc||l.descricao||'—'}</div><div style="font-size:10.5px;color:var(--text3)">${fD(l.data)} · ${CL[l.cat]||l.cat}</div></div>
+    <div><div style="font-size:13px;font-weight:500">${esc(l.desc||l.descricao||'—')}</div><div style="font-size:10.5px;color:var(--text3)">${fD(l.data)} · ${CL[l.cat]||l.cat}</div></div>
     <div class="tdm" aria-label="${fmt(l.valor)}">${fmt(l.valor)}</div></div>`).join(''):'<p style="color:var(--text3);font-size:13px">Sem lançamentos.</p>';
   renderCharts(ob.id);
 }
@@ -4237,8 +4247,8 @@ function renderRC(){
   card.style.display='block';
   document.getElementById('rc-list').innerHTML=items.map(r=>`<div class="rec-item" role="listitem">
     <div style="width:32px;height:32px;border-radius:7px;background:${r.tipo==='energia'?'var(--yellow-bg)':'var(--blue-bg)'};display:flex;align-items:center;justify-content:center;font-size:14px" aria-hidden="true">${TI[r.tipo]||'📋'}</div>
-    <div style="flex:1"><div style="font-size:13px;font-weight:500">${r.nome}</div><div style="font-size:11px;color:var(--text3)">Todo dia <strong style="color:var(--brand3)">${r.dia}</strong> do mês</div></div>
-    <button class="btn btn-sm btn-d" onclick="delR('${r.id}')" aria-label="Remover periódica ${r.nome}">✕</button>
+    <div style="flex:1"><div style="font-size:13px;font-weight:500">${esc(r.nome)}</div><div style="font-size:11px;color:var(--text3)">Todo dia <strong style="color:var(--brand3)">${r.dia}</strong> do mês</div></div>
+    <button class="btn btn-sm btn-d" onclick="delR('${r.id}')" aria-label="Remover periódica ${esc(r.nome)}">✕</button>
   </div>`).join('');
 }
 
@@ -4329,8 +4339,8 @@ function renderCal(){
     let cls='cal-day';if(pnds.length)cls+=' has-p';if(hu)cls+=' has-u';if(isT)cls+=' tod';if(isOverdue)cls+=' overdue';
     const dots=pnds.slice(0,6).map(p=>`<div class="cd ${p.recur?'recur':p.prio||'media'}" aria-hidden="true"></div>`).join('');
     const cnt=pnds.length?`<div class="cal-cnt" style="background:${hu?'var(--red-bg)':'rgba(230,126,34,.12)'};color:${hu?'var(--red)':'var(--accent)'}" aria-hidden="true">${pnds.length}</div>`:'';
-    const lbl=pnds.length?`<div class="cal-lbl">${pnds[0].titulo}</div>`:'';
-    cells+=`<div class="${cls}" title="${pnds.map(p=>p.titulo).join(', ')||''}" role="gridcell" aria-label="Dia ${d}${pnds.length?' - '+pnds.length+' pendência(s)':''}">${cnt}<div class="cad">${d}</div><div class="cal-dots">${dots}</div>${lbl}</div>`;
+    const lbl=pnds.length?`<div class="cal-lbl">${esc(pnds[0].titulo)}</div>`:'';
+    cells+=`<div class="${cls}" title="${esc(pnds.map(p=>p.titulo).join(', ')||'')}" role="gridcell" aria-label="Dia ${d}${pnds.length?' - '+pnds.length+' pendência(s)':''}">${cnt}<div class="cad">${d}</div><div class="cal-dots">${dots}</div>${lbl}</div>`;
   }
   const rem=42-fd-di;for(let i=1;i<=rem;i++)cells+=`<div class="cal-day om" aria-hidden="true"><div class="cad">${i}</div></div>`;
   document.getElementById('cal-bd').innerHTML=cells;
@@ -4384,20 +4394,20 @@ function renderDocs(){
       else if(dv<=30){expClass=' expiring';expBadge=`<span class="badge b-yellow" style="font-size:9.5px">⏰ Vence em ${dv}d</span>`;}
       else expBadge=`<span class="badge b-muted" style="font-size:9.5px">Val: ${fD(d.validade)}</span>`;
     }
-    return `<div class="doc-card-new${expClass}" role="listitem" aria-label="Documento: ${d.tipo}">
+    return `<div class="doc-card-new${expClass}" role="listitem" aria-label="Documento: ${esc(d.tipo)}">
       <div style="display:flex;align-items:flex-start;gap:10px">
         <span style="font-size:30px;line-height:1;flex-shrink:0">${DI[d.cat]||'📄'}</span>
         <div style="min-width:0;flex:1">
-          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--text);word-break:break-word">${d.tipo}</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--text);word-break:break-word">${esc(d.tipo)}</div>
           <div style="font-size:10.5px;color:var(--text3);margin-top:2px">${DOC_CAT_LABELS[d.cat]||d.cat}${d.data?' · '+fD(d.data):''}</div>
-          ${d.desc?`<div style="font-size:10.5px;color:var(--text2);margin-top:3px">${d.desc}</div>`:''}
+          ${d.desc?`<div style="font-size:10.5px;color:var(--text2);margin-top:3px">${esc(d.desc)}</div>`:''}
         </div>
       </div>
       ${expBadge?`<div style="margin-top:6px">${expBadge}</div>`:''}
-      ${d.fileName?`<div style="font-size:9.5px;color:var(--text3);word-break:break-all;margin-top:2px">📎 ${d.fileName}</div>`:''}
+      ${d.fileName?`<div style="font-size:9.5px;color:var(--text3);word-break:break-all;margin-top:2px">📎 ${esc(d.fileName)}</div>`:''}
       <div class="doc-card-acts" style="margin-top:8px">
-        ${d.cloudinaryUrl?`<a href="${d.cloudinaryUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Ver ${d.tipo}">☁️ Ver</a>`:d.fileB64?`<a href="${d.fileB64}" download="${d.fileName||d.tipo}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Baixar ${d.tipo}">⬇ Baixar</a>`:''}
-        <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${d.tipo}">🗑 Remover</button>
+        ${d.cloudinaryUrl?`<a href="${d.cloudinaryUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Ver ${esc(d.tipo)}">☁️ Ver</a>`:d.fileB64?`<a href="${d.fileB64}" download="${esc(d.fileName||d.tipo)}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Baixar ${esc(d.tipo)}">⬇ Baixar</a>`:''}
+        <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${esc(d.tipo)}">🗑 Remover</button>
       </div>
     </div>`;
   }).join('');
@@ -4650,7 +4660,7 @@ async function limparTudo(){
   if(fbDb&&fbReady){
     toast('Limpando dados da nuvem...','info');
     try{
-      await fbDb.doc('lupa_data/main').set({
+      await fbDb.doc(FB_DOC_PATH).set({
         obras:[],lancamentos:[],pendencias:[],recorrentes:[],documentos:[],auditLog:[],obraAtiva:null,
         updatedAt:firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -4722,8 +4732,8 @@ function rptHeader(titulo,subtitulo){
       <div class="rpt-title">${titulo}</div>
       <div class="rpt-meta-row">
         ${subtitulo?`<span class="rpt-meta-item">📋 ${subtitulo}</span>`:''}
-        ${ob?`<span class="rpt-meta-item">🏗️ <strong>${ob.nome}</strong></span>`:''}
-        ${ob&&ob.endereco?`<span class="rpt-meta-item">📍 ${ob.endereco}</span>`:''}
+        ${ob?`<span class="rpt-meta-item">🏗️ <strong>${esc(ob.nome)}</strong></span>`:''}
+        ${ob&&ob.endereco?`<span class="rpt-meta-item">📍 ${esc(ob.endereco)}</span>`:''}
       </div>
     </div>
     <div class="rpt-header-date">Emitido em<br><strong>${now}</strong></div>
@@ -4765,7 +4775,7 @@ function gerarRelatorio(tipo){
     html+=`</div>`;
     html+=`<div class="rpt-section">Últimos 10 Lançamentos</div>
     <table class="rpt-table"><thead><tr><th>Data</th><th>Descrição</th><th>Fornecedor</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead><tbody>`;
-    ls.slice(0,10).forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${l.desc||l.descricao||'—'}</strong>${l.nfNum?`<br><span style="font-size:9px;color:#888">NF: ${l.nfNum}</span>`:''}</td><td>${l.fornecedor||'—'}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
+    ls.slice(0,10).forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${esc(l.desc||l.descricao||'—')}</strong>${l.nfNum?`<br><span style="font-size:9px;color:#888">NF: ${esc(l.nfNum)}</span>`:''}</td><td>${esc(l.fornecedor||'—')}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
     html+=`</tbody></table>`;
     html+=rptFooter();
   }
@@ -4813,7 +4823,7 @@ function gerarRelatorio(tipo){
     html=rptHeader('Registro de Notas Fiscais','Agrupado por NF');
     html+=`<div class="rpt-kpis"><div class="rpt-kpi" style="border-left-color:#9B59B6"><div class="rpt-kpi-v">${nfs.length}</div><div class="rpt-kpi-l">NFs Registradas</div></div><div class="rpt-kpi" style="border-left-color:#2980B9"><div class="rpt-kpi-v">${fmtR(totGeral)}</div><div class="rpt-kpi-l">Valor Total</div></div></div>`;
     html+=`<table class="rpt-table"><thead><tr><th>Nº NF</th><th>Emissor/Fornecedor</th><th>Data</th><th>Categoria</th><th>Itens</th><th>Valor Total</th></tr></thead><tbody>`;
-    nfs.forEach(n=>{html+=`<tr><td style="font-weight:700;color:#7D3C98">${n.num}</td><td>${n.forn}</td><td>${fD(n.data)}</td><td><span class="rpt-badge" style="background:${CC[n.cat]}22;color:${CC[n.cat]}">${CL[n.cat]||n.cat}</span></td><td style="color:#555">${n.itens.length} item${n.itens.length!==1?'s':''}</td><td style="font-weight:700">${fmtR(n.total)}</td></tr>`;});
+    nfs.forEach(n=>{html+=`<tr><td style="font-weight:700;color:#7D3C98">${esc(n.num)}</td><td>${esc(n.forn)}</td><td>${fD(n.data)}</td><td><span class="rpt-badge" style="background:${CC[n.cat]}22;color:${CC[n.cat]}">${CL[n.cat]||n.cat}</span></td><td style="color:#555">${n.itens.length} item${n.itens.length!==1?'s':''}</td><td style="font-weight:700">${fmtR(n.total)}</td></tr>`;});
     html+=`</tbody><tfoot><tr><td colspan="4" style="font-weight:700">TOTAL GERAL</td><td style="font-weight:700">${nfs.reduce((a,n)=>a+n.itens.length,0)} itens</td><td style="font-weight:800;font-size:13px">${fmtR(totGeral)}</td></tr></tfoot></table>`;
     html+=rptFooter();
   }
@@ -4845,9 +4855,9 @@ function gerarRelatorio(tipo){
     html=rptHeader('Gastos por Fornecedor','Concentração de gastos por empresa');
     html+=`<div class="rpt-kpis"><div class="rpt-kpi" style="border-left-color:#E74C3C"><div class="rpt-kpi-v">${flist.length}</div><div class="rpt-kpi-l">Fornecedores</div></div><div class="rpt-kpi" style="border-left-color:#2980B9"><div class="rpt-kpi-v">${fmtR(totGeral)}</div><div class="rpt-kpi-l">Total Geral</div></div></div>`;
     html+=`<div class="rpt-section">Ranking de Fornecedores</div><div class="rpt-bar-wrap">`;
-    flist.forEach(f=>{const p=totGeral?Math.round(f.total/totGeral*100):0;html+=`<div class="rpt-bar-row"><div class="rpt-bar-label" title="${f.nome}">${f.nome}</div><div class="rpt-bar-track"><div class="rpt-bar-fill" style="width:${p}%;background:#E74C3C"></div></div><div class="rpt-bar-val">${fmtR(f.total)} <span style="color:#999;font-size:9px">${p}%</span></div></div>`;});
+    flist.forEach(f=>{const p=totGeral?Math.round(f.total/totGeral*100):0;html+=`<div class="rpt-bar-row"><div class="rpt-bar-label" title="${esc(f.nome)}">${esc(f.nome)}</div><div class="rpt-bar-track"><div class="rpt-bar-fill" style="width:${p}%;background:#E74C3C"></div></div><div class="rpt-bar-val">${fmtR(f.total)} <span style="color:#999;font-size:9px">${p}%</span></div></div>`;});
     html+=`</div><table class="rpt-table"><thead><tr><th>#</th><th>Fornecedor</th><th>Categorias</th><th>NFs</th><th>Total Pago</th><th>% do Total</th></tr></thead><tbody>`;
-    flist.forEach((f,i)=>{const p=totGeral?Math.round(f.total/totGeral*100):0;html+=`<tr><td style="color:#888;font-weight:700">${i+1}</td><td><strong>${f.nome}</strong></td><td style="font-size:10px">${[...f.cats].map(c=>CL[c]||c).join(', ')}</td><td style="font-size:10px;color:#7D3C98">${f.nfs.size||'—'}</td><td style="font-weight:700">${fmtR(f.total)}</td><td style="font-weight:700;color:#2980B9">${p}%</td></tr>`;});
+    flist.forEach((f,i)=>{const p=totGeral?Math.round(f.total/totGeral*100):0;html+=`<tr><td style="color:#888;font-weight:700">${i+1}</td><td><strong>${esc(f.nome)}</strong></td><td style="font-size:10px">${[...f.cats].map(c=>CL[c]||c).join(', ')}</td><td style="font-size:10px;color:#7D3C98">${f.nfs.size||'—'}</td><td style="font-weight:700">${fmtR(f.total)}</td><td style="font-weight:700;color:#2980B9">${p}%</td></tr>`;});
     html+=`</tbody><tfoot><tr><td colspan="4" style="font-weight:700">TOTAL</td><td style="font-weight:800">${fmtR(totGeral)}</td><td></td></tr></tfoot></table>`;
     html+=rptFooter();
   }
@@ -4903,7 +4913,7 @@ function atualizarExtrato(){
   if(!items.length){html+='<p style="color:#888;text-align:center;padding:20px">Nenhum lançamento encontrado para os filtros selecionados.</p>';}
   else{
     html+=`<table class="rpt-table"><thead><tr><th>Data</th><th>Descrição</th><th>Fornecedor</th><th>NF</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead><tbody>`;
-    items.forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${l.desc||l.descricao||'—'}</strong>${l.obs?`<br><span style="font-size:9px;color:#888">${l.obs.slice(0,40)}</span>`:''}</td><td>${l.fornecedor||'—'}</td><td style="font-size:10px;color:#7D3C98">${l.nfNum||'—'}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
+    items.forEach(l=>{const isPago=(l.statusPag||'pago')==='pago';html+=`<tr><td>${fD(l.data)}</td><td><strong>${esc(l.desc||l.descricao||'—')}</strong>${l.obs?`<br><span style="font-size:9px;color:#888">${esc(l.obs.slice(0,40))}</span>`:''}</td><td>${esc(l.fornecedor||'—')}</td><td style="font-size:10px;color:#7D3C98">${esc(l.nfNum||'—')}</td><td><span class="rpt-badge" style="background:${CC[l.cat]}22;color:${CC[l.cat]}">${CL[l.cat]||l.cat}</span></td><td style="font-weight:700">${fmtR(l.valor)}</td><td><span class="rpt-badge ${isPago?'rpt-pago':'rpt-apagar'}">${isPago?'Pago':'A Pagar'}</span></td></tr>`;});
     html+=`</tbody><tfoot><tr><td colspan="4" style="font-weight:700">${items.length} lançamento${items.length!==1?'s':''}</td><td></td><td style="font-weight:800;font-size:13px">${fmtR(tot)}</td><td style="font-size:10px;color:#E67E22">${tot-pago>0?'A pagar: '+fmtR(tot-pago):''}</td></tr></tfoot></table>`;
   }
   const div=document.getElementById('rpt-extrato-body');if(div)div.innerHTML=html;
@@ -4915,7 +4925,7 @@ function renderAudit(){
   const div=document.getElementById('audit-list');if(!div)return;
   if(!items.length){div.innerHTML='<p style="color:var(--text3);font-size:12.5px;padding:7px 0">Nenhuma ação registrada ainda.</p>';return;}
   div.innerHTML=items.slice(0,200).map(a=>`<div class="audit-item">
-    <div style="flex:1"><span class="audit-user">${a.usuario}</span> <span style="color:var(--text)">${a.acao}</span>${a.detalhe?`<div style="font-size:10.5px;color:var(--text3);margin-top:2px">${a.detalhe}</div>`:''}</div>
+    <div style="flex:1"><span class="audit-user">${esc(a.usuario)}</span> <span style="color:var(--text)">${esc(a.acao)}</span>${a.detalhe?`<div style="font-size:10.5px;color:var(--text3);margin-top:2px">${esc(a.detalhe)}</div>`:''}</div>
     <div style="font-size:10px;color:var(--text3);white-space:nowrap;margin-left:8px">${a.data?fD(a.data):''} ${a.hora||''}</div>
   </div>`).join('');
 }
