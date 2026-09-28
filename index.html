@@ -1842,6 +1842,9 @@ input,select,textarea{min-height:44px}
   <div class="card" id="form-obra" style="margin-bottom:14px;display:none">
     <div class="card-title" style="margin-bottom:12px" id="fo-title">📐 Dados da Obra</div>
     <div class="fg">
+      <div class="fgg"><label class="fl" for="cfg-tipo">Tipo de Obra</label><select id="cfg-tipo" onchange="onTipoObra()" aria-label="Tipo de Obra"><option value="empreendimento">🏘️ Empreendimento (para venda)</option><option value="interna">🏢 Obra Interna / Reforma (sem venda)</option></select></div>
+    </div>
+    <div class="fg">
       <div class="fgg"><label class="fl" for="cfg-nm">Nome do Empreendimento <span class="req">*</span></label><input type="text" id="cfg-nm" placeholder="Ex: Terreno Barra de Macaé" aria-required="true"></div>
       <div class="fgg"><label class="fl" for="cfg-end">Endereço Completo <span class="req">*</span></label><input type="text" id="cfg-end" placeholder="Rua, nº, bairro — Macaé/RJ" aria-required="true"></div>
     </div>
@@ -1855,7 +1858,7 @@ input,select,textarea{min-height:44px}
       <div class="fgg"><label class="fl" for="cfg-st">Situação da construção</label><select id="cfg-st" aria-label="Situação da construção"><option value="andamento">🏗️ Em Andamento</option><option value="concluida">✅ Concluída</option></select></div>
       <div class="fgg"><label class="fl" for="cfg-soc">Responsável / Sócio</label><input type="text" id="cfg-soc" placeholder="Nome do responsável"></div>
     </div>
-    <div class="casas-sec">
+    <div class="casas-sec" id="casas-sec">
       <div class="casas-hdr">
         <div><div class="casas-tit">🏠 Casas / Unidades</div><div class="casas-sub">Os custos do empreendimento são rateados igualmente entre as casas.</div></div>
         <button type="button" class="btn btn-sm btn-s" onclick="addCasaRow()" aria-label="Adicionar casa">+ Casa</button>
@@ -3146,9 +3149,10 @@ function gerarPDF(){
 
 /* ══ DASHBOARD ══ */
 function renderDash(){
-  const totAll=ST.lancamentos.reduce((a,l)=>a+l.valor,0);
+  const idsInterna=new Set(ST.obras.filter(o=>o.tipo==='interna').map(o=>o.id));
+  const totAll=ST.lancamentos.filter(l=>!idsInterna.has(l.obraId)).reduce((a,l)=>a+l.valor,0);
   let totalCasas=0,vendidasTot=0,vgvReal=0,recebTot=0,aReceberTot=0,margemTot=0,temVenda=false;
-  ST.obras.forEach(o=>{const r=empResumo(o);totalCasas+=r.nCasas;vendidasTot+=r.vendidas+r.naPlanta;vgvReal+=r.vgvRealizado;recebTot+=r.recebido;aReceberTot+=r.aReceber;margemTot+=r.margemTotal;if(r.vgvRealizado>0)temVenda=true;});
+  ST.obras.forEach(o=>{if(o.tipo==='interna')return;const r=empResumo(o);totalCasas+=r.nCasas;vendidasTot+=r.vendidas+r.naPlanta;vgvReal+=r.vgvRealizado;recebTot+=r.recebido;aReceberTot+=r.aReceber;margemTot+=r.margemTotal;if(r.vgvRealizado>0)temVenda=true;});
   const pnd=ST.pendencias.filter(p=>p.status==='aberta').length;
   document.getElementById('k-obras').textContent=totalCasas?`${vendidasTot}/${totalCasas}`:'0';
   if(!valoresOcultos){document.getElementById('k-total').textContent=fmt(totAll);
@@ -3179,14 +3183,14 @@ function renderDash(){
         <div><div class="oc-name">${esc(o.nome)}</div><div class="oc-addr">📍 ${esc(o.endereco)}</div></div>
         <span class="oc-sbadge ${o.status==='concluida'?'sb-con':'sb-and'}">${o.status==='concluida'?'✅ Concluída':'⚙️ Andamento'}</span>
       </div>
-      <div class="oc-casas-line">🏠 ${r.nCasas} casa${r.nCasas>1?'s':''} · ${r.vendidas} vendida${r.vendidas!==1?'s':''}${r.naPlanta?` · ${r.naPlanta} na planta`:''}${r.disponiveis?` · ${r.disponiveis} disponíve${r.disponiveis>1?'is':'l'}`:''}</div>
+      ${o.tipo==='interna'?'':`<div class="oc-casas-line">🏠 ${r.nCasas} casa${r.nCasas>1?'s':''} · ${r.vendidas} vendida${r.vendidas!==1?'s':''}${r.naPlanta?` · ${r.naPlanta} na planta`:''}${r.disponiveis?` · ${r.disponiveis} disponíve${r.disponiveis>1?'is':'l'}`:''}</div>`}
       ${o.status==='concluida'&&r.naPlanta>0?`<div><span class="sign-pend-pill">📝 Pendente de Assinatura Final</span></div>`:''}
       <div><div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${pct}% do orçamento utilizado"><div class="prog-f" style="width:${pct}%;background:${pct>90?'var(--red)':pct>70?'var(--yellow)':'var(--accent)'}"></div></div>
       <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:9.5px;color:var(--text3)">${pct}% do orçamento</span><span style="font-size:9.5px;color:var(--text3)">${fmt(o.orcamento||0)}</span></div></div>
       <div class="oc-kpis">
         <div class="omk"><div class="omk-l">Investido</div><div class="omk-v ac">${fmtS(gasto)}</div></div>
-        <div class="omk"><div class="omk-l">Custo/casa</div><div class="omk-v">${fmtS(cpCasa)}</div></div>
-        ${temVenda?`<div class="omk"><div class="omk-l">VGV</div><div class="omk-v ac">${fmtS(r.vgvRealizado)}</div></div>
+        ${o.tipo==='interna'?'':`<div class="omk"><div class="omk-l">Custo/casa</div><div class="omk-v">${fmtS(cpCasa)}</div></div>`}
+        ${temVenda&&o.tipo!=='interna'?`<div class="omk"><div class="omk-l">VGV</div><div class="omk-v ac">${fmtS(r.vgvRealizado)}</div></div>
         <div class="omk"><div class="omk-l">Lucro ${o.status==='concluida'?'':'est.'}</div><div class="omk-v ${r.margemTotal>=0?'su':'da'}">${fmtS(r.margemTotal)}</div></div>`
         :`<div class="omk"><div class="omk-l">Saldo orç.</div><div class="omk-v ${saldo>=0?'su':'da'}">${fmtS(saldo)}</div></div>
         <div class="omk"><div class="omk-l">Lançamentos</div><div class="omk-v">${ls.length}</div></div>`}
@@ -3213,6 +3217,7 @@ function filterByPeriodo(items){
 function renderCasasResult(ob,res){
   const box=document.getElementById('casas-result');
   if(!box)return;
+  if(ob.tipo==='interna'){box.style.display='none';return;}
   normCasas(ob);
   const custoCasa=custoPorCasa(ob);
   const temVenda=res.vendidas+res.naPlanta>0;
@@ -3353,9 +3358,10 @@ function renderCharts(oid){
 
   // ── Obras comparison ──────────────────────────────────────────────────────
   const obrasWrap=document.getElementById('obras-chart-wrap');
-  if(ST.obras.length>1){
+  const obrasComp=ST.obras.filter(o=>o.tipo!=='interna');
+  if(obrasComp.length>1){
     obrasWrap.style.display='';
-    const oData=ST.obras.map(o=>{
+    const oData=obrasComp.map(o=>{
       const g=ST.lancamentos.filter(l=>l.obraId===o.id).reduce((a,l)=>a+l.valor,0);
       const util=Math.min(o.orcamento||0,g);const disp=Math.max(0,(o.orcamento||0)-g);
       return{nome:o.nome.length>20?o.nome.slice(0,18)+'…':o.nome,util,disp,g,orc:o.orcamento||0,status:o.status};
@@ -4481,6 +4487,9 @@ function onCasaSit(sel){
   if(vl)vl.textContent=sel.value==='disponivel'?'Valor de Tabela (R$)':'Valor de Venda (R$)';
 }
 function readCasasForm(baseId){
+  if(document.getElementById('cfg-tipo').value==='interna'){
+    return[{id:baseId+'-c1',nome:'Interna',situacao:'disponivel',valorVenda:0,adiantamento:0,dataVenda:''}];
+  }
   const rows=[...document.querySelectorAll('#casas-list .casa-row')];
   return rows.map((r,i)=>{
     const sit=r.querySelector('.casa-sit').value;
@@ -4495,10 +4504,16 @@ function readCasasForm(baseId){
     };
   });
 }
+function onTipoObra(){
+  const interna=document.getElementById('cfg-tipo').value==='interna';
+  document.getElementById('casas-sec').style.display=interna?'none':'';
+}
 function novaO(){
   document.getElementById('cfg-id').value='';
   ['cfg-nm','cfg-end','cfg-ini','cfg-orc','cfg-area','cfg-concl','cfg-soc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('cfg-st').value='andamento';
+  document.getElementById('cfg-tipo').value='empreendimento';
+  onTipoObra();
   renderCasasForm(null);
   document.getElementById('fo-title').textContent='🏗️ Novo Empreendimento';
   document.getElementById('form-obra').style.display='block';
@@ -4514,6 +4529,8 @@ function editO(id){
   document.getElementById('cfg-ini').value=ob.inicio||'';setFinVal(document.getElementById('cfg-orc'),ob.orcamento||0);
   document.getElementById('cfg-area').value=ob.area||'';document.getElementById('cfg-concl').value=ob.previsao||ob.conclusao||'';
   document.getElementById('cfg-soc').value=ob.socio||'';document.getElementById('cfg-st').value=(ob.status==='concluida'?'concluida':'andamento');
+  document.getElementById('cfg-tipo').value=ob.tipo==='interna'?'interna':'empreendimento';
+  onTipoObra();
   renderCasasForm(ob.casas);
   document.getElementById('fo-title').textContent='✏️ Editando: '+ob.nome;
   document.getElementById('form-obra').style.display='block';
@@ -4527,7 +4544,8 @@ function salvarO(){
   const id=document.getElementById('cfg-id').value||uid();
   const casas=readCasasForm(id);
   if(!casas.length){_savingO=false;toast('Adicione pelo menos 1 casa.','error');return;}
-  const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFinVal(document.getElementById('cfg-orc')),area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,casas};
+  const tipo=document.getElementById('cfg-tipo').value==='interna'?'interna':'empreendimento';
+  const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFinVal(document.getElementById('cfg-orc')),area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,tipo,casas};
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
   // ── Limpar corretagens de casas deletadas ──
@@ -4581,7 +4599,7 @@ function renderOA(){
     const badgeCls=o.status==='concluida'?'b-green':'b-accent';
     const badgeTxt=o.status==='concluida'?'Concluída':'Andamento';
     const vgvHtml=r.vgvRealizado?fmt(r.vgvRealizado):'<span style="color:var(--text3)">—</span>';
-    const vendStr=`${r.nCasas} <span style="color:var(--text3);font-size:10px">(${r.vendidas+r.naPlanta} vend.)</span>`;
+    const vendStr=o.tipo==='interna'?'<span style="color:var(--text3)">— obra interna</span>':`${r.nCasas} <span style="color:var(--text3);font-size:10px">(${r.vendidas+r.naPlanta} vend.)</span>`;
     const acoes=`<button class="btn btn-sm" onclick="editO('${o.id}')" aria-label="Editar ${esc(o.nome)}">✏️</button><button class="btn btn-sm btn-d" onclick="delO('${o.id}')" aria-label="Remover ${esc(o.nome)}">✕</button>`;
     return {o,r,badgeCls,badgeTxt,vgvHtml,vendStr,acoes};
   });
@@ -4612,7 +4630,7 @@ function renderOA(){
       ${o.endereco?`<div class="oac-end">${esc(o.endereco)}</div>`:''}
       <div class="oac-meta">
         <span class="badge ${badgeCls}">${badgeTxt}</span>
-        <span class="oac-casas">${r.nCasas} casa${r.nCasas!==1?'s':''} · ${r.vendidas+r.naPlanta} vendida${(r.vendidas+r.naPlanta)!==1?'s':''}</span>
+        <span class="oac-casas">${o.tipo==='interna'?'Obra interna':`${r.nCasas} casa${r.nCasas!==1?'s':''} · ${r.vendidas+r.naPlanta} vendida${(r.vendidas+r.naPlanta)!==1?'s':''}`}</span>
         ${o.inicio?`<span class="oac-casas">Início: ${fD(o.inicio)}</span>`:''}
       </div>
       <div class="oac-fin">
@@ -4833,17 +4851,31 @@ function gerarRelatorio(tipo){
     const logoEl2=document.getElementById('logo-img-wrap');const imgSrc2=logoEl2?.querySelector('img')?.src||'';
     const logoHtml2=imgSrc2?`<img src="${imgSrc2}" alt="LUPA">`:`<span class="rpt-logo-fallback">LUPA</span>`;
     const now2=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    html=`<div class="rpt-header"><div class="rpt-logo">${logoHtml2}</div><div class="rpt-header-divider"></div><div class="rpt-header-info"><div class="rpt-header-label">LUPA Facilities · Macaé / RJ</div><div class="rpt-title">Comparativo entre Obras</div><div class="rpt-meta-row"><span class="rpt-meta-item">🏗️ Todas as obras cadastradas</span></div></div><div class="rpt-header-date">Emitido em<br><strong>${now2}</strong></div></div>`;
-    const totGeral=ST.lancamentos.reduce((a,l)=>a+l.valor,0);
-    html+=`<div class="rpt-kpis"><div class="rpt-kpi" style="border-left-color:#1A3A5C"><div class="rpt-kpi-v">${ST.obras.length}</div><div class="rpt-kpi-l">Obras Cadastradas</div></div><div class="rpt-kpi" style="border-left-color:#2980B9"><div class="rpt-kpi-v">${fmtR(totGeral)}</div><div class="rpt-kpi-l">Investimento Total</div></div></div>`;
+    html=`<div class="rpt-header"><div class="rpt-logo">${logoHtml2}</div><div class="rpt-header-divider"></div><div class="rpt-header-info"><div class="rpt-header-label">LUPA Facilities · Macaé / RJ</div><div class="rpt-title">Comparativo entre Obras</div><div class="rpt-meta-row"><span class="rpt-meta-item">🏗️ Empreendimentos cadastrados</span></div></div><div class="rpt-header-date">Emitido em<br><strong>${now2}</strong></div></div>`;
+    const obrasEmp=ST.obras.filter(o=>o.tipo!=='interna');
+    const obrasInt=ST.obras.filter(o=>o.tipo==='interna');
+    const totGeral=obrasEmp.reduce((a,o)=>a+ST.lancamentos.filter(l=>l.obraId===o.id).reduce((a2,l)=>a2+l.valor,0),0);
+    html+=`<div class="rpt-kpis"><div class="rpt-kpi" style="border-left-color:#1A3A5C"><div class="rpt-kpi-v">${obrasEmp.length}</div><div class="rpt-kpi-l">Obras Cadastradas</div></div><div class="rpt-kpi" style="border-left-color:#2980B9"><div class="rpt-kpi-v">${fmtR(totGeral)}</div><div class="rpt-kpi-l">Investimento Total</div></div></div>`;
     html+=`<table class="rpt-table"><thead><tr><th>Obra</th><th>Endereço</th><th>Status</th><th>Orçamento</th><th>Realizado</th><th>Saldo</th><th>% Uso</th></tr></thead><tbody>`;
-    ST.obras.forEach(o=>{
+    obrasEmp.forEach(o=>{
       const tot=ST.lancamentos.filter(l=>l.obraId===o.id).reduce((a,l)=>a+l.valor,0);
       const orc=o.orcamento||0;const saldo=orc-tot;const pct=orc?Math.round(tot/orc*100):0;
       const clr=pct>90?'#E74C3C':pct>70?'#E67E22':'#27AE60';
       html+=`<tr><td><strong>${esc(o.nome)}</strong></td><td style="font-size:10px;color:#666">${esc(o.endereco||'—')}</td><td><span class="rpt-badge" style="background:#E8F4FD;color:#2980B9">${esc(o.status||'—')}</span></td><td>${orc?fmtR(orc):'—'}</td><td style="font-weight:700">${fmtR(tot)}</td><td style="font-weight:700;color:${saldo<0?'#E74C3C':'#27AE60'}">${fmtR(Math.abs(saldo))}${saldo<0?' ⚠️':''}</td><td><span style="font-weight:700;color:${clr}">${orc?pct+'%':'—'}</span></td></tr>`;
     });
     html+=`</tbody><tfoot><tr><td colspan="4" style="font-weight:700">TOTAIS</td><td style="font-weight:800">${fmtR(totGeral)}</td><td colspan="2"></td></tr></tfoot></table>`;
+    if(obrasInt.length){
+      const totInterna=obrasInt.reduce((a,o)=>a+ST.lancamentos.filter(l=>l.obraId===o.id).reduce((a2,l)=>a2+l.valor,0),0);
+      html+=`<div class="rpt-section">Obras Internas (sem venda — não entram no Investimento Total acima)</div>`;
+      html+=`<table class="rpt-table"><thead><tr><th>Obra</th><th>Endereço</th><th>Status</th><th>Orçamento</th><th>Gasto</th><th>Saldo</th><th>% Uso</th></tr></thead><tbody>`;
+      obrasInt.forEach(o=>{
+        const tot=ST.lancamentos.filter(l=>l.obraId===o.id).reduce((a,l)=>a+l.valor,0);
+        const orc=o.orcamento||0;const saldo=orc-tot;const pct=orc?Math.round(tot/orc*100):0;
+        const clr=pct>90?'#E74C3C':pct>70?'#E67E22':'#27AE60';
+        html+=`<tr><td><strong>${esc(o.nome)}</strong></td><td style="font-size:10px;color:#666">${esc(o.endereco||'—')}</td><td><span class="rpt-badge" style="background:#E8F4FD;color:#2980B9">${esc(o.status||'—')}</span></td><td>${orc?fmtR(orc):'—'}</td><td style="font-weight:700">${fmtR(tot)}</td><td style="font-weight:700;color:${saldo<0?'#E74C3C':'#27AE60'}">${fmtR(Math.abs(saldo))}${saldo<0?' ⚠️':''}</td><td><span style="font-weight:700;color:${clr}">${orc?pct+'%':'—'}</span></td></tr>`;
+      });
+      html+=`</tbody><tfoot><tr><td colspan="4" style="font-weight:700">TOTAL OBRAS INTERNAS</td><td style="font-weight:800">${fmtR(totInterna)}</td><td colspan="2"></td></tr></tfoot></table>`;
+    }
     html+=rptFooter();
   }
 
