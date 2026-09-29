@@ -750,6 +750,289 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .budget-alert-text{font-size:11px}
   .budget-alert-text strong{font-size:11.5px}
 }
+/* ═══════════════════════════════════════════════════════════════
+   ★ LANÇAMENTOS DESKTOP — PAINEL SPLIT (approved 2026-09-28)
+   Tabela histórico + formulário lateral sempre visível
+   Só ativo em desktop (>900px). Mobile mantém bottom sheet.
+   ═══════════════════════════════════════════════════════════════ */
+.lanc-split-wrap{display:block}
+.lanc-hist-tbl{
+  width:100%;border-collapse:separate;border-spacing:0;
+  font-size:12.5px;font-variant-numeric:tabular-nums;
+}
+.lanc-hist-tbl thead th{
+  background:var(--bg3);padding:9px 10px;text-align:left;
+  font-weight:700;font-size:11px;color:var(--text3);
+  letter-spacing:.3px;text-transform:uppercase;
+  border-bottom:1px solid var(--border2);
+  position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;
+}
+.lanc-hist-tbl thead th:hover{color:var(--brand3)}
+.lanc-hist-tbl thead th.sort-active{color:var(--brand3)}
+.lanc-hist-tbl tbody td{
+  padding:8px 10px;border-bottom:1px solid var(--border);
+  color:var(--text);vertical-align:middle;height:36px;
+}
+.lanc-hist-tbl tbody tr:hover td{background:var(--surface2)}
+.lanc-hist-tbl tbody tr.row-flash td{animation:rowFlashLanc 1.4s ease-out}
+@keyframes rowFlashLanc{
+  0%{background:rgba(39,174,96,.35)}
+  100%{background:transparent}
+}
+.lanc-hist-tbl td.data{color:var(--text2);font-size:11.5px;white-space:nowrap}
+.lanc-hist-tbl td.valor{text-align:right;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;white-space:nowrap}
+.lanc-hist-tbl td.cat-cell{white-space:nowrap;width:1px}
+.lanc-hist-tbl td.actions{text-align:right;white-space:nowrap;width:1px}
+.lanc-hist-tbl td.actions button{
+  background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;
+  padding:3px 5px;border-radius:4px;transition:color .12s,background .12s;
+}
+.lanc-hist-tbl td.actions button:hover{color:var(--brand3);background:var(--bg3)}
+.lanc-hist-tbl td.actions button.del:hover{color:var(--red)}
+.lanc-hist-tbl .cat-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;
+}
+.lanc-hist-tbl .pag-badge{
+  display:inline-flex;align-items:center;padding:2px 7px;
+  border-radius:10px;font-size:10.5px;font-weight:600;
+}
+.lanc-hist-tbl .pag-badge.pago{background:var(--green-bg);color:var(--green)}
+.lanc-hist-tbl .pag-badge.a_pagar{background:var(--yellow-bg);color:var(--yellow)}
+.lanc-hist-tbl a.hist-comp{color:var(--brand3);text-decoration:none;font-size:11px}
+.lanc-hist-tbl a.hist-comp:hover{text-decoration:underline}
+/* ─── DROP ZONE ─── */
+.dz-lanc{
+  margin-top:10px;padding:20px 16px;
+  background:linear-gradient(180deg, rgba(41,128,185,.06), rgba(39,174,96,.03));
+  border:2px dashed var(--border2);border-radius:12px;
+  text-align:center;transition:all .18s;cursor:pointer;position:relative;
+}
+.dz-lanc:hover{border-color:var(--brand2);background:rgba(41,128,185,.08)}
+.dz-lanc.dragover{
+  border-color:var(--green);border-style:solid;
+  background:var(--green-bg);transform:scale(1.02);
+  box-shadow:0 0 0 4px rgba(39,174,96,.18);
+}
+.dz-lanc.missing{border-color:var(--red);animation:dzMissing 1s ease-out}
+@keyframes dzMissing{
+  0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}
+  50%{box-shadow:0 0 0 6px rgba(231,76,60,.25)}
+}
+.dz-lanc-ico{font-size:28px;margin-bottom:6px;opacity:.75}
+.dz-lanc-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.dz-lanc-sub{font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:10px}
+.dz-lanc-sub kbd{
+  background:var(--bg3);padding:1px 5px;border-radius:3px;
+  border:1px solid var(--border2);font-size:10px;color:var(--text2);
+  font-family:'DM Sans',monospace;
+}
+.dz-lanc-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:7px;
+  color:var(--text);font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .15s;font-family:'DM Sans',sans-serif;
+}
+.dz-lanc-btn:hover{border-color:var(--brand2);background:var(--surface3)}
+.dz-lanc-req{
+  display:inline-block;margin-top:8px;font-size:10px;
+  color:var(--red);font-weight:600;letter-spacing:.3px;
+}
+.dz-lanc.filled{
+  padding:12px;background:var(--green-bg);
+  border-color:var(--green);border-style:solid;text-align:left;cursor:default;
+}
+.dz-lanc.filled:hover{background:var(--green-bg);border-color:var(--green)}
+.dz-preview{display:flex;align-items:center;gap:10px}
+.dz-thumb{
+  width:52px;height:52px;border-radius:7px;flex-shrink:0;
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:var(--green);overflow:hidden;
+  border:1px solid rgba(39,174,96,.4);
+}
+.dz-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.dz-info{flex:1;min-width:0}
+.dz-nm{
+  font-size:12px;font-weight:600;color:var(--green);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.dz-meta{font-size:10.5px;color:var(--text3);margin-top:2px}
+.dz-actions{display:flex;gap:5px;flex-shrink:0}
+.dz-actions button{
+  background:none;border:none;color:var(--text3);cursor:pointer;
+  font-size:12px;padding:4px 8px;border-radius:5px;
+  transition:color .12s,background .12s;
+}
+.dz-actions button:hover{color:var(--brand3);background:rgba(255,255,255,.06)}
+.dz-actions button.del:hover{color:var(--red)}
+/* ─── OVERLAY GLOBAL ─── */
+.dz-overlay{
+  position:absolute;inset:0;background:rgba(39,174,96,.25);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  border:3px dashed var(--green);
+  display:none;align-items:center;justify-content:center;flex-direction:column;
+  z-index:80;pointer-events:none;animation:overlayFade .15s ease-out;
+}
+.dz-overlay.show{display:flex}
+@keyframes overlayFade{from{opacity:0}to{opacity:1}}
+.dz-overlay-ico{font-size:56px;margin-bottom:10px;filter:drop-shadow(0 4px 12px rgba(39,174,96,.5))}
+.dz-overlay-txt{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:18px;font-weight:700;color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+.dz-overlay-sub{font-size:12px;color:rgba(255,255,255,.85);margin-top:6px}
+/* ─── ATIVAÇÃO SPLIT: só desktop ≥901px ─── */
+@media(min-width:901px){
+  /* Split = tabela (esq) + painel docado à direita (igual mockup: coluna chapada
+     com border-left, 380px, sem card flutuante/arredondado, altura cheia). */
+  .lanc-split-wrap{
+    display:grid;grid-template-columns:1fr 380px;gap:0;
+    align-items:flex-start;
+  }
+  .lanc-split-left{min-width:0;grid-column:1;grid-row:1;padding-right:18px}
+  .lanc-split-right{
+    grid-column:2;grid-row:1;
+    position:sticky;top:20px;margin-right:-20px;  /* cancela padding-right do main-content → doca no fim da tela */
+    background:var(--surface);border-left:1px solid var(--border2);
+    padding:18px 18px 24px;
+    min-height:calc(100vh - 120px);max-height:calc(100vh - 40px);overflow-y:auto;
+    display:flex;flex-direction:column;gap:0;
+  }
+  .lanc-split-right::-webkit-scrollbar{width:6px}
+  /* Card do form fica "inline" dentro do painel direito (sem duplo box) */
+  .lanc-split-right #lanc-form-card{
+    background:transparent!important;border:none!important;
+    padding:0!important;margin:0!important;box-shadow:none!important;
+  }
+  /* No desktop-split, esconde os elementos de bottom-sheet */
+  .lanc-split-right .sheet-handle-bar{display:none!important}
+  /* Toggle Rápido/NF Completa fica compacto */
+  .lanc-split-right .mode-switch{margin-bottom:12px}
+  /* Cards mobile do histórico só no mobile */
+  .lanc-cards{display:none!important}
+  .lanc-hist-tbl-wrap{display:block}
+  /* Botão "+ Lançar" some no desktop (form sempre visível) */
+  #btn-novo-lanc{display:none!important}
+  /* Drop zone no fluxo natural: logo APÓS Pagamento e ANTES do Salvar (igual mockup aprovado) */
+  .lanc-split-right .dz-lanc{margin-top:14px;padding:22px 18px}
+  .lanc-split-right .dz-lanc-ico{font-size:32px;margin-bottom:8px}
+  /* Banner "Obra Ativa" do form-card fica redundante (já está na sidebar/header) */
+  .lanc-split-right .obra-banner{display:none!important}
+  /* Botões "Foto" antigos no rodapé (Rápido e NF Completa) — redundantes com drop zone */
+  .lanc-split-right label[for="rl-comp"]{display:none!important}
+  .lanc-split-right label[for="nf-comp"]{display:none!important}
+  /* Spacer sticky (80px) do modo Rápido só faz sentido no mobile — some no desktop */
+  .lanc-split-right .rapido-sticky-spacer{display:none!important}
+}
+@media(max-width:900px){
+  /* No mobile: tabela HTML some, cards ficam */
+  .lanc-hist-tbl-wrap{display:none}
+  .lanc-cards{display:block}
+  /* Overlay não faz sentido em mobile (bottom sheet) */
+  .dz-overlay{display:none!important}
+}
+/* ─── Modo Rápido v2 (desktop) — igual mockup Split aprovado ─── */
+.rapido-title-row{display:none}  /* só aparece desktop-split (via media abaixo) */
+.rapido-title-badge{
+  background:var(--brand2);color:#fff;font-size:9.5px;padding:2px 6px;
+  border-radius:10px;font-weight:700;letter-spacing:.4px;
+}
+.rapido-title-txt{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;font-weight:700;color:var(--text);
+}
+.rapido-two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.rapido-inline-input{
+  width:100%;padding:9px 12px;height:40px;
+  background:var(--bg3);border:1.5px solid var(--border2);
+  border-radius:8px;color:var(--text);font-size:13px;
+  font-family:'DM Sans',sans-serif;outline:none;
+  transition:border-color .15s,box-shadow .15s;
+  box-sizing:border-box;
+}
+.rapido-inline-input:focus{border-color:var(--brand2);box-shadow:0 0 0 3px rgba(41,128,185,.15)}
+input[type=date].rapido-inline-input{color-scheme:dark}
+/* ─── Bloco Salvar (Split desktop) — depois da drop zone ─── */
+.split-save-area{display:none}  /* só aparece desktop-split */
+.split-save-btn{
+  width:100%;padding:14px;font-size:14px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,#27AE60,#1E8449);
+  border:none;border-radius:10px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  box-shadow:0 3px 12px rgba(39,174,96,.3);
+  transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.split-save-btn:hover{filter:brightness(1.08)}
+.split-save-btn:active{transform:scale(.98)}
+.split-quick-actions{display:flex;gap:6px;margin-top:8px}
+.split-quick-actions .btn{flex:1;height:34px;font-size:12px}
+@media(min-width:901px){
+  .rapido-title-row{
+    display:flex;align-items:center;gap:8px;margin-bottom:14px;
+  }
+  /* Categorias 5x1 no painel Split (igual mockup aprovado) */
+  .lanc-split-right .cat-picker{
+    grid-template-columns:repeat(5,1fr)!important;gap:5px!important;
+  }
+  .lanc-split-right .cat-tile{padding:8px 6px!important;gap:2px!important;border-width:1.5px!important;border-radius:8px!important;min-width:0}
+  .lanc-split-right .cat-tile-ico{font-size:18px!important}
+  .lanc-split-right .cat-tile-label{font-size:9.5px!important;font-weight:600!important;letter-spacing:.3px}
+  .lanc-split-right .cat-tile.active{box-shadow:none!important}
+  /* No desktop-split: modo Rápido é o único visível — esconde toggle */
+  .lanc-split-right .mode-switch{display:none!important}
+  /* Rodapé antigo com botão salvar pequeno também some — usamos o grande abaixo */
+  .lanc-split-right #rapido-footer-bar{display:none!important}
+  /* Bloco Salvar grande fica visível */
+  .split-save-area{
+    display:flex;flex-direction:column;margin-top:14px;
+  }
+  /* Modo NF Completa fica escondido por padrão no desktop-split (acesso via botão) */
+  /* Desktop-split: form Rápido SEMPRE visível por padrão (sobrepõe base #mode-rapido{display:none}) */
+  .lanc-split-right #mode-rapido{display:block}
+  .lanc-split-right #mode-nf{display:none}
+  .lanc-split-right.show-nf #mode-nf{display:block}
+  .lanc-split-right.show-nf #mode-rapido{display:none}
+  .lanc-split-right.show-nf .split-save-area{display:none}
+  /* ── Medidas idênticas ao mockup opcao-1-split-v2 ── */
+  /* VALOR: .valor-input-lg (56px, 28px, alinhado à esquerda, prefixo R$) */
+  .lanc-split-right .rapido-val-wrap{margin-bottom:12px}
+  .lanc-split-right .rapido-val-lbl{font-size:10.5px;font-weight:700;letter-spacing:.4px;margin-bottom:5px}
+  .lanc-split-right .rapido-val-input{
+    height:56px!important;font-size:28px!important;text-align:left!important;
+    padding:12px 16px 12px 46px!important;border-width:2px;border-radius:12px;
+    letter-spacing:-.4px!important;
+  }
+  .lanc-split-right .rapido-prefix{left:16px;font-size:15px;top:auto;bottom:18px}
+  /* DESCRIÇÃO / FORNECEDOR: .input-base (38px, borda 1.5px, radius 8, 13px) */
+  .lanc-split-right #rl-desc,
+  .lanc-split-right #rl-forn{
+    height:38px;padding:9px 12px;border:1.5px solid var(--border2);
+    border-radius:8px;font-size:13px;
+  }
+  .lanc-split-right .rapido-desc-row{margin-bottom:12px}
+  /* DATA + NF: .input-base */
+  .lanc-split-right .rapido-inline-input{height:38px;border-width:1.5px;border-radius:8px;font-size:13px}
+  .lanc-split-right .rapido-two-col{margin-bottom:12px}
+  /* PAGAMENTO: .pag-opt (9px 10px, 1.5px, radius 8, 12px, sem sombra) */
+  .lanc-split-right .pag-toggle{gap:6px!important;margin-top:0!important}
+  .lanc-split-right .pag-opt{padding:9px 10px!important;border-width:1.5px!important;border-radius:8px!important;font-size:12px!important;box-shadow:none!important}
+  .lanc-split-right .pag-opt.sel-pago,
+  .lanc-split-right .pag-opt.sel-apagar{box-shadow:none!important}
+  /* SALVAR: 44px, radius 8, sombra do mockup */
+  .lanc-split-right .split-save-btn{padding:0!important;height:44px;border-radius:8px;box-shadow:0 3px 10px rgba(39,174,96,.3)}
+  .lanc-split-right .split-quick-actions{margin-top:6px}
+}
+/* Painel de atalhos rodapé do form Split */
+.split-shortcuts{
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--border);
+  font-size:10.5px;color:var(--text3);line-height:1.7;
+}
+.split-shortcuts kbd{
+  background:var(--bg3);padding:1px 5px;border-radius:3px;
+  border:1px solid var(--border2);font-size:10px;color:var(--text2);
+  font-family:'DM Sans',monospace;
+}
 /* ═══ LANCAMENTO BOTTOM SHEET ═══ */
 #lanc-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:498;display:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);transition:opacity .25s}
 #lanc-backdrop.show{display:block}
@@ -1453,6 +1736,14 @@ input,select,textarea{min-height:44px}
   </div>
   <div id="apagar-alert-wrap"></div>
 
+  <!-- ★ SPLIT WRAP — grid ativo só desktop (>900px). Mobile mantém layout linear. -->
+  <div class="lanc-split-wrap">
+  <div class="lanc-split-right">
+  <div class="dz-overlay" id="lanc-dz-overlay" aria-hidden="true">
+    <div class="dz-overlay-ico">📎</div>
+    <div class="dz-overlay-txt">Solte o comprovante aqui</div>
+    <div class="dz-overlay-sub">Imagem ou PDF</div>
+  </div>
   <div class="card" id="lanc-form-card" style="margin-bottom:14px">
     <div class="sheet-handle-bar">
       <div class="sheet-drag-pill"></div>
@@ -1491,38 +1782,72 @@ input,select,textarea{min-height:44px}
       <button class="mode-sw-btn active" id="msw-nf" onclick="setLancMode('nf')" role="tab" aria-selected="true">📋 NF Completa</button>
     </div>
 
-    <!-- ═══ MODO RÁPIDO ═══ -->
+    <!-- ═══ MODO RÁPIDO (v2 desktop — matches mockup Split aprovado 2026-09-28) ═══ -->
     <div id="mode-rapido">
+      <!-- Título / status — visível só desktop-split -->
+      <div class="rapido-title-row">
+        <span class="rapido-title-badge">SEMPRE ATIVO</span>
+        <span class="rapido-title-txt">⚡ Novo lançamento</span>
+      </div>
+
       <div id="recentes-wrap" style="display:none">
         <div style="font-size:10.5px;color:var(--text3);font-weight:600;margin-bottom:4px">⚡ RECENTES</div>
         <div class="recentes-chips" id="recentes-chips"></div>
       </div>
+
+      <!-- VALOR (input grande) -->
       <div class="rapido-val-wrap">
         <div class="rapido-val-lbl">Valor</div>
         <span class="rapido-prefix">R$</span>
         <input type="text" id="rl-val" class="rapido-val-input fin-val" inputmode="decimal" placeholder="0,00" style="padding-left:40px" onkeydown="if(event.key==='Enter'){document.getElementById('rl-desc').focus();}">
       </div>
-      <div class="cat-picker" role="radiogroup" style="margin-bottom:14px">
-        <button type="button" class="cat-tile" data-rlcat="material" onclick="selectRLCat('material',this)"><span class="cat-tile-ico">🧱</span><span class="cat-tile-label">Materiais</span></button>
-        <button type="button" class="cat-tile" data-rlcat="funcionario" onclick="selectRLCat('funcionario',this)"><span class="cat-tile-ico">👷</span><span class="cat-tile-label">Funcionários</span></button>
-        <button type="button" class="cat-tile" data-rlcat="burocracia" onclick="selectRLCat('burocracia',this)"><span class="cat-tile-ico">📋</span><span class="cat-tile-label">Burocracia</span></button>
-        <button type="button" class="cat-tile" data-rlcat="terreno" onclick="selectRLCat('terreno',this)"><span class="cat-tile-ico">🏡</span><span class="cat-tile-label">Terreno</span></button>
-        <button type="button" class="cat-tile" data-rlcat="outro" onclick="selectRLCat('outro',this)"><span class="cat-tile-ico">📦</span><span class="cat-tile-label">Outros</span></button>
-      </div>
+
+      <!-- DESCRIÇÃO -->
       <div class="rapido-desc-row">
         <div class="rapido-val-lbl">Descrição</div>
-        <input type="text" id="rl-desc" placeholder="Ex: Almoço equipe, Uber obra..." style="width:100%" onkeydown="if(event.key==='Enter'){salvarRapido();}">
+        <input type="text" id="rl-desc" placeholder="Ex: Cimento 50kg, Diária pedreiro" style="width:100%" list="rl-desc-list" autocomplete="off" onkeydown="if(event.key==='Enter'){document.getElementById('rl-forn').focus();}">
+        <datalist id="rl-desc-list"></datalist>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
-        <div style="flex:1">
-          <div class="rapido-val-lbl" style="margin-bottom:4px">Pagamento</div>
-          <div class="pag-toggle">
-            <label class="pag-opt sel-pago" id="rl-opt-pago" onclick="setRLPag('pago')"><input type="radio" name="rl-pag" value="pago" checked style="position:absolute;opacity:0;width:0;height:0"> ✅ Pago</label>
-            <label class="pag-opt" id="rl-opt-apagar" onclick="setRLPag('a_pagar')"><input type="radio" name="rl-pag" value="a_pagar" style="position:absolute;opacity:0;width:0;height:0"> ⏳ A Pagar</label>
-          </div>
+
+      <!-- CATEGORIA (1-5) -->
+      <div class="rapido-val-lbl" style="margin-top:4px">Categoria (1-5)</div>
+      <div class="cat-picker" role="radiogroup" style="margin-bottom:14px">
+        <button type="button" class="cat-tile" data-rlcat="material" onclick="selectRLCat('material',this)" title="Tecla 1"><span class="cat-tile-ico">🧱</span><span class="cat-tile-label">Mate</span></button>
+        <button type="button" class="cat-tile" data-rlcat="funcionario" onclick="selectRLCat('funcionario',this)" title="Tecla 2"><span class="cat-tile-ico">👷</span><span class="cat-tile-label">Func</span></button>
+        <button type="button" class="cat-tile" data-rlcat="burocracia" onclick="selectRLCat('burocracia',this)" title="Tecla 3"><span class="cat-tile-ico">📋</span><span class="cat-tile-label">Buro</span></button>
+        <button type="button" class="cat-tile" data-rlcat="terreno" onclick="selectRLCat('terreno',this)" title="Tecla 4"><span class="cat-tile-ico">🏡</span><span class="cat-tile-label">Terr</span></button>
+        <button type="button" class="cat-tile" data-rlcat="outro" onclick="selectRLCat('outro',this)" title="Tecla 5"><span class="cat-tile-ico">📦</span><span class="cat-tile-label">Outr</span></button>
+      </div>
+
+      <!-- FORNECEDOR -->
+      <div class="rapido-desc-row">
+        <div class="rapido-val-lbl">Fornecedor</div>
+        <input type="text" id="rl-forn" placeholder="Nome ou razão social" style="width:100%" list="rl-forn-list" autocomplete="off">
+        <datalist id="rl-forn-list"></datalist>
+      </div>
+
+      <!-- DATA + NF (2 colunas) -->
+      <div class="rapido-two-col">
+        <div>
+          <div class="rapido-val-lbl">Data</div>
+          <input type="date" id="rl-data" class="rapido-inline-input">
+        </div>
+        <div>
+          <div class="rapido-val-lbl">NF (opcional)</div>
+          <input type="text" id="rl-nf" class="rapido-inline-input" placeholder="NF-1234">
         </div>
       </div>
-      <div style="padding-bottom:80px"></div><!-- espaço para footer sticky não cobrir conteúdo -->
+
+      <!-- PAGAMENTO -->
+      <div style="margin-bottom:4px">
+        <div class="rapido-val-lbl" style="margin-bottom:4px">Pagamento</div>
+        <div class="pag-toggle">
+          <label class="pag-opt sel-pago" id="rl-opt-pago" onclick="setRLPag('pago')"><input type="radio" name="rl-pag" value="pago" checked style="position:absolute;opacity:0;width:0;height:0"> ✅ Pago</label>
+          <label class="pag-opt" id="rl-opt-apagar" onclick="setRLPag('a_pagar')"><input type="radio" name="rl-pag" value="a_pagar" style="position:absolute;opacity:0;width:0;height:0"> ⏳ A pagar</label>
+        </div>
+      </div>
+
+      <div class="rapido-sticky-spacer" style="padding-bottom:80px"></div><!-- espaço para footer sticky não cobrir conteúdo (só mobile) -->
     </div>
     <!-- footer sticky do modo Rápido — igual ao NF Completa -->
     <div class="form-footer-bar" id="rapido-footer-bar">
@@ -1620,6 +1945,51 @@ input,select,textarea{min-height:44px}
     </div>
   </div>
 
+  <!-- ★ DROP ZONE do comprovante (desktop) — dentro do painel direito -->
+  <div class="dz-lanc" id="lanc-dz" onclick="lancPickFoto()">
+    <div id="lanc-dz-empty">
+      <div class="dz-lanc-ico">📎</div>
+      <div class="dz-lanc-title">Comprovante da despesa</div>
+      <div class="dz-lanc-sub">Arraste o arquivo, cole com <kbd>Cmd+V</kbd> ou clique para escolher</div>
+      <button type="button" class="dz-lanc-btn" onclick="event.stopPropagation();lancPickFoto()">📷 Escolher arquivo</button>
+      <div class="dz-lanc-req">* obrigatório (compliance)</div>
+    </div>
+    <div id="lanc-dz-preview" style="display:none">
+      <div class="dz-preview">
+        <div class="dz-thumb" id="lanc-dz-thumb">📄</div>
+        <div class="dz-info">
+          <div class="dz-nm" id="lanc-dz-nm">arquivo.jpg</div>
+          <div class="dz-meta" id="lanc-dz-meta">245 KB · anexado agora</div>
+        </div>
+        <div class="dz-actions">
+          <button onclick="event.stopPropagation();lancPickFoto()" title="Trocar arquivo">↻</button>
+          <button class="del" onclick="event.stopPropagation();lancResetFoto()" title="Remover">✕</button>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="lanc-dz-input" accept="image/*,application/pdf" style="display:none" onchange="lancHandleFileInput(event)">
+  </div>
+  <!-- ★ Bloco Salvar (Split desktop) — só aparece desktop-split (>900px) -->
+  <div class="split-save-area">
+    <button type="button" class="split-save-btn" onclick="salvarRapido()">
+      💾 Salvar (Cmd+Enter)
+    </button>
+    <div class="split-quick-actions">
+      <button type="button" class="btn btn-ghost" onclick="lancLimparRapido()">🧹 Limpar (Esc)</button>
+      <button type="button" class="btn btn-ghost" onclick="setLancMode('nf')">📋 NF Completa…</button>
+    </div>
+  </div>
+
+  <!-- Atalhos rodapé do form Split -->
+  <div class="split-shortcuts">
+    <div style="font-weight:700;color:var(--text2);margin-bottom:6px">Atalhos:</div>
+    <kbd>N</kbd> foca no valor · <kbd>1-5</kbd> categoria<br>
+    <kbd>Tab</kbd> avança · <kbd>Cmd+↵</kbd> salva · <kbd>Esc</kbd> limpa<br>
+    <kbd>Cmd+V</kbd> cola screenshot como comprovante
+  </div>
+  </div><!-- /.lanc-split-right -->
+
+  <div class="lanc-split-left">
   <!-- HISTÓRICO -->
   <div class="card">
     <div class="card-hdr">
@@ -1682,6 +2052,8 @@ input,select,textarea{min-height:44px}
     </div>
     <div id="tabela" role="region"></div>
   </div>
+  </div><!-- /.lanc-split-left -->
+  </div><!-- /.lanc-split-wrap -->
 </div>
 
 <!-- PENDÊNCIAS -->
@@ -2688,7 +3060,7 @@ function showPage(id,el){
   if(id==='documentos')renderDocs();
   if(id==='cadastro')renderOA();
   if(id==='auditoria')renderAudit();
-  if(id==='lancamentos'){renderT();updAPagar();}
+  if(id==='lancamentos'){renderT();updAPagar(); if(window.innerWidth>900){setLancMode('rapido');}}
   closeSidebar();updBanners();
   localStorage.setItem('lupa_active_page',id);
 }
@@ -2831,7 +3203,32 @@ function setLancMode(mode){
   document.getElementById('msw-nf').classList.toggle('active',!isRapido);
   const rf=document.getElementById('rapido-footer-bar');
   if(rf)rf.style.display=isRapido?'flex':'none';
-  if(isRapido){renderRecentesRapido();setTimeout(()=>document.getElementById('rl-val').focus(),80);}
+  /* ★ Desktop-split: toggle NF via classe no painel direito */
+  const panel=document.querySelector('.lanc-split-right');
+  if(panel) panel.classList.toggle('show-nf', !isRapido);
+  if(isRapido){
+    renderRecentesRapido();
+    lancRefreshDataLists();
+    /* Data hoje se vazio */
+    const rlData=document.getElementById('rl-data'); if(rlData&&!rlData.value) rlData.value=td();
+    setTimeout(()=>document.getElementById('rl-val').focus(),80);
+  }
+}
+
+/* ★ Preenche datalists de fornecedor/descrição recentes (autocomplete Split) */
+function lancRefreshDataLists(){
+  try{
+    const fornList=document.getElementById('rl-forn-list');
+    if(fornList){
+      const arr=JSON.parse(localStorage.getItem('lupa_forn_recentes_v1')||'[]');
+      fornList.innerHTML=arr.map(x=>`<option value="${esc(x.forn||'')}">`).join('');
+    }
+    const descList=document.getElementById('rl-desc-list');
+    if(descList){
+      const arr=JSON.parse(localStorage.getItem('lupa_recentes_v1')||'[]');
+      descList.innerHTML=arr.map(x=>`<option value="${esc(x.desc||'')}">`).join('');
+    }
+  }catch(e){}
 }
 function selectRLCat(cat,el){
   rlCat=cat;
@@ -2861,14 +3258,198 @@ function onRLComp(e){
     if(ph)ph.textContent='Foto';
   }
 }
+/* ═══════════════════════════════════════════════════════════════
+   ★ DROP ZONE COMPROVANTE (Split desktop) — approved 2026-09-28
+   3 formas de anexar: drop, paste Cmd+V, drop no painel inteiro
+   Sincroniza com rlFile/cFile (fluxos Rápido e NF Completa)
+   ═══════════════════════════════════════════════════════════════ */
+let lancFotoFile = null;      // { name, size, type, url (dataURL), source }
+let lancDropInitialized = false;
+
+function lancPickFoto(){
+  const inp = document.getElementById('lanc-dz-input');
+  if(inp) inp.click();
+}
+function lancHandleFileInput(e){
+  const f = e.target.files && e.target.files[0];
+  if(f) lancProcessFile(f, 'seleção');
+}
+function lancProcessFile(file, source){
+  if(!file) return;
+  const okType = (file.type||'').startsWith('image/') || file.type === 'application/pdf';
+  if(!okType){ toast('Formato não suportado — envie imagem ou PDF.','error'); return; }
+  if(file.size > 8 * 1024 * 1024){ toast('Arquivo maior que 8MB.','error'); return; }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    lancFotoFile = {
+      name: file.name || `screenshot-${Date.now()}.png`,
+      size: file.size,
+      type: file.type,
+      url: ev.target.result,
+      source: source || 'arquivo',
+      raw: file
+    };
+    /* ★ Sincroniza com fluxos existentes — assim salvarRapido/salvarNFMulti veem a foto */
+    rlFile = file;
+    rlFileB64 = ev.target.result;
+    cFile = file;
+    cFileB64 = ev.target.result;
+    lancRenderFotoPreview();
+    toast(`📎 Comprovante anexado (${source||'arquivo'})`,'success');
+  };
+  reader.readAsDataURL(file);
+}
+function lancRenderFotoPreview(){
+  const dz = document.getElementById('lanc-dz');
+  const empty = document.getElementById('lanc-dz-empty');
+  const preview = document.getElementById('lanc-dz-preview');
+  if(!dz || !empty || !preview) return;
+  if(!lancFotoFile){
+    dz.classList.remove('filled','missing');
+    empty.style.display = '';
+    preview.style.display = 'none';
+    return;
+  }
+  dz.classList.add('filled');
+  dz.classList.remove('missing');
+  empty.style.display = 'none';
+  preview.style.display = '';
+  const thumb = document.getElementById('lanc-dz-thumb');
+  if(lancFotoFile.type.startsWith('image/')){
+    thumb.innerHTML = `<img src="${esc(lancFotoFile.url)}" alt="preview">`;
+  } else {
+    thumb.innerHTML = '📄';
+  }
+  document.getElementById('lanc-dz-nm').textContent = lancFotoFile.name;
+  const kb = (lancFotoFile.size / 1024).toFixed(0);
+  document.getElementById('lanc-dz-meta').textContent = `${kb} KB · via ${lancFotoFile.source}`;
+}
+function lancResetFoto(){
+  lancFotoFile = null;
+  rlFile = null; rlFileB64 = null;
+  cFile = null;  cFileB64 = null;
+  const inp = document.getElementById('lanc-dz-input');
+  if(inp) inp.value = '';
+  lancRenderFotoPreview();
+}
+function lancDzMissingFlash(){
+  const dz = document.getElementById('lanc-dz');
+  if(!dz) return;
+  dz.classList.add('missing');
+  dz.scrollIntoView({behavior:'smooth', block:'center'});
+  setTimeout(()=>dz.classList.remove('missing'), 1500);
+}
+function initLancDropZone(){
+  if(lancDropInitialized) return;
+  lancDropInitialized = true;
+  const dz = document.getElementById('lanc-dz');
+  const panel = document.querySelector('.lanc-split-right');
+  const overlay = document.getElementById('lanc-dz-overlay');
+  if(!dz || !panel || !overlay) return;
+
+  /* Drop zone específica */
+  dz.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', e => { e.stopPropagation(); dz.classList.remove('dragover'); });
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); e.stopPropagation();
+    dz.classList.remove('dragover');
+    const f = e.dataTransfer && e.dataTransfer.files[0];
+    if(f) lancProcessFile(f, 'drag-and-drop');
+  });
+
+  /* Overlay do painel inteiro */
+  let dragDepth = 0;
+  panel.addEventListener('dragenter', e => {
+    if(!e.dataTransfer || !e.dataTransfer.types.includes('Files')) return;
+    e.preventDefault();
+    dragDepth++;
+    overlay.classList.add('show');
+  });
+  panel.addEventListener('dragover', e => {
+    if(!e.dataTransfer || !e.dataTransfer.types.includes('Files')) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  });
+  panel.addEventListener('dragleave', () => {
+    dragDepth--;
+    if(dragDepth <= 0){ dragDepth = 0; overlay.classList.remove('show'); }
+  });
+  panel.addEventListener('drop', e => {
+    e.preventDefault();
+    dragDepth = 0;
+    overlay.classList.remove('show');
+    const f = e.dataTransfer && e.dataTransfer.files[0];
+    if(f) lancProcessFile(f, 'drop no painel');
+  });
+
+  /* Paste (Cmd+V) — cola screenshot do clipboard */
+  document.addEventListener('paste', e => {
+    /* Só ativa na aba Lançamentos */
+    const activePage = document.querySelector('.page.active');
+    if(!activePage || activePage.id !== 'page-lancamentos') return;
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    let fileItem = null;
+    for(const it of items){
+      if(it.kind === 'file' && ((it.type||'').startsWith('image/') || it.type === 'application/pdf')){
+        fileItem = it; break;
+      }
+    }
+    if(!fileItem) return;  /* deixa colar texto normal */
+    e.preventDefault();
+    const f = fileItem.getAsFile();
+    if(f){
+      const named = f.name ? f : new File([f], `clipboard-${Date.now()}.png`, {type: f.type});
+      lancProcessFile(named, 'paste (clipboard)');
+    }
+  });
+
+  /* Atalhos: N foca valor, 1-5 categoria, Cmd/Ctrl+Enter salva, Esc limpa */
+  document.addEventListener('keydown', e => {
+    const activePage = document.querySelector('.page.active');
+    if(!activePage || activePage.id !== 'page-lancamentos') return;
+    if(document.getElementById('login-ov')?.style.display !== 'none') return;
+    const tag = document.activeElement.tagName;
+    const inField = ['INPUT','SELECT','TEXTAREA'].includes(tag);
+    const isMeta = e.metaKey || e.ctrlKey;
+
+    if(e.key === 'n' && !inField && !isMeta){
+      e.preventDefault();
+      const rlVal = document.getElementById('rl-val');
+      if(rlVal){ setLancMode('rapido'); setTimeout(()=>rlVal.focus(),50); }
+    }
+    if(isMeta && e.key === 'Enter'){
+      /* Só se estiver com foco no form de lançamento (rl-* ou nf-*) */
+      const activeId = document.activeElement.id || '';
+      const isRapido = activeId.startsWith('rl-');
+      const isNF = activeId.startsWith('nf-') || activeId.startsWith('nfm-');
+      if(isRapido){ e.preventDefault(); salvarRapido(); }
+      else if(isNF){ e.preventDefault(); salvarNFMulti(); }
+    }
+    if(/^[1-5]$/.test(e.key) && !inField && !isMeta){
+      const idx = parseInt(e.key,10) - 1;
+      const mode = document.getElementById('mode-rapido')?.style.display !== 'none' ? 'rapido' : 'nf';
+      const attr = mode === 'rapido' ? 'data-rlcat' : 'data-nfcat';
+      const tiles = document.querySelectorAll(`[${attr}]`);
+      if(tiles[idx]){
+        tiles[idx].click();
+      }
+    }
+  });
+}
+
 async function salvarRapido(){
   const ob=getOA();if(!ob){toast('Selecione uma obra antes de lançar.','error');return;}
   const val=parseFinVal(document.getElementById('rl-val'));
   if(!val||val<=0){toast('Informe o valor.','error');document.getElementById('rl-val').focus();return;}
   if(!rlCat){toast('Selecione a categoria.','error');return;}
-  if(!rlFile){toast('📷 Anexe uma foto do comprovante.','error');document.getElementById('rl-comp').click();return;}
+  if(!rlFile){toast('📎 Anexe o comprovante antes de salvar.','error');lancDzMissingFlash();return;}
   const desc=(document.getElementById('rl-desc').value||'').trim()||({material:'Material',funcionario:'Funcionário',burocracia:'Burocracia',terreno:'Terreno',outro:'Despesa'}[rlCat]);
   const statusPag=document.querySelector('input[name="rl-pag"]:checked')?.value||'pago';
+  /* ★ Novos campos do form Split v2 (fornecedor, data, NF opcional) */
+  const forn=(document.getElementById('rl-forn')?.value||'').trim();
+  const dataInput=document.getElementById('rl-data')?.value;
+  const dataLanc=dataInput||td();
+  const nfNum=(document.getElementById('rl-nf')?.value||'').trim();
   let cloudUrl='';
   if(rlFile){
     try{
@@ -2878,22 +3459,35 @@ async function salvarRapido(){
     }catch(e){}
   }
   ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:rlCat,subcat:'',desc:norm(desc),valor:val,
-    data:td(),obs:'Lançamento rápido',comprovante:rlFile?rlFile.name:'',fileB64:rlFileB64||'',cloudinaryUrl:cloudUrl,
-    fornecedor:'',statusPag,nfNum:'',extra:{},ts:Date.now()});
+    data:dataLanc,obs:'Lançamento rápido',comprovante:rlFile?rlFile.name:'',fileB64:rlFileB64||'',cloudinaryUrl:cloudUrl,
+    fornecedor:norm(forn),statusPag,nfNum,extra:{},ts:Date.now()});
   addAudit('Lançamento rápido',desc+' — '+fmt(val));
   saveRecentEntry(rlCat, desc, val);
+  if(forn)saveFornRecente(forn,rlCat);
   toast(`✅ ${desc} · ${fmt(val)} salvo!`,'success');
   // Reset
+  lancLimparRapido();
+  /* Só fecha o bottom sheet no mobile — no desktop-split o form fica aberto */
+  if(window.matchMedia('(max-width:900px)').matches) closeLancSheet();
+  save();renderT();updKpis();checkBudgetAlert();updAPagar();
+  /* Refoca no valor para próximo lançamento rápido (desktop) */
+  if(window.matchMedia('(min-width:901px)').matches) setTimeout(()=>document.getElementById('rl-val')?.focus(),100);
+}
+
+/* ★ Helper: limpa form Rápido completo (usado após salvar e no botão Limpar) */
+function lancLimparRapido(){
   document.getElementById('rl-val').value='';
   document.getElementById('rl-desc').value='';
-  const rlCompEl=document.getElementById('rl-comp');if(rlCompEl)rlCompEl.value='';
-  const rlCompNm=document.getElementById('rl-comp-nm');if(rlCompNm)rlCompNm.textContent='';
-  rlFile=null;rlFileB64=null;
+  const rlForn=document.getElementById('rl-forn'); if(rlForn) rlForn.value='';
+  const rlNF=document.getElementById('rl-nf'); if(rlNF) rlNF.value='';
+  const rlData=document.getElementById('rl-data'); if(rlData) rlData.value=td();
+  const rlCompEl=document.getElementById('rl-comp'); if(rlCompEl) rlCompEl.value='';
+  const rlCompNm=document.getElementById('rl-comp-nm'); if(rlCompNm) rlCompNm.textContent='';
+  rlFile=null; rlFileB64=null;
+  lancResetFoto();
   rlCat='';
   document.querySelectorAll('[data-rlcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   setRLPag('pago');
-  closeLancSheet();
-  save();renderT();updKpis();checkBudgetAlert();updAPagar();
 }
 /* ══ CHIPS RECENTES ══ */
 function saveRecentEntry(cat,desc,val){
@@ -3895,7 +4489,7 @@ async function salvarNFMulti(){
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
-  if(!cFile){toast('📎 Anexe o comprovante da NF (obrigatório).','error');document.getElementById('nf-comp').click();return;}
+  if(!cFile){toast('📎 Anexe o comprovante da NF (obrigatório).','error');lancDzMissingFlash();return;}
   const nfNum=document.getElementById('nfm-num').value.trim()||'NF-'+Date.now();
   const nfForn=norm(document.getElementById('nfm-forn').value||'');
   const data=document.getElementById('nf-data-f').value||td();
@@ -3923,7 +4517,10 @@ async function salvarNFMulti(){
     toast(nfItems.length+' item(s) · '+fmt(total)+' da NF '+nfNum+' salvos!','success');
   }
   nfItems=[];nfCat='';
-  limparL();closeLancSheet();save();renderT();updKpis();checkBudgetAlert();updAPagar();
+  lancResetFoto();
+  limparL();
+  if(window.matchMedia('(max-width:900px)').matches) closeLancSheet();
+  save();renderT();updKpis();checkBudgetAlert();updAPagar();
 }
 function selectCat(cat,el){
   document.getElementById('f-cat').value=cat;
@@ -4083,7 +4680,50 @@ function renderT(keepPage=false){
     <span>${lancPage+1}/${totalPages} · ${items.length} item${items.length!==1?'s':''}</span>
     <button class="btn btn-sm" onclick="lancGoPage(${lancPage+1})" ${lancPage>=totalPages-1?'disabled':''}>Próxima →</button>
   </div>`:'';
-  w.innerHTML=summaryBar+`<div class="lanc-cards">${cards}</div>`+pgCtrl;
+  /* ★ Tabela HTML densa (desktop) — CSS decide via media query se mostra tabela ou cards */
+  const rows = pageItems.map(l => {
+    const isPago=(l.statusPag||'pago')==='pago';
+    const catClr=CC[l.cat]||'#888';
+    const desc=l.desc||l.descricao||'—';
+    const obraNm=todasObras?(ST.obras.find(o=>o.id===l.obraId)?.nome||''):'';
+    let compCell='<span style="color:var(--text3)">—</span>';
+    if(l.cloudinaryUrl)compCell=`<a href="${esc(l.cloudinaryUrl)}" target="_blank" class="hist-comp" title="Ver comprovante">☁️ Ver</a>`;
+    else if(l.fileB64)compCell=`<a href="${esc(l.fileB64)}" download="${esc(l.comprovante||'comprovante')}" class="hist-comp">📎 baixar</a>`;
+    else if(l.comprovante)compCell=`<span class="hist-comp" style="color:var(--text3)">📎 ${esc(l.comprovante.slice(0,14))}</span>`;
+    const catName=(CL[l.cat]||l.cat||'').slice(0,4);
+    return `<tr>
+      <td class="data">${esc(fD(l.data))}</td>
+      <td class="cat-cell"><span class="cat-tag" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${esc(catName)}</span></td>
+      <td>${esc(desc)}${obraNm?`<span style="margin-left:6px;font-size:10.5px;color:var(--text3)">🏠 ${esc(obraNm)}</span>`:''}</td>
+      <td style="color:var(--text2);font-size:12px">${esc(l.fornecedor||'—')}</td>
+      <td class="valor">${fmt(l.valor)}</td>
+      <td><span class="pag-badge ${isPago?'pago':'a_pagar'}">${isPago?'✅ Pago':'⏳ Pag.'}</span></td>
+      <td style="color:var(--text3);font-size:11px">${esc(l.nfNum||'—')}</td>
+      <td>${compCell}</td>
+      <td class="actions">
+        ${!isPago?`<button onclick="marcarPago('${l.id}')" title="Marcar pago">✓</button>`:''}
+        <button onclick="openEditLanc('${l.id}')" title="Editar">✏️</button>
+        <button class="del" onclick="delL('${l.id}')" title="Remover">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+  const table = `<div class="lanc-hist-tbl-wrap">
+    <table class="lanc-hist-tbl">
+      <thead><tr>
+        <th onclick="sortT('data')" class="${sortCol==='data'?'sort-active':''}" title="Ordenar por data">Data ${sortCol==='data'?(sortDir==='desc'?'↓':'↑'):''}</th>
+        <th>Cat</th>
+        <th onclick="sortT('desc')" class="${sortCol==='desc'?'sort-active':''}" title="Ordenar por descrição">Descrição ${sortCol==='desc'?(sortDir==='desc'?'↓':'↑'):''}</th>
+        <th>Fornecedor</th>
+        <th onclick="sortT('valor')" class="${sortCol==='valor'?'sort-active':''}" style="text-align:right" title="Ordenar por valor">Valor ${sortCol==='valor'?(sortDir==='desc'?'↓':'↑'):''}</th>
+        <th>Pag</th>
+        <th>NF</th>
+        <th>📎</th>
+        <th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+  w.innerHTML=summaryBar+table+`<div class="lanc-cards">${cards}</div>`+pgCtrl;
 }
 function setCatFil(el,cat){
   document.querySelectorAll('#lanc-cat-chips .cat-chip').forEach(c=>c.classList.remove('active'));
@@ -5005,6 +5645,9 @@ function initApp(){
   checkBudgetAlert();checkDocAlert();checkOverdueBanner();updAPagar();
   document.querySelectorAll('.nav-item[tabindex]').forEach(el=>{el.addEventListener('keydown',e=>{if(e.key==='Enter')el.click();});});
   initFinInputs();
+  initLancDropZone();  /* ★ Split desktop: drag/paste/drop + atalhos */
+  lancRefreshDataLists();  /* ★ Split desktop: datalists de fornecedor/descrição recentes */
+  const rlDataInit=document.getElementById('rl-data'); if(rlDataInit&&!rlDataInit.value) rlDataInit.value=td();
   // Firebase — banco de dados em tempo real (substitui Google Sheets)
   initFirebase();
   // Google Auth opcional — apenas para OCR de notas fiscais
