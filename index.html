@@ -573,6 +573,46 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .doc-card-meta{font-size:10.5px;color:var(--text3);margin-left:8px;display:flex;flex-direction:column;gap:2px}
 .doc-card-acts{display:flex;gap:5px;margin-left:8px;margin-top:2px}
 @media(max-width:480px){.doc-grid-new{grid-template-columns:1fr}}
+.doc-card-new.vigente::before{background:var(--green)}
+.doc-card-new.vigente{border-color:rgba(39,174,96,.28)}
+/* ═══ DOCUMENTOS · SPLIT ═══ */
+.doc-split-wrap{display:block}
+.doc-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.doc-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;font-size:11.5px;color:var(--text2);cursor:pointer;transition:all .15s;user-select:none;-webkit-user-select:none;font-weight:600}
+.doc-chip:hover{border-color:var(--brand2);color:var(--brand3)}
+.doc-chip.active{background:rgba(41,128,185,.12);border-color:var(--brand2);color:var(--brand3)}
+/* validade destacada com feedback ao vivo */
+.doc-val-box{border:1.5px solid var(--border2);border-radius:9px;padding:10px 12px;margin-top:12px;background:var(--bg3);transition:border-color .18s,background .18s}
+.doc-val-box.has{border-color:var(--yellow);background:var(--yellow-bg)}
+.doc-val-box-top{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.doc-val-ico{font-size:15px}
+.doc-val-ttl{font-size:11.5px;font-weight:700;color:var(--text)}
+.doc-val-hint{font-size:10px;color:var(--text3);margin-left:auto}
+.doc-val-fb{font-size:10.5px;margin-top:7px;color:var(--text3)}
+/* drop zone documento (espelha dz-lanc) */
+.dz-doc{margin-top:14px;padding:20px 16px;background:linear-gradient(180deg,rgba(41,128,185,.06),rgba(39,174,96,.03));border:2px dashed var(--border2);border-radius:12px;text-align:center;transition:all .18s;cursor:pointer;position:relative}
+.dz-doc:hover{border-color:var(--brand2);background:rgba(41,128,185,.08)}
+.dz-doc.dragover{border-color:var(--green);border-style:solid;background:var(--green-bg);transform:scale(1.02);box-shadow:0 0 0 4px rgba(39,174,96,.18)}
+.dz-doc.missing{border-color:var(--red);animation:dzMissing 1s ease-out}
+.dz-doc-ico{font-size:28px;margin-bottom:6px;opacity:.75}
+.dz-doc-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.dz-doc-sub{font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:8px}
+.dz-doc-sub kbd{background:var(--bg3);padding:1px 5px;border-radius:3px;border:1px solid var(--border2);font-size:10px;color:var(--text2)}
+.dz-doc-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.dz-doc-btn:hover{border-color:var(--brand2);background:var(--surface3)}
+.dz-doc-req{display:inline-block;margin-top:8px;font-size:10px;color:var(--red);font-weight:600;letter-spacing:.3px}
+.dz-doc.filled{padding:12px;background:var(--green-bg);border-color:var(--green);border-style:solid;text-align:left;cursor:default}
+.dz-doc.filled:hover{background:var(--green-bg);border-color:var(--green)}
+.dz-doc.filled .dz-doc-req{color:var(--green)}
+/* ativação split: só desktop ≥901px (mobile mantém empilhado) */
+@media(min-width:901px){
+  .doc-split-wrap{display:grid;grid-template-columns:1fr 380px;gap:0;align-items:flex-start}
+  .doc-split-left{min-width:0;grid-column:1;grid-row:1;padding-right:18px}
+  .doc-split-right{grid-column:2;grid-row:1;position:sticky;top:20px;margin-right:-20px;background:var(--surface);border-left:1px solid var(--border2);padding:18px 18px 24px;min-height:calc(100vh - 120px);max-height:calc(100vh - 40px);overflow-y:auto}
+  .doc-split-right::-webkit-scrollbar{width:6px}
+  .doc-split-right #doc-form-card{background:transparent!important;border:none!important;padding:0!important;margin:0!important;box-shadow:none!important}
+  .doc-split-right .obra-banner-warn{display:none}
+}
 /* ═══ TABLE ROW COLOR ═══ */
 .trow-cat{border-left:3px solid transparent}
 /* ═══ CHARTS ═══ */
@@ -2133,78 +2173,115 @@ input,select,textarea{min-height:44px}
 </div>
 
 <!-- DOCUMENTOS -->
-<div id="page-documentos" class="page" role="main">
+<div id="page-documentos" class="page" role="main" style="position:relative">
+  <div class="dz-overlay" id="doc-dz-overlay" aria-hidden="true">
+    <div class="dz-overlay-ico">📎</div>
+    <div class="dz-overlay-txt">Solte o documento aqui</div>
+    <div class="dz-overlay-sub">Imagem ou PDF</div>
+  </div>
   <div class="page-hdr">
     <div><div class="page-title">Documentos Oficiais</div><div class="page-sub">Contratos, alvarás, certidões e documentos de obras</div></div>
   </div>
-  <!-- FORMULÁRIO DE ANEXO -->
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-hdr" style="margin-bottom:14px">
-      <div><div class="card-title">📁 Anexar Documento</div><div class="chart-subtitle">Vinculado à obra selecionada</div></div>
-    </div>
-    <div class="obra-banner" role="status">
-      <div class="obra-banner-top">
-        <span class="obra-banner-badge">🏗️ Obra Ativa</span>
-        <span class="obra-banner-label">— documentos vinculados a</span>
+
+  <div class="doc-split-wrap">
+    <!-- LISTA (esquerda) -->
+    <div class="doc-split-left">
+      <div class="card">
+        <div style="margin-bottom:12px">
+          <div class="card-title" style="margin-bottom:2px">📂 Documentos Salvos</div>
+          <div class="chart-subtitle" style="margin-bottom:10px"><span id="doc-count">0</span> documento(s) vinculados a esta obra</div>
+          <div class="doc-filtros">
+            <input type="text" id="doc-search" placeholder="🔍 Buscar documento..." oninput="renderDocs()" aria-label="Buscar documentos">
+          </div>
+        </div>
+        <div class="doc-chips" id="doc-chips" role="tablist" aria-label="Filtrar por categoria"></div>
+        <select id="d-fil" style="display:none"><option value=""></option></select>
+        <div class="doc-grid-new" id="doc-grid" role="list"></div>
       </div>
-      <div class="obra-banner-plate">
-        <div class="obra-banner-name" id="doc-ob-nm">—</div>
-      </div>
-      <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
     </div>
 
-    <!-- Categoria do documento -->
-    <div class="fsec-title" style="margin-top:14px">Categoria do documento</div>
-    <div class="doc-cat-picker" role="radiogroup" aria-label="Categoria do documento">
-      <button type="button" class="doc-cat-tile" data-cat="terreno" onclick="selectDocCat('terreno',this)"><span class="doc-cat-tile-ico">🏡</span>Terreno / Imóvel</button>
-      <button type="button" class="doc-cat-tile" data-cat="obra" onclick="selectDocCat('obra',this)"><span class="doc-cat-tile-ico">🏗️</span>Obra / Construção</button>
-      <button type="button" class="doc-cat-tile" data-cat="prefeitura" onclick="selectDocCat('prefeitura',this)"><span class="doc-cat-tile-ico">🏛️</span>Prefeitura Macaé</button>
-      <button type="button" class="doc-cat-tile" data-cat="financeiro" onclick="selectDocCat('financeiro',this)"><span class="doc-cat-tile-ico">💰</span>Financeiro</button>
-      <button type="button" class="doc-cat-tile" data-cat="contrato" onclick="selectDocCat('contrato',this)"><span class="doc-cat-tile-ico">📝</span>Contratos</button>
-      <button type="button" class="doc-cat-tile" data-cat="outro" onclick="selectDocCat('outro',this)"><span class="doc-cat-tile-ico">📦</span>Outros</button>
-    </div>
-    <select id="d-cat" style="display:none">
-      <option value="terreno">terreno</option><option value="obra">obra</option><option value="prefeitura">prefeitura</option>
-      <option value="financeiro">financeiro</option><option value="contrato">contrato</option><option value="outro">outro</option>
-    </select>
+    <!-- FORMULÁRIO (docado à direita) -->
+    <div class="doc-split-right">
+      <div class="card" id="doc-form-card">
+        <div class="card-hdr" style="margin-bottom:12px">
+          <div><div class="card-title">📁 Anexar Documento</div><div class="chart-subtitle">Vinculado à obra selecionada</div></div>
+        </div>
+        <div class="obra-banner" role="status">
+          <div class="obra-banner-top">
+            <span class="obra-banner-badge">🏗️ Obra Ativa</span>
+            <span class="obra-banner-label">— documentos vinculados a</span>
+          </div>
+          <div class="obra-banner-plate">
+            <div class="obra-banner-name" id="doc-ob-nm">—</div>
+          </div>
+          <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
+        </div>
 
-    <!-- Detalhes -->
-    <div class="fsec">
-      <div class="fsec-title">Detalhes do documento</div>
-      <div class="fg" style="margin-bottom:10px">
-        <div class="fgg"><label class="fl" for="d-tipo">Tipo / Nome <span class="req">*</span></label><input type="text" id="d-tipo" placeholder="Ex: ITBI, Escritura, Alvará, ART..." aria-required="true"></div>
-        <div class="fgg"><label class="fl" for="d-data">Data do Documento</label><input type="date" id="d-data" placeholder="dd/mm/aaaa"></div>
-        <div class="fgg"><label class="fl" for="d-validade">Validade <span style="font-size:10px;color:var(--text3)">(se houver)</span></label><input type="date" id="d-validade" placeholder="dd/mm/aaaa" title="Deixe em branco se não vencer"></div>
-      </div>
-      <div class="fgg" style="margin-bottom:0"><label class="fl" for="d-desc">Descrição / Observação</label><input type="text" id="d-desc" placeholder="Breve descrição ou número do processo..."></div>
-    </div>
-
-    <!-- Upload + Salvar -->
-    <div class="form-footer-bar">
-      <div style="display:flex;align-items:center;gap:8px">
-        <label for="d-file" id="doc-up" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 14px">📎 Anexar documento</label>
-        <input type="file" id="d-file" style="display:none" accept="image/*,application/pdf" onchange="onDocF(event)">
-        <span id="doc-fn" style="font-size:11.5px;color:var(--text2)"></span>
-      </div>
-      <button onclick="salvarDoc()" aria-label="Salvar documento" class="btn-salvar-doc" style="height:36px;padding:0 24px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif">📤 Salvar Documento</button>
-    </div>
-  </div>
-
-  <!-- LISTA DE DOCUMENTOS -->
-  <div class="card">
-    <div style="margin-bottom:12px">
-      <div class="card-title" style="margin-bottom:10px">📂 Documentos Salvos</div>
-      <div class="doc-filtros">
-        <input type="text" id="doc-search" placeholder="🔍 Buscar documento..." oninput="renderDocs()" aria-label="Buscar documentos">
-        <select id="d-fil" onchange="renderDocs()" aria-label="Filtrar por categoria">
-          <option value="">Todas as categorias</option>
-          <option value="terreno">🏡 Terreno</option><option value="obra">🏗️ Obra</option>
-          <option value="prefeitura">🏛️ Prefeitura</option><option value="financeiro">💰 Financeiro</option>
-          <option value="contrato">📝 Contratos</option><option value="outro">📦 Outros</option>
+        <!-- Categoria do documento -->
+        <div class="fsec-title" style="margin-top:14px">Categoria do documento</div>
+        <div class="doc-cat-picker" role="radiogroup" aria-label="Categoria do documento">
+          <button type="button" class="doc-cat-tile" data-cat="terreno" onclick="selectDocCat('terreno',this)" title="Tecla 1"><span class="doc-cat-tile-ico">🏡</span>Terreno / Imóvel</button>
+          <button type="button" class="doc-cat-tile" data-cat="obra" onclick="selectDocCat('obra',this)" title="Tecla 2"><span class="doc-cat-tile-ico">🏗️</span>Obra / Construção</button>
+          <button type="button" class="doc-cat-tile" data-cat="prefeitura" onclick="selectDocCat('prefeitura',this)" title="Tecla 3"><span class="doc-cat-tile-ico">🏛️</span>Prefeitura Macaé</button>
+          <button type="button" class="doc-cat-tile" data-cat="financeiro" onclick="selectDocCat('financeiro',this)" title="Tecla 4"><span class="doc-cat-tile-ico">💰</span>Financeiro</button>
+          <button type="button" class="doc-cat-tile" data-cat="contrato" onclick="selectDocCat('contrato',this)" title="Tecla 5"><span class="doc-cat-tile-ico">📝</span>Contratos</button>
+          <button type="button" class="doc-cat-tile" data-cat="outro" onclick="selectDocCat('outro',this)" title="Tecla 6"><span class="doc-cat-tile-ico">📦</span>Outros</button>
+        </div>
+        <select id="d-cat" style="display:none">
+          <option value="terreno">terreno</option><option value="obra">obra</option><option value="prefeitura">prefeitura</option>
+          <option value="financeiro">financeiro</option><option value="contrato">contrato</option><option value="outro">outro</option>
         </select>
+
+        <!-- Detalhes -->
+        <div class="fsec-title" style="margin-top:14px">Tipo / Nome do documento <span class="req">*</span></div>
+        <input type="text" id="d-tipo" list="doc-tipos" placeholder="Ex: ITBI, Escritura, Alvará, ART..." autocomplete="off" aria-required="true">
+        <datalist id="doc-tipos"></datalist>
+
+        <div class="fg" style="margin-top:12px;margin-bottom:0">
+          <div class="fgg"><label class="fl" for="d-data">Data de emissão</label><input type="date" id="d-data" placeholder="dd/mm/aaaa"></div>
+          <div class="fgg" style="margin-bottom:0"><label class="fl" for="d-desc">Descrição / Nº processo</label><input type="text" id="d-desc" placeholder="Breve descrição..."></div>
+        </div>
+
+        <!-- Validade destacada -->
+        <div class="doc-val-box" id="doc-val-box">
+          <div class="doc-val-box-top">
+            <span class="doc-val-ico" id="doc-val-ico">📅</span>
+            <span class="doc-val-ttl">Validade / Vencimento</span>
+            <span class="doc-val-hint">deixe vazio se não vence</span>
+          </div>
+          <input type="date" id="d-validade" oninput="onDocValidade()" title="Deixe em branco se não vencer">
+          <div class="doc-val-fb" id="doc-val-fb"></div>
+        </div>
+
+        <!-- Drop zone -->
+        <div class="fsec-title" style="margin-top:14px">Arquivo <span class="req">*</span></div>
+        <div class="dz-doc" id="doc-dz" onclick="docPickFile()">
+          <div id="doc-dz-empty">
+            <div class="dz-doc-ico">📎</div>
+            <div class="dz-doc-title">Documento (PDF ou imagem)</div>
+            <div class="dz-doc-sub">Arraste, cole com <kbd>Cmd+V</kbd> ou clique para escolher</div>
+            <button type="button" class="dz-doc-btn" onclick="event.stopPropagation();docPickFile()">📄 Escolher arquivo</button>
+            <div class="dz-doc-req">* obrigatório — o arquivo é o documento</div>
+          </div>
+          <div id="doc-dz-preview" style="display:none">
+            <div class="dz-preview">
+              <div class="dz-thumb" id="doc-dz-thumb">📄</div>
+              <div class="dz-info">
+                <div class="dz-nm" id="doc-dz-nm">arquivo.pdf</div>
+                <div class="dz-meta" id="doc-dz-meta">245 KB · anexado agora</div>
+              </div>
+              <div class="dz-actions">
+                <button onclick="event.stopPropagation();docPickFile()" title="Trocar arquivo">↻</button>
+                <button class="del" onclick="event.stopPropagation();docResetFile()" title="Remover">✕</button>
+              </div>
+            </div>
+          </div>
+          <input type="file" id="d-file" accept="image/*,application/pdf" style="display:none" onchange="onDocF(event)">
+        </div>
+
+        <button onclick="salvarDoc()" aria-label="Salvar documento" style="width:100%;height:44px;margin-top:14px;border:none;border-radius:10px;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,.35);transition:filter .15s;font-family:'DM Sans',sans-serif">💾 Salvar Documento <span style="opacity:.7;font-weight:500;font-size:11px">(Cmd+↵)</span></button>
       </div>
     </div>
-    <div class="doc-grid-new" id="doc-grid" role="list"></div>
   </div>
 </div>
 
@@ -4994,52 +5071,131 @@ function renderCal(){
 function calPrev(){calM--;if(calM<0){calM=11;calY--;}renderCal();}
 function calNext(){calM++;if(calM>11){calM=0;calY++;}renderCal();}
 /* ══ DOCUMENTOS ══ */
-function onDocF(e){
-  docF=e.target.files[0];docFB64=null;
-  if(docF){
-    document.getElementById('doc-fn').textContent='✓ '+docF.name;
-    if(docF.size>2097152){toast('Arquivo maior que 2MB — será salvo apenas o nome.','warn');}
-    else readB64(docF,b64=>{docFB64=b64;});
-  }
+let docDropInit=false,docFilCat='',docFileMeta=null;
+function DOC_STATUS(validade){
+  if(!validade)return{key:'perene',ord:3,ico:'♾️',label:'Sem vencimento',color:'var(--text3)'};
+  const dv=dif(td(),validade);
+  if(dv<0)return{key:'vencido',ord:0,ico:'⚠️',label:`Vencido ${fD(validade)}`,color:'var(--red)'};
+  if(dv<=30)return{key:'vencendo',ord:1,ico:'⏰',label:`Vence em ${dv}d`,color:'var(--yellow)'};
+  return{key:'vigente',ord:2,ico:'✅',label:`Vigente até ${fD(validade)}`,color:'var(--green)'};
+}
+function docPickFile(){const i=document.getElementById('d-file');if(i)i.click();}
+function onDocF(e){const f=e.target.files&&e.target.files[0];if(f)docProcessFile(f,'seleção');}
+function docProcessFile(file,source){
+  if(!file)return;
+  const ok=(file.type||'').startsWith('image/')||file.type==='application/pdf';
+  if(!ok){toast('Formato não suportado — envie imagem ou PDF.','error');return;}
+  if(file.size>8*1024*1024){toast('Arquivo maior que 8MB.','error');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    docF=file;
+    docFB64=(file.size<=2097152)?ev.target.result:null;
+    docFileMeta={name:file.name||`doc-${Date.now()}`,size:file.size,type:file.type,url:ev.target.result,source:source||'arquivo'};
+    docRenderPreview();
+    toast(`📎 Documento anexado (${source||'arquivo'})`,'success');
+  };
+  reader.readAsDataURL(file);
+}
+function docRenderPreview(){
+  const dz=document.getElementById('doc-dz'),empty=document.getElementById('doc-dz-empty'),prev=document.getElementById('doc-dz-preview');
+  if(!dz||!empty||!prev)return;
+  if(!docFileMeta){dz.classList.remove('filled','missing');empty.style.display='';prev.style.display='none';return;}
+  dz.classList.add('filled');dz.classList.remove('missing');
+  empty.style.display='none';prev.style.display='';
+  const thumb=document.getElementById('doc-dz-thumb');
+  thumb.innerHTML=docFileMeta.type.startsWith('image/')?`<img src="${esc(docFileMeta.url)}" alt="preview">`:'📄';
+  document.getElementById('doc-dz-nm').textContent=docFileMeta.name;
+  document.getElementById('doc-dz-meta').textContent=`${(docFileMeta.size/1024).toFixed(0)} KB · via ${docFileMeta.source}`;
+}
+function docResetFile(){docF=null;docFB64=null;docFileMeta=null;const i=document.getElementById('d-file');if(i)i.value='';docRenderPreview();}
+function docDzMissingFlash(){const dz=document.getElementById('doc-dz');if(!dz)return;dz.classList.add('missing');dz.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>dz.classList.remove('missing'),1500);}
+function onDocValidade(){
+  const el=document.getElementById('d-validade');if(!el)return;
+  const v=el.value;
+  const box=document.getElementById('doc-val-box'),ico=document.getElementById('doc-val-ico'),fb=document.getElementById('doc-val-fb');
+  if(!v){box.classList.remove('has');ico.textContent='📅';fb.textContent='';return;}
+  const s=DOC_STATUS(v);box.classList.add('has');ico.textContent=s.ico;
+  fb.innerHTML=`<span style="color:${s.color};font-weight:700">${s.ico} ${s.label}</span>`;
+}
+function docLimparForm(){
+  ['d-tipo','d-desc','d-data','d-validade'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  docResetFile();onDocValidade();
+}
+function pickDocFil(cat){docFilCat=cat;renderDocs();}
+function docRenderChips(base){
+  const wrap=document.getElementById('doc-chips');if(!wrap)return;
+  const CATS=[['terreno','🏡','Terreno'],['obra','🏗️','Obra'],['prefeitura','🏛️','Prefeitura'],['financeiro','💰','Financeiro'],['contrato','📝','Contratos'],['outro','📦','Outros']];
+  const counts={};base.forEach(d=>{counts[d.cat]=(counts[d.cat]||0)+1;});
+  let html=`<span class="doc-chip${docFilCat===''?' active':''}" role="tab" onclick="pickDocFil('')">Todos (${base.length})</span>`;
+  html+=CATS.filter(c=>counts[c[0]]).map(c=>`<span class="doc-chip${docFilCat===c[0]?' active':''}" role="tab" onclick="pickDocFil('${c[0]}')">${c[1]} ${c[2]} (${counts[c[0]]})</span>`).join('');
+  wrap.innerHTML=html;
+}
+function docRenderTipos(){
+  const dl=document.getElementById('doc-tipos');if(!dl)return;
+  const seen=[];ST.documentos.forEach(d=>{if(d.tipo&&!seen.includes(d.tipo))seen.push(d.tipo);});
+  ['Alvará','ITBI','Escritura','ART','Certidão Negativa','Matrícula','Habite-se','Contrato','Nota Fiscal'].forEach(t=>{if(!seen.includes(t))seen.push(t);});
+  dl.innerHTML=seen.slice(0,40).map(t=>`<option value="${esc(t)}">`).join('');
+}
+function initDocDropZone(){
+  if(docDropInit)return;docDropInit=true;
+  const dz=document.getElementById('doc-dz'),panel=document.getElementById('page-documentos'),overlay=document.getElementById('doc-dz-overlay');
+  if(!dz||!panel||!overlay)return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();dz.classList.add('dragover');});
+  dz.addEventListener('dragleave',e=>{e.stopPropagation();dz.classList.remove('dragover');});
+  dz.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();dz.classList.remove('dragover');const f=e.dataTransfer&&e.dataTransfer.files[0];if(f)docProcessFile(f,'drag-and-drop');});
+  let depth=0;
+  panel.addEventListener('dragenter',e=>{if(!e.dataTransfer||!e.dataTransfer.types.includes('Files'))return;e.preventDefault();depth++;overlay.classList.add('show');});
+  panel.addEventListener('dragover',e=>{if(!e.dataTransfer||!e.dataTransfer.types.includes('Files'))return;e.preventDefault();e.dataTransfer.dropEffect='copy';});
+  panel.addEventListener('dragleave',()=>{depth--;if(depth<=0){depth=0;overlay.classList.remove('show');}});
+  panel.addEventListener('drop',e=>{e.preventDefault();depth=0;overlay.classList.remove('show');const f=e.dataTransfer&&e.dataTransfer.files[0];if(f)docProcessFile(f,'drop no painel');});
+  document.addEventListener('paste',e=>{
+    const ap=document.querySelector('.page.active');if(!ap||ap.id!=='page-documentos')return;
+    const items=(e.clipboardData&&e.clipboardData.items)||[];let fi=null;
+    for(const it of items){if(it.kind==='file'&&((it.type||'').startsWith('image/')||it.type==='application/pdf')){fi=it;break;}}
+    if(!fi)return;e.preventDefault();const f=fi.getAsFile();
+    if(f){const named=f.name?f:new File([f],`clipboard-${Date.now()}.png`,{type:f.type});docProcessFile(named,'paste (clipboard)');}
+  });
+  document.addEventListener('keydown',e=>{
+    const ap=document.querySelector('.page.active');if(!ap||ap.id!=='page-documentos')return;
+    if(document.getElementById('login-ov')?.style.display!=='none')return;
+    const inField=['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName);const isMeta=e.metaKey||e.ctrlKey;
+    if(isMeta&&e.key==='Enter'){e.preventDefault();salvarDoc();return;}
+    if(e.key==='Escape'){docLimparForm();return;}
+    if(/^[1-6]$/.test(e.key)&&!inField&&!isMeta){e.preventDefault();const tiles=document.querySelectorAll('#page-documentos .doc-cat-tile');const t=tiles[+e.key-1];if(t)t.click();}
+  });
 }
 async function salvarDoc(){
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
-  const tipo=document.getElementById('d-tipo').value.trim();if(!tipo){toast('Informe o tipo.','error');return;}
-  if(!docF){toast('Selecione um arquivo.','error');return;}
-  // Upload para Cloudinary
+  const tipo=document.getElementById('d-tipo').value.trim();
+  if(!tipo){toast('Informe o tipo/nome.','error');document.getElementById('d-tipo').focus();return;}
+  if(!docF){toast('Anexe o arquivo — é obrigatório.','error');docDzMissingFlash();return;}
   let cloudinaryUrl='';
   toast('Enviando documento...','info');
   const result=await uploadToCloudinary(docF,ob.id,'documento');
   if(result)cloudinaryUrl=result.url;
   ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:document.getElementById('d-data').value,validade:document.getElementById('d-validade').value||'',fileName:docF.name,fileB64:docFB64||'',cloudinaryUrl,ts:Date.now()});
   addAudit('Documento salvo',tipo);
-  if(cloudinaryUrl){
-    toast('Documento salvo! ☁️ Arquivado na nuvem.','success');
-  } else {
-    toast('Documento salvo!','success');
-  }
+  toast(cloudinaryUrl?'Documento salvo! ☁️ Arquivado na nuvem.':'Documento salvo!','success');
   save();
-  ['d-tipo','d-desc','d-data','d-validade'].forEach(id=>document.getElementById(id).value='');
-  docF=null;document.getElementById('doc-fn').textContent='';document.getElementById('d-file').value='';
+  docLimparForm();
   renderDocs();
 }
 function renderDocs(){
-  const ob=getOA();const cat=document.getElementById('d-fil').value;
+  const ob=getOA();
   const q=(document.getElementById('doc-search').value||'').toLowerCase();
-  let items=(ob?ST.documentos.filter(d=>d.obraId===ob.id):ST.documentos).filter(d=>!cat||d.cat===cat);
+  const base=ob?ST.documentos.filter(d=>d.obraId===ob.id):ST.documentos;
+  docRenderChips(base);docRenderTipos();
+  let items=base.filter(d=>!docFilCat||d.cat===docFilCat);
   if(q)items=items.filter(d=>(d.tipo||'').toLowerCase().includes(q)||(d.desc||'').toLowerCase().includes(q)||(d.fileName||'').toLowerCase().includes(q));
+  items.sort((a,b)=>{const sa=DOC_STATUS(a.validade).ord,sb=DOC_STATUS(b.validade).ord;return sa-sb||(b.ts||0)-(a.ts||0);});
+  const cnt=document.getElementById('doc-count');if(cnt)cnt.textContent=base.length;
   const g=document.getElementById('doc-grid');
-  if(!items.length){g.innerHTML='<p style="color:var(--text3);font-size:12.5px">Nenhum documento encontrado.</p>';return;}
-  const today=td();
+  if(!items.length){g.innerHTML='<p style="color:var(--text3);font-size:12.5px;grid-column:1/-1">Nenhum documento encontrado.</p>';return;}
   const DOC_CAT_LABELS={terreno:'Terreno / Imóvel',obra:'Obra / Construção',prefeitura:'Prefeitura Macaé',financeiro:'Financeiro',contrato:'Contratos',outro:'Outros'};
   g.innerHTML=items.map(d=>{
-    let expClass='',expBadge='';
-    if(d.validade){
-      const dv=dif(today,d.validade);
-      if(dv<0){expClass=' expired';expBadge=`<span class="badge b-red" style="font-size:9.5px">⚠️ Vencido ${fD(d.validade)}</span>`;}
-      else if(dv<=30){expClass=' expiring';expBadge=`<span class="badge b-yellow" style="font-size:9.5px">⏰ Vence em ${dv}d</span>`;}
-      else expBadge=`<span class="badge b-muted" style="font-size:9.5px">Val: ${fD(d.validade)}</span>`;
-    }
+    const s=DOC_STATUS(d.validade);
+    const expClass=s.key==='vencido'?' expired':s.key==='vencendo'?' expiring':s.key==='vigente'?' vigente':'';
+    const expBadge=d.validade?`<span class="badge ${s.key==='vencido'?'b-red':s.key==='vencendo'?'b-yellow':'b-green'}" style="font-size:9.5px">${s.ico} ${s.label}</span>`:'';
     return `<div class="doc-card-new${expClass}" role="listitem" aria-label="Documento: ${esc(d.tipo)}">
       <div style="display:flex;align-items:flex-start;gap:10px">
         <span style="font-size:30px;line-height:1;flex-shrink:0">${DI[d.cat]||'📄'}</span>
@@ -5646,6 +5802,7 @@ function initApp(){
   document.querySelectorAll('.nav-item[tabindex]').forEach(el=>{el.addEventListener('keydown',e=>{if(e.key==='Enter')el.click();});});
   initFinInputs();
   initLancDropZone();  /* ★ Split desktop: drag/paste/drop + atalhos */
+  initDocDropZone();   /* ★ Documentos Split: drag/paste/drop + atalhos */
   lancRefreshDataLists();  /* ★ Split desktop: datalists de fornecedor/descrição recentes */
   const rlDataInit=document.getElementById('rl-data'); if(rlDataInit&&!rlDataInit.value) rlDataInit.value=td();
   // Firebase — banco de dados em tempo real (substitui Google Sheets)
