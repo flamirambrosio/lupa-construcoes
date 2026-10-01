@@ -168,6 +168,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .kv{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1}
 .kv.b{color:var(--blue)}.kv.r{color:var(--red)}.kv.g{color:var(--green)}.kv.y{color:var(--yellow)}.kv.a{color:var(--accent)}
 .kd{font-size:11px;color:var(--text2);margin-top:4px}
+.kd.up{color:var(--green)}
+/* ═══ DASHBOARD SUB-ABAS (Visão Geral / Financeiro / Gráficos) ═══ */
+.dash-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:4px;margin-bottom:16px;width:fit-content;max-width:100%;overflow-x:auto;box-shadow:var(--cglow)}
+.dtab{display:flex;align-items:center;gap:7px;padding:8px 18px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text2);cursor:pointer;background:none;border:none;white-space:nowrap;transition:.13s}
+.dtab svg{width:15px;height:15px;flex-shrink:0}
+.dtab:hover{color:var(--text)}
+.dtab.active{background:var(--brand2);color:#fff}
+.dash-pane{display:none}
+.dash-pane.show{display:block;animation:dashfade .25s}
+@keyframes dashfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+/* toggle de escopo: Carteira ↔ Obra ativa */
+.scope-seg{display:inline-flex;gap:3px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:3px;margin-bottom:14px;max-width:100%}
+.scope-opt{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:7px;font-size:11.5px;font-weight:600;color:var(--text3);cursor:pointer;background:none;border:none;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:.13s}
+.scope-opt .sc{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.scope-opt.active{background:rgba(41,128,185,.15);color:var(--brand3)}
+/* resumo da carteira */
+.cart-sum{background:linear-gradient(160deg,rgba(41,128,185,.1),var(--bg2));border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.cart-sum-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--brand3);margin-bottom:10px}
+.cart-sum-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border)}
+.cart-sum-row:last-child{border-bottom:none}
+.cart-sum-row .cl{font-size:12px;color:var(--text3)}
+.cart-sum-row .cv{font-size:15px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;font-variant-numeric:tabular-nums}
+/* comparativo entre obras */
+.cmp-row2{display:grid;grid-template-columns:190px 1fr 120px;gap:14px;align-items:center;margin-bottom:11px}
+.cmp-nm{font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;min-width:0}
+.cmp-nm .sc{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cmp-nm span.nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmp-nm small{display:block;font-size:10px;color:var(--text3);font-weight:500;margin-top:1px}
+.cmp-trk{height:24px;background:var(--bg2);border-radius:7px;position:relative;overflow:hidden}
+.cmp-trk i{position:absolute;left:0;top:0;height:100%;border-radius:7px;display:flex;align-items:center;padding-left:9px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;min-width:fit-content}
+.cmp-fill-and{background:linear-gradient(90deg,var(--brand2),var(--brand3))}
+.cmp-fill-done{background:linear-gradient(90deg,#1E8449,#2ECC71)}
+.cmp-vl{text-align:right;font-size:11px;font-variant-numeric:tabular-nums;color:var(--text3)}
+.cmp-vl b{color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;display:block;font-size:12.5px}
+@media(max-width:720px){.cmp-row2{grid-template-columns:110px 1fr}.cmp-vl{display:none}.scope-opt{max-width:140px}}
 .prog{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:7px}
 .prog-f{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
 /* ═══ OBRA CARDS ═══ */
@@ -377,6 +412,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .pend-item:last-child{border-bottom:none}
 .pend-ico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .pend-ico.alta{background:var(--red-bg)}.pend-ico.media{background:var(--yellow-bg)}.pend-ico.baixa{background:var(--green-bg)}
+.pend-ico svg{color:var(--text2)}.pend-ico.alta svg{color:var(--red)}.pend-ico.media svg{color:var(--yellow)}.pend-ico.baixa svg{color:var(--green)}
 .pt{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
 .pm{font-size:11px;color:var(--text3)}
 .pend-overdue{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);border-radius:8px;padding:11px;margin-bottom:6px}
@@ -517,6 +553,8 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .cat-tile:hover{background:var(--surface3);border-color:rgba(41,128,185,.5);transform:translateY(-1px)}
 .cat-tile.active{border-color:var(--brand2);background:rgba(41,128,185,.1);box-shadow:0 0 0 3px rgba(41,128,185,.12)}
 .cat-tile-ico{font-size:24px;line-height:1}
+.cat-tile-ico svg{width:24px;height:24px;color:var(--text2)}
+.cat-tile.active .cat-tile-ico svg{color:var(--brand3)}
 .cat-tile-label{font-size:10.5px;color:var(--text2);font-weight:500;text-align:center;line-height:1.2}
 .cat-tile.active .cat-tile-label{color:var(--brand3);font-weight:700}
 @media(max-width:600px){.cat-picker{grid-template-columns:repeat(3,1fr)}}
@@ -677,6 +715,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .cat-picker{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
   .cat-tile{padding:10px 4px 8px!important}
   .cat-tile-ico{font-size:20px!important}
+  .cat-tile-ico svg{width:20px!important;height:20px!important}
   .cat-tile-label{font-size:10px!important}
   .doc-cat-picker{grid-template-columns:repeat(2,1fr)!important}
   /* Banner Google — não vazar */
@@ -1017,6 +1056,7 @@ input[type=date].rapido-inline-input{color-scheme:dark}
   }
   .lanc-split-right .cat-tile{padding:8px 6px!important;gap:2px!important;border-width:1.5px!important;border-radius:8px!important;min-width:0}
   .lanc-split-right .cat-tile-ico{font-size:18px!important}
+  .lanc-split-right .cat-tile-ico svg{width:18px!important;height:18px!important}
   .lanc-split-right .cat-tile-label{font-size:9.5px!important;font-weight:600!important;letter-spacing:.3px}
   .lanc-split-right .cat-tile.active{box-shadow:none!important}
   /* No desktop-split: modo Rápido é o único visível — esconde toggle */
@@ -1126,6 +1166,7 @@ input[type=date].rapido-inline-input{color-scheme:dark}
     min-width:0;padding:8px 2px 6px!important
   }
   #lanc-form-card.sheet-open .cat-tile-ico{font-size:18px!important}
+  #lanc-form-card.sheet-open .cat-tile-ico svg{width:18px!important;height:18px!important}
   #lanc-form-card.sheet-open .cat-tile-label{font-size:9px!important}
   /* espaço abaixo das categorias para não colar no rodapé do sheet */
   #lanc-form-card.sheet-open .cat-picker{
@@ -1402,7 +1443,7 @@ input,select,textarea{min-height:44px}
 <!-- EDIT LANÇAMENTO MODAL -->
 <div class="modal-ov" id="edit-lanc-modal" role="dialog" aria-label="Editar lançamento">
 <div class="modal-box edit-modal">
-  <div class="modal-hdr"><div class="modal-title">✏️ Editar Lançamento</div><button class="modal-close" onclick="closeEditLanc()">✕</button></div>
+  <div class="modal-hdr"><div class="modal-title" style="display:inline-flex;align-items:center;gap:8px"><span id="edit-lanc-ico"></span>Editar Lançamento</div><button class="modal-close" onclick="closeEditLanc()">✕</button></div>
   <div class="fg">
     <div class="fgg"><label class="fl">Descrição</label><input type="text" id="el-desc" aria-label="Descrição"></div>
     <div class="fgg"><label class="fl">Data</label><input type="date" id="el-data" aria-label="Data"></div>
@@ -1411,8 +1452,8 @@ input,select,textarea{min-height:44px}
     <div class="fgg"><label class="fl">Valor (R$)</label><input type="text" id="el-valor" class="fin-val" inputmode="decimal" placeholder="Ex: 1.5k" aria-label="Valor"></div>
     <div class="fgg"><label class="fl">Categoria</label>
       <select id="el-cat" aria-label="Categoria">
-        <option value="material">🧱 Materiais</option><option value="funcionario">👷 Funcionários</option>
-        <option value="burocracia">📋 Burocracia</option><option value="terreno">🏡 Terreno</option><option value="outro">📦 Outros</option>
+        <option value="material">Materiais</option><option value="funcionario">Funcionários</option>
+        <option value="burocracia">Burocracia</option><option value="terreno">Terreno</option><option value="outro">Outros</option>
       </select>
     </div>
   </div>
@@ -1420,7 +1461,7 @@ input,select,textarea{min-height:44px}
     <div class="fgg"><label class="fl">Fornecedor / Prestador</label><input type="text" id="el-forn" aria-label="Fornecedor" placeholder="Ex: Materiais Macaé Ltda"></div>
     <div class="fgg"><label class="fl">Status de Pagamento</label>
       <select id="el-pag" aria-label="Status de pagamento">
-        <option value="pago">✅ Pago</option><option value="a_pagar">⏳ A Pagar</option>
+        <option value="pago">Pago</option><option value="a_pagar">A Pagar</option>
       </select>
     </div>
   </div>
@@ -1435,14 +1476,14 @@ input,select,textarea{min-height:44px}
 <!-- EDIT PENDÊNCIA MODAL -->
 <div class="modal-ov" id="edit-pend-modal" role="dialog" aria-label="Editar pendência">
 <div class="modal-box edit-modal">
-  <div class="modal-hdr"><div class="modal-title">✏️ Editar Pendência</div><button class="modal-close" onclick="closeEditPend()">✕</button></div>
+  <div class="modal-hdr"><div class="modal-title" style="display:inline-flex;align-items:center;gap:8px"><span id="edit-pend-ico"></span>Editar Pendência</div><button class="modal-close" onclick="closeEditPend()">✕</button></div>
   <div class="fg">
     <div class="fgg"><label class="fl">Título</label><input type="text" id="ep-titulo" aria-label="Título"></div>
     <div class="fgg"><label class="fl">Tipo</label>
       <select id="ep-tipo" aria-label="Tipo">
-        <option value="energia">⚡ Energia</option><option value="agua">💧 Água</option>
-        <option value="prefeitura">🏛️ Prefeitura</option><option value="corretor">🤝 Corretor</option>
-        <option value="cartorio">📜 Cartório</option><option value="fornecedor">📦 Fornecedor</option><option value="outro">📋 Outro</option>
+        <option value="energia">Energia</option><option value="agua">Água</option>
+        <option value="prefeitura">Prefeitura</option><option value="corretor">Corretor</option>
+        <option value="cartorio">Cartório</option><option value="fornecedor">Fornecedor</option><option value="outro">Outro</option>
       </select>
     </div>
   </div>
@@ -1451,7 +1492,7 @@ input,select,textarea{min-height:44px}
     <div class="fgg"><label class="fl">Responsável</label><input type="text" id="ep-resp" aria-label="Responsável"></div>
     <div class="fgg"><label class="fl">Prioridade</label>
       <select id="ep-prio" aria-label="Prioridade">
-        <option value="alta">🔴 Alta</option><option value="media">🟡 Média</option><option value="baixa">🟢 Baixa</option>
+        <option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option>
       </select>
     </div>
   </div>
@@ -1688,49 +1729,73 @@ input,select,textarea{min-height:44px}
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active" role="main">
   <div class="page-hdr">
-    <div><div class="page-title">Painel Geral &amp; Gráficos</div><div class="page-sub" id="dash-sub">LUPA Facilities · Macaé, RJ</div></div>
-    <span class="badge b-accent" aria-label="Status das obras">🏗️ Obras Ativas</span>
+    <div><div class="page-title">Painel Geral</div><div class="page-sub" id="dash-sub">Carteira consolidada</div></div>
   </div>
   <div id="budget-alert-wrap"></div>
   <div id="doc-alert-wrap"></div>
-  <div class="period-bar" id="dash-period-bar">
-    <span style="font-size:10.5px;color:var(--text3);font-weight:600;letter-spacing:.5px;text-transform:uppercase">Período:</span>
-    <button class="btn active-period" id="pp-total" onclick="setDashPeriodo('total',this)">Total</button>
-    <button class="btn" id="pp-mes" onclick="setDashPeriodo('mes',this)">Este Mês</button>
-    <button class="btn" id="pp-trimestre" onclick="setDashPeriodo('trimestre',this)">Trimestre</button>
-    <button class="btn" id="pp-ano" onclick="setDashPeriodo('ano',this)">Este Ano</button>
-    <span id="dash-periodo-label" style="font-size:11px;color:var(--brand3);margin-left:4px"></span>
-    <button id="btn-ocultar-val" onclick="toggleValores()" aria-label="Ocultar/revelar valores" title="Ocultar valores" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);padding:2px 4px;line-height:1;transition:color .2s" onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'">👁</button>
+  <!-- Sub-abas do Painel (igual mockup aprovado) -->
+  <div class="dash-tabs" role="tablist" aria-label="Seções do painel">
+    <button class="dtab active" data-dtab="visao" onclick="setDashTab('visao',this)" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Visão Geral</button>
+    <button class="dtab" data-dtab="fin" onclick="setDashTab('fin',this)" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg> Financeiro</button>
+    <button class="dtab" data-dtab="graf" onclick="setDashTab('graf',this)" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Gráficos</button>
   </div>
-  <div class="g4" id="kpi-glob">
-    <div class="kc cb"><div class="ki b" aria-hidden="true">🏠</div><div class="kl">Casas Vendidas</div><div class="kv b" id="k-obras">0</div></div>
-    <div class="kc cr"><div class="ki r" aria-hidden="true">💰</div><div class="kl">Total Investido</div><div class="kv r" id="k-total">R$0</div></div>
-    <div class="kc cg"><div class="ki g" aria-hidden="true">📈</div><div class="kl">VGV Realizado</div><div class="kv g" id="k-vgv">R$0</div></div>
-    <div class="kc ca"><div class="ki a" aria-hidden="true">💹</div><div class="kl">Lucro Estimado</div><div class="kv a" id="k-lucro">R$0</div></div>
-  </div>
-  <div class="caixa-strip" id="caixa-strip" style="display:none">
-    <div class="cxs-item"><span class="cxs-l">💵 Recebido (caixa)</span><span class="cxs-v g" id="cx-receb">R$0</span></div>
-    <div class="cxs-sep" aria-hidden="true"></div>
-    <div class="cxs-item"><span class="cxs-l">⏳ A receber (assinatura)</span><span class="cxs-v y" id="cx-areceber">R$0</span></div>
-  </div>
-  <button class="dash-pend-banner" onclick="showPage('pendencias')" aria-label="Ver pendências">
-    <div class="dash-pend-left">
-      <div class="dash-pend-icon">⚠️</div>
-      <div>
-        <div class="dash-pend-title">Pendências</div>
-        <div class="dash-pend-sub">Prazos e tarefas da obra</div>
+
+  <!-- ░░░ PANE: VISÃO GERAL ░░░ -->
+  <div class="dash-pane show" id="dtp-visao" role="tabpanel" aria-label="Visão geral">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <div class="scope-seg" id="dash-scope-seg" role="group" aria-label="Escopo dos indicadores">
+        <button class="scope-opt active" id="scope-cart" onclick="setDashScope('carteira',this)"><span class="sc" style="background:var(--brand3)"></span> Carteira (todas)</button>
+        <button class="scope-opt" id="scope-obra" onclick="setDashScope('obra',this)"><span class="sc" style="background:var(--accent)"></span> Obra ativa</button>
       </div>
+      <button id="btn-ocultar-val" onclick="toggleValores()" aria-label="Ocultar/revelar valores" title="Ocultar valores" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);padding:2px 4px;line-height:1;margin-bottom:14px;transition:color .2s" onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
-    <div class="dash-pend-right">
-      <div class="dash-pend-count" id="k-pend">0</div>
-      <div class="dash-pend-arrow">→</div>
+    <div class="g4" id="kpi-glob">
+      <div class="kc cb"><div class="ki b" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="kl">Unidades Vendidas</div><div class="kv" id="k-obras">0</div><div class="kd" id="kd-obras"></div></div>
+      <div class="kc cr"><div class="ki r" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="kl">Investido</div><div class="kv" id="k-total">R$0</div><div class="kd" id="kd-total"></div></div>
+      <div class="kc cg"><div class="ki g" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="kl">VGV Realizado</div><div class="kv" id="k-vgv">R$0</div><div class="kd" id="kd-vgv"></div></div>
+      <div class="kc ca"><div class="ki a" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="kl">Lucro Estimado</div><div class="kv" id="k-lucro">R$0</div><div class="kd" id="kd-lucro"></div></div>
     </div>
-  </button>
-  <div class="card">
-    <div class="card-hdr"><div class="card-title">🏘️ Empreendimentos</div><button class="btn btn-sm btn-a" onclick="showPage('cadastro',null)" aria-label="Novo empreendimento">+ Novo Empreendimento</button></div>
-    <div class="obras-grid" id="obras-grid"></div>
+    <div class="caixa-strip" id="caixa-strip" style="display:none">
+      <div class="cxs-item"><span class="cxs-l"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" style="vertical-align:-1px" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Recebido (caixa)</span><span class="cxs-v g" id="cx-receb">R$0</span></div>
+      <div class="cxs-sep" aria-hidden="true"></div>
+      <div class="cxs-item"><span class="cxs-l"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" style="vertical-align:-1px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> A receber (assinatura)</span><span class="cxs-v y" id="cx-areceber">R$0</span></div>
+    </div>
+    <button class="dash-pend-banner" onclick="showPage('pendencias')" aria-label="Ver pendências">
+      <div class="dash-pend-left">
+        <div class="dash-pend-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E67E22" stroke-width="1.9" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div>
+          <div class="dash-pend-title">Pendências</div>
+          <div class="dash-pend-sub">Prazos e tarefas da obra</div>
+        </div>
+      </div>
+      <div class="dash-pend-right">
+        <div class="dash-pend-count" id="k-pend">0</div>
+        <div class="dash-pend-arrow">→</div>
+      </div>
+    </button>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title" style="display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18"/><path d="M6 12H4a2 2 0 00-2 2v8h20v-8a2 2 0 00-2-2h-2"/><path d="M10 6h4M10 10h4M10 14h4"/></svg> Empreendimentos</div><button class="btn btn-sm btn-a" onclick="showPage('cadastro',null)" aria-label="Novo empreendimento">+ Novo Empreendimento</button></div>
+      <div class="obras-grid" id="obras-grid"></div>
+    </div>
+    <!-- Resumo consolidado da carteira -->
+    <div class="cart-sum" id="cart-sum" style="display:none"></div>
+    <!-- Comparativo entre obras (tabela leve) -->
+    <div class="card" id="cmp-card" style="display:none">
+      <div class="card-hdr"><div class="card-title" style="display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="18" rx="1.5"/></svg> Comparativo entre Obras</div></div>
+      <div id="cmp-list"></div>
+    </div>
   </div>
-  <div id="obra-detail">
+
+  <!-- ░░░ PANE: FINANCEIRO ░░░ -->
+  <div class="dash-pane" id="dtp-fin" role="tabpanel" aria-label="Financeiro">
+    <div class="period-bar" id="dash-period-bar">
+      <span style="font-size:10.5px;color:var(--text3);font-weight:600;letter-spacing:.5px;text-transform:uppercase">Período:</span>
+      <button class="btn active-period" id="pp-total" onclick="setDashPeriodo('total',this)">Total</button>
+      <button class="btn" id="pp-mes" onclick="setDashPeriodo('mes',this)">Este Mês</button>
+      <button class="btn" id="pp-trimestre" onclick="setDashPeriodo('trimestre',this)">Trimestre</button>
+      <button class="btn" id="pp-ano" onclick="setDashPeriodo('ano',this)">Este Ano</button>
+      <span id="dash-periodo-label" style="font-size:11px;color:var(--brand3);margin-left:4px"></span>
+    </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <div class="page-title" style="font-size:16px" id="detail-title">Selecione um empreendimento acima</div>
     </div>
@@ -1740,7 +1805,10 @@ input,select,textarea{min-height:44px}
       <div class="card"><div class="card-hdr"><div class="card-title">Gastos por Categoria</div></div><div id="cat-bars"></div></div>
       <div class="card"><div class="card-hdr"><div class="card-title">Últimos Lançamentos</div><button class="btn btn-sm" onclick="showPage('lancamentos',null)" aria-label="Ver todos os lançamentos">Ver todos →</button></div><div id="dash-last"></div></div>
     </div>
-    <!-- Gráfico destaque: Evolução Mensal -->
+  </div>
+
+  <!-- ░░░ PANE: GRÁFICOS ░░░ -->
+  <div class="dash-pane" id="dtp-graf" role="tabpanel" aria-label="Gráficos">
     <div class="card chart-featured" style="margin-bottom:16px">
       <div class="card-hdr">
         <div><div class="card-title">Evolução de Gastos</div><div class="chart-subtitle">Gastos mensais e curva de acumulado</div></div>
@@ -1748,7 +1816,6 @@ input,select,textarea{min-height:44px}
       </div>
       <div class="cc" style="height:260px"><canvas id="chart-linha" role="img" aria-label="Gráfico de linha de evolução mensal"></canvas></div>
     </div>
-    <!-- Donut + Pago vs A Pagar -->
     <div class="chart-row">
       <div class="card">
         <div class="card-hdr"><div><div class="card-title">Distribuição por Categoria</div><div class="chart-subtitle">% do total gasto</div></div></div>
@@ -1760,7 +1827,6 @@ input,select,textarea{min-height:44px}
         <div class="cc" style="height:220px"><canvas id="chart-bar" role="img" aria-label="Gráfico de barras Pago vs A Pagar"></canvas></div>
       </div>
     </div>
-    <!-- Comparativo entre obras -->
     <div class="card" id="obras-chart-wrap" style="margin-bottom:16px;display:none">
       <div class="card-hdr"><div><div class="card-title">Comparativo entre Obras</div><div class="chart-subtitle">Utilização do orçamento por obra</div></div></div>
       <div class="cc" style="height:200px"><canvas id="chart-obras" role="img" aria-label="Comparativo entre obras"></canvas></div>
@@ -1780,7 +1846,7 @@ input,select,textarea{min-height:44px}
   <div class="lanc-split-wrap">
   <div class="lanc-split-right">
   <div class="dz-overlay" id="lanc-dz-overlay" aria-hidden="true">
-    <div class="dz-overlay-ico">📎</div>
+    <div class="dz-overlay-ico"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
     <div class="dz-overlay-txt">Solte o comprovante aqui</div>
     <div class="dz-overlay-sub">Imagem ou PDF</div>
   </div>
@@ -1788,20 +1854,20 @@ input,select,textarea{min-height:44px}
     <div class="sheet-handle-bar">
       <div class="sheet-drag-pill"></div>
       <div class="sheet-hdr-row">
-        <span class="sheet-hdr-title">📋 Nova NF</span>
+        <span class="sheet-hdr-title" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> Nova NF</span>
         <button class="sheet-close-btn" onclick="closeLancSheet()" aria-label="Fechar formulário">✕</button>
       </div>
     </div>
     <div class="obra-banner" role="status" aria-live="polite">
       <div class="obra-banner-top">
-        <span class="obra-banner-badge">🏗️ Obra Ativa</span>
+        <span class="obra-banner-badge" style="display:inline-flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18"/><path d="M6 12H4a2 2 0 00-2 2v8h20v-8a2 2 0 00-2-2h-2"/><path d="M10 6h4M10 10h4M10 14h4"/></svg> Obra Ativa</span>
         <span class="obra-banner-label">— lançamentos vinculados a</span>
       </div>
       <div class="obra-banner-plate">
         <div class="obra-banner-name" id="conf-ob-nm">—</div>
         <div class="obra-banner-end" id="conf-ob-end"></div>
       </div>
-      <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
+      <div class="obra-banner-warn" style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Confirme a obra antes de salvar</div>
     </div>
     <!-- hidden legacy fields to avoid JS errors -->
     <select id="f-cat" style="display:none"></select>
@@ -1818,8 +1884,8 @@ input,select,textarea{min-height:44px}
 
     <!-- ═══ TOGGLE: RÁPIDO vs NF COMPLETA ═══ -->
     <div class="mode-switch" role="tablist">
-      <button class="mode-sw-btn" id="msw-rapido" onclick="setLancMode('rapido')" role="tab" aria-selected="false">⚡ Rápido</button>
-      <button class="mode-sw-btn active" id="msw-nf" onclick="setLancMode('nf')" role="tab" aria-selected="true">📋 NF Completa</button>
+      <button class="mode-sw-btn" id="msw-rapido" onclick="setLancMode('rapido')" role="tab" aria-selected="false" style="display:inline-flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Rápido</button>
+      <button class="mode-sw-btn active" id="msw-nf" onclick="setLancMode('nf')" role="tab" aria-selected="true" style="display:inline-flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> NF Completa</button>
     </div>
 
     <!-- ═══ MODO RÁPIDO (v2 desktop — matches mockup Split aprovado 2026-09-28) ═══ -->
@@ -1827,11 +1893,11 @@ input,select,textarea{min-height:44px}
       <!-- Título / status — visível só desktop-split -->
       <div class="rapido-title-row">
         <span class="rapido-title-badge">SEMPRE ATIVO</span>
-        <span class="rapido-title-txt">⚡ Novo lançamento</span>
+        <span class="rapido-title-txt" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Novo lançamento</span>
       </div>
 
       <div id="recentes-wrap" style="display:none">
-        <div style="font-size:10.5px;color:var(--text3);font-weight:600;margin-bottom:4px">⚡ RECENTES</div>
+        <div style="font-size:10.5px;color:var(--text3);font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> RECENTES</div>
         <div class="recentes-chips" id="recentes-chips"></div>
       </div>
 
@@ -1852,11 +1918,11 @@ input,select,textarea{min-height:44px}
       <!-- CATEGORIA (1-5) -->
       <div class="rapido-val-lbl" style="margin-top:4px">Categoria (1-5)</div>
       <div class="cat-picker" role="radiogroup" style="margin-bottom:14px">
-        <button type="button" class="cat-tile" data-rlcat="material" onclick="selectRLCat('material',this)" title="Tecla 1"><span class="cat-tile-ico">🧱</span><span class="cat-tile-label">Mate</span></button>
-        <button type="button" class="cat-tile" data-rlcat="funcionario" onclick="selectRLCat('funcionario',this)" title="Tecla 2"><span class="cat-tile-ico">👷</span><span class="cat-tile-label">Func</span></button>
-        <button type="button" class="cat-tile" data-rlcat="burocracia" onclick="selectRLCat('burocracia',this)" title="Tecla 3"><span class="cat-tile-ico">📋</span><span class="cat-tile-label">Buro</span></button>
-        <button type="button" class="cat-tile" data-rlcat="terreno" onclick="selectRLCat('terreno',this)" title="Tecla 4"><span class="cat-tile-ico">🏡</span><span class="cat-tile-label">Terr</span></button>
-        <button type="button" class="cat-tile" data-rlcat="outro" onclick="selectRLCat('outro',this)" title="Tecla 5"><span class="cat-tile-ico">📦</span><span class="cat-tile-label">Outr</span></button>
+        <button type="button" class="cat-tile" data-rlcat="material" onclick="selectRLCat('material',this)" title="Tecla 1"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M8 3v6M16 3v6M8 15v6M16 15v6"/></svg></span><span class="cat-tile-label">Mate</span></button>
+        <button type="button" class="cat-tile" data-rlcat="funcionario" onclick="selectRLCat('funcionario',this)" title="Tecla 2"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18a1 1 0 001 1h18a1 1 0 001-1v-2a1 1 0 00-1-1H3a1 1 0 00-1 1z"/><path d="M10 10V5a1 1 0 011-1h2a1 1 0 011 1v5"/><path d="M4 15v-3a6 6 0 016-6"/><path d="M14 6a6 6 0 016 6v3"/></svg></span><span class="cat-tile-label">Func</span></button>
+        <button type="button" class="cat-tile" data-rlcat="burocracia" onclick="selectRLCat('burocracia',this)" title="Tecla 3"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg></span><span class="cat-tile-label">Buro</span></button>
+        <button type="button" class="cat-tile" data-rlcat="terreno" onclick="selectRLCat('terreno',this)" title="Tecla 4"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10v.2A3 3 0 018.9 16H5a3 3 0 01-1-5.8V10a3 3 0 016 0z"/><path d="M7 16v6M13 19v3"/><path d="M12 19h8.3a1 1 0 00.7-1.7L18 14h.3a1 1 0 00.7-1.7L16 9h.2a1 1 0 00.8-1.7L13 3l-1.4 1.5"/></svg></span><span class="cat-tile-label">Terr</span></button>
+        <button type="button" class="cat-tile" data-rlcat="outro" onclick="selectRLCat('outro',this)" title="Tecla 5"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg></span><span class="cat-tile-label">Outr</span></button>
       </div>
 
       <!-- FORNECEDOR -->
@@ -1882,8 +1948,8 @@ input,select,textarea{min-height:44px}
       <div style="margin-bottom:4px">
         <div class="rapido-val-lbl" style="margin-bottom:4px">Pagamento</div>
         <div class="pag-toggle">
-          <label class="pag-opt sel-pago" id="rl-opt-pago" onclick="setRLPag('pago')"><input type="radio" name="rl-pag" value="pago" checked style="position:absolute;opacity:0;width:0;height:0"> ✅ Pago</label>
-          <label class="pag-opt" id="rl-opt-apagar" onclick="setRLPag('a_pagar')"><input type="radio" name="rl-pag" value="a_pagar" style="position:absolute;opacity:0;width:0;height:0"> ⏳ A pagar</label>
+          <label class="pag-opt sel-pago" id="rl-opt-pago" onclick="setRLPag('pago')" style="display:flex;align-items:center;justify-content:center;gap:5px"><input type="radio" name="rl-pag" value="pago" checked style="position:absolute;opacity:0;width:0;height:0"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Pago</label>
+          <label class="pag-opt" id="rl-opt-apagar" onclick="setRLPag('a_pagar')" style="display:flex;align-items:center;justify-content:center;gap:5px"><input type="radio" name="rl-pag" value="a_pagar" style="position:absolute;opacity:0;width:0;height:0"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 00-.59-1.42L12 12l-4.41 4.41A2 2 0 007 17.83V22M7 2v4.17a2 2 0 00.59 1.42L12 12l4.41-4.41A2 2 0 0017 6.17V2"/></svg> A pagar</label>
         </div>
       </div>
 
@@ -1892,10 +1958,10 @@ input,select,textarea{min-height:44px}
     <!-- footer sticky do modo Rápido — igual ao NF Completa -->
     <div class="form-footer-bar" id="rapido-footer-bar">
       <input type="file" id="rl-comp" style="display:none" accept="image/*" capture="environment" onchange="onRLComp(event)">
-      <label for="rl-comp" class="btn btn-sm" style="cursor:pointer;height:36px;padding:0 14px;gap:6px;flex-shrink:0;font-size:12.5px" title="Foto do comprovante (obrigatório)">
-        📷 <span id="rl-comp-nm" style="font-size:11px;color:var(--green);font-weight:600;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span><span id="rl-comp-placeholder">Foto <span style="color:var(--red)">*</span></span>
+      <label for="rl-comp" class="btn btn-sm" style="cursor:pointer;height:36px;padding:0 14px;gap:6px;flex-shrink:0;font-size:12.5px;display:inline-flex;align-items:center" title="Foto do comprovante (obrigatório)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> <span id="rl-comp-nm" style="font-size:11px;color:var(--green);font-weight:600;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span><span id="rl-comp-placeholder">Foto <span style="color:var(--red)">*</span></span>
       </label>
-      <button id="btn-salvar-rapido" onclick="salvarRapido()" style="flex:1;height:36px;font-size:13px;padding:0;display:flex;align-items:center;justify-content:center">⚡ Salvar Rápido</button>
+      <button id="btn-salvar-rapido" onclick="salvarRapido()" style="flex:1;height:36px;font-size:13px;padding:0;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Salvar Rápido</button>
     </div>
 
     <!-- ═══ LANÇAMENTOS (NF) ═══ -->
@@ -1926,19 +1992,19 @@ input,select,textarea{min-height:44px}
         <div>
           <label class="fl" style="margin-bottom:6px">Pagamento</label>
           <div class="pag-toggle">
-            <label class="pag-opt sel-pago" id="nf-opt-pago" onclick="setNFPag('pago')"><input type="radio" name="nf-pag" value="pago" checked style="position:absolute;opacity:0;width:0;height:0"> ✅ Pago</label>
-            <label class="pag-opt" id="nf-opt-apagar" onclick="setNFPag('a_pagar')"><input type="radio" name="nf-pag" value="a_pagar" style="position:absolute;opacity:0;width:0;height:0"> ⏳ A Pagar</label>
+            <label class="pag-opt sel-pago" id="nf-opt-pago" onclick="setNFPag('pago')" style="display:flex;align-items:center;justify-content:center;gap:5px"><input type="radio" name="nf-pag" value="pago" checked style="position:absolute;opacity:0;width:0;height:0"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Pago</label>
+            <label class="pag-opt" id="nf-opt-apagar" onclick="setNFPag('a_pagar')" style="display:flex;align-items:center;justify-content:center;gap:5px"><input type="radio" name="nf-pag" value="a_pagar" style="position:absolute;opacity:0;width:0;height:0"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 00-.59-1.42L12 12l-4.41 4.41A2 2 0 007 17.83V22M7 2v4.17a2 2 0 00.59 1.42L12 12l4.41-4.41A2 2 0 0017 6.17V2"/></svg> A Pagar</label>
           </div>
         </div>
       </div>
 
       <div class="fsec-title" id="fsec-cat-title">Categoria desta nota fiscal — escolha uma vez</div>
       <div class="cat-picker" role="radiogroup">
-        <button type="button" class="cat-tile" data-nfcat="material" onclick="selectNFCat('material',this)"><span class="cat-tile-ico">🧱</span><span class="cat-tile-label">Materiais</span></button>
-        <button type="button" class="cat-tile" data-nfcat="funcionario" onclick="selectNFCat('funcionario',this)"><span class="cat-tile-ico">👷</span><span class="cat-tile-label">Funcionários</span></button>
-        <button type="button" class="cat-tile" data-nfcat="burocracia" onclick="selectNFCat('burocracia',this)"><span class="cat-tile-ico">📋</span><span class="cat-tile-label">Burocracia</span></button>
-        <button type="button" class="cat-tile" data-nfcat="terreno" onclick="selectNFCat('terreno',this)"><span class="cat-tile-ico">🏡</span><span class="cat-tile-label">Terreno</span></button>
-        <button type="button" class="cat-tile" data-nfcat="outro" onclick="selectNFCat('outro',this)"><span class="cat-tile-ico">📦</span><span class="cat-tile-label">Outros</span></button>
+        <button type="button" class="cat-tile" data-nfcat="material" onclick="selectNFCat('material',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M8 3v6M16 3v6M8 15v6M16 15v6"/></svg></span><span class="cat-tile-label">Materiais</span></button>
+        <button type="button" class="cat-tile" data-nfcat="funcionario" onclick="selectNFCat('funcionario',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18a1 1 0 001 1h18a1 1 0 001-1v-2a1 1 0 00-1-1H3a1 1 0 00-1 1z"/><path d="M10 10V5a1 1 0 011-1h2a1 1 0 011 1v5"/><path d="M4 15v-3a6 6 0 016-6"/><path d="M14 6a6 6 0 016 6v3"/></svg></span><span class="cat-tile-label">Funcionários</span></button>
+        <button type="button" class="cat-tile" data-nfcat="burocracia" onclick="selectNFCat('burocracia',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg></span><span class="cat-tile-label">Burocracia</span></button>
+        <button type="button" class="cat-tile" data-nfcat="terreno" onclick="selectNFCat('terreno',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10v.2A3 3 0 018.9 16H5a3 3 0 01-1-5.8V10a3 3 0 016 0z"/><path d="M7 16v6M13 19v3"/><path d="M12 19h8.3a1 1 0 00.7-1.7L18 14h.3a1 1 0 00.7-1.7L16 9h.2a1 1 0 00.8-1.7L13 3l-1.4 1.5"/></svg></span><span class="cat-tile-label">Terreno</span></button>
+        <button type="button" class="cat-tile" data-nfcat="outro" onclick="selectNFCat('outro',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg></span><span class="cat-tile-label">Outros</span></button>
       </div>
 
       <div id="nf-items-wrap" style="display:none" class="form-reveal">
@@ -1948,7 +2014,7 @@ input,select,textarea{min-height:44px}
           <!-- Linha para materiais -->
           <div class="nf-add-row" id="nf-row-mat" style="display:none">
             <div style="position:relative;flex:2;min-width:140px">
-              <input type="text" id="nf-mat-s" placeholder="🔍 Material..." oninput="fNFMat()" onfocus="oNFMat()" autocomplete="off" onkeydown="if(event.key==='Enter'){document.getElementById('nf-mat-qty').focus();event.preventDefault();}">
+              <input type="text" id="nf-mat-s" placeholder="Material..." oninput="fNFMat()" onfocus="oNFMat()" autocomplete="off" onkeydown="if(event.key==='Enter'){document.getElementById('nf-mat-qty').focus();event.preventDefault();}">
               <div class="mat-dd" id="nf-mat-dd" role="listbox"></div>
             </div>
             <div class="nf-qty-row">
@@ -1967,7 +2033,7 @@ input,select,textarea{min-height:44px}
             <input type="text" id="nf-gen-val" class="fin-val" inputmode="decimal" placeholder="Ex: 50k" style="max-width:130px" onkeydown="if(event.key==='Enter'){addNFItem();event.preventDefault();}">
             <button type="button" class="btn btn-p" onclick="addNFItem()" style="white-space:nowrap;height:38px">+ Adicionar</button>
           </div>
-          <div class="nf-add-hint">⌨️ <strong>Enter</strong> avança entre campos · <strong>Enter</strong> no valor adiciona o item</div>
+          <div class="nf-add-hint" style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg> <span><strong>Enter</strong> avança entre campos · <strong>Enter</strong> no valor adiciona o item</span></div>
           <div id="nf-total-bar" style="display:none" class="nf-total-bar">
             <span class="nf-total-label" id="nf-count-label">0 itens</span>
             <span class="nf-total-val" id="nf-total-val">R$ 0,00</span>
@@ -1976,10 +2042,10 @@ input,select,textarea{min-height:44px}
         <div class="form-footer-bar" style="display:flex;align-items:center;gap:8px">
           <button class="btn" onclick="limparL();closeLancSheet()" style="height:34px;padding:0 14px;font-size:12.5px;color:var(--text2);flex-shrink:0">✕</button>
           <!-- Anexar manual — some quando OCR foi usado -->
-          <label for="nf-comp" id="lbl-nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 12px;flex-shrink:0" title="Anexar comprovante (obrigatório)">📎 <span style="color:var(--red);font-size:13px;line-height:1" id="nf-comp-star">*</span></label>
+          <label for="nf-comp" id="lbl-nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 12px;flex-shrink:0;display:inline-flex;align-items:center" title="Anexar comprovante (obrigatório)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> <span style="color:var(--red);font-size:13px;line-height:1" id="nf-comp-star">*</span></label>
           <input type="file" id="nf-comp" style="display:none" accept="image/*,application/pdf" onchange="onNFComp(event)">
           <span id="nf-comp-nm" style="font-size:11px;color:var(--text2);flex:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px"></span>
-          <button id="btn-salvar-nf" onclick="salvarNFMulti()" style="flex:1;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif">⚠️ Adicione itens para salvar</button>
+          <button id="btn-salvar-nf" onclick="salvarNFMulti()" style="flex:1;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione itens para salvar</button>
         </div>
       </div>
     </div>
@@ -1988,21 +2054,21 @@ input,select,textarea{min-height:44px}
   <!-- ★ DROP ZONE do comprovante (desktop) — dentro do painel direito -->
   <div class="dz-lanc" id="lanc-dz" onclick="lancPickFoto()">
     <div id="lanc-dz-empty">
-      <div class="dz-lanc-ico">📎</div>
+      <div class="dz-lanc-ico"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
       <div class="dz-lanc-title">Comprovante da despesa</div>
       <div class="dz-lanc-sub">Arraste o arquivo, cole com <kbd>Cmd+V</kbd> ou clique para escolher</div>
-      <button type="button" class="dz-lanc-btn" onclick="event.stopPropagation();lancPickFoto()">📷 Escolher arquivo</button>
+      <button type="button" class="dz-lanc-btn" onclick="event.stopPropagation();lancPickFoto()" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Escolher arquivo</button>
       <div class="dz-lanc-req">* obrigatório (compliance)</div>
     </div>
     <div id="lanc-dz-preview" style="display:none">
       <div class="dz-preview">
-        <div class="dz-thumb" id="lanc-dz-thumb">📄</div>
+        <div class="dz-thumb" id="lanc-dz-thumb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <div class="dz-info">
           <div class="dz-nm" id="lanc-dz-nm">arquivo.jpg</div>
           <div class="dz-meta" id="lanc-dz-meta">245 KB · anexado agora</div>
         </div>
         <div class="dz-actions">
-          <button onclick="event.stopPropagation();lancPickFoto()" title="Trocar arquivo">↻</button>
+          <button onclick="event.stopPropagation();lancPickFoto()" title="Trocar arquivo"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
           <button class="del" onclick="event.stopPropagation();lancResetFoto()" title="Remover">✕</button>
         </div>
       </div>
@@ -2011,12 +2077,12 @@ input,select,textarea{min-height:44px}
   </div>
   <!-- ★ Bloco Salvar (Split desktop) — só aparece desktop-split (>900px) -->
   <div class="split-save-area">
-    <button type="button" class="split-save-btn" onclick="salvarRapido()">
-      💾 Salvar (Cmd+Enter)
+    <button type="button" class="split-save-btn" onclick="salvarRapido()" style="display:inline-flex;align-items:center;justify-content:center;gap:7px">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar (Cmd+Enter)
     </button>
     <div class="split-quick-actions">
-      <button type="button" class="btn btn-ghost" onclick="lancLimparRapido()">🧹 Limpar (Esc)</button>
-      <button type="button" class="btn btn-ghost" onclick="setLancMode('nf')">📋 NF Completa…</button>
+      <button type="button" class="btn btn-ghost" onclick="lancLimparRapido()" style="display:inline-flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21l-4.3-4.3a1 1 0 010-1.4l9.6-9.6a1 1 0 011.4 0l5.6 5.6a1 1 0 010 1.4L13 21"/><path d="M22 21H7"/><path d="M5 11l9 9"/></svg> Limpar (Esc)</button>
+      <button type="button" class="btn btn-ghost" onclick="setLancMode('nf')" style="display:inline-flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> NF Completa…</button>
     </div>
   </div>
 
@@ -2035,23 +2101,26 @@ input,select,textarea{min-height:44px}
     <div class="card-hdr">
       <div class="card-title">Histórico</div>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="btn btn-sm" onclick="exportCSV()" aria-label="Exportar CSV" title="Exportar CSV" style="padding:0 10px;font-size:11.5px">⬇ CSV</button>
+        <button class="btn btn-sm" onclick="exportCSV()" aria-label="Exportar CSV" title="Exportar CSV" style="padding:0 10px;font-size:11.5px;display:inline-flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> CSV</button>
       </div>
     </div>
     <div class="tbl-filters" role="search">
       <div class="tbl-filters-row1">
-        <input type="text" id="tbl-search" placeholder="🔍 Buscar..." oninput="renderT()" aria-label="Buscar lançamentos">
-        <button class="btn-filtros-toggle" onclick="togFiltros()" id="btn-filtros" aria-expanded="false" aria-controls="filtros-panel">⚙ Filtros <span class="fil-badge" id="fil-badge" style="display:none">0</span></button>
+        <div style="flex:1;position:relative;display:flex;align-items:center">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;pointer-events:none" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="tbl-search" placeholder="Buscar..." oninput="renderT()" aria-label="Buscar lançamentos" style="padding-left:32px">
+        </div>
+        <button class="btn-filtros-toggle" onclick="togFiltros()" id="btn-filtros" aria-expanded="false" aria-controls="filtros-panel" style="display:inline-flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> Filtros <span class="fil-badge" id="fil-badge" style="display:none">0</span></button>
       </div>
       <!-- Chips de categoria — sempre visíveis -->
       <div class="cat-chips-wrap">
         <div class="cat-chips" id="lanc-cat-chips">
           <button class="cat-chip active" data-cat="" onclick="setCatFil(this,'')">Todas</button>
-          <button class="cat-chip" data-cat="material" onclick="setCatFil(this,'material')">🧱 Materiais</button>
-          <button class="cat-chip" data-cat="funcionario" onclick="setCatFil(this,'funcionario')">👷 Funcionários</button>
-          <button class="cat-chip" data-cat="burocracia" onclick="setCatFil(this,'burocracia')">📋 Burocracia</button>
-          <button class="cat-chip" data-cat="terreno" onclick="setCatFil(this,'terreno')">🏡 Terreno</button>
-          <button class="cat-chip" data-cat="outro" onclick="setCatFil(this,'outro')">📦 Outros</button>
+          <button class="cat-chip" data-cat="material" onclick="setCatFil(this,'material')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M8 3v6M16 3v6M8 15v6M16 15v6"/></svg> Materiais</button>
+          <button class="cat-chip" data-cat="funcionario" onclick="setCatFil(this,'funcionario')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><path d="M2 18a1 1 0 001 1h18a1 1 0 001-1v-2a1 1 0 00-1-1H3a1 1 0 00-1 1z"/><path d="M10 10V5a1 1 0 011-1h2a1 1 0 011 1v5"/><path d="M4 15v-3a6 6 0 016-6"/><path d="M14 6a6 6 0 016 6v3"/></svg> Funcionários</button>
+          <button class="cat-chip" data-cat="burocracia" onclick="setCatFil(this,'burocracia')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> Burocracia</button>
+          <button class="cat-chip" data-cat="terreno" onclick="setCatFil(this,'terreno')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><path d="M10 10v.2A3 3 0 018.9 16H5a3 3 0 01-1-5.8V10a3 3 0 016 0z"/><path d="M7 16v6M13 19v3"/><path d="M12 19h8.3a1 1 0 00.7-1.7L18 14h.3a1 1 0 00.7-1.7L16 9h.2a1 1 0 00.8-1.7L13 3l-1.4 1.5"/></svg> Terreno</button>
+          <button class="cat-chip" data-cat="outro" onclick="setCatFil(this,'outro')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg> Outros</button>
         </div>
       </div>
       <div class="filtros-panel" id="filtros-panel" style="display:none">
@@ -2074,8 +2143,8 @@ input,select,textarea{min-height:44px}
         <!-- Chips de pagamento -->
         <div class="cat-chips" style="margin:0">
           <button class="cat-chip active" id="fil-pag-chip-todos" onclick="setPagFil(this,'')">Todos</button>
-          <button class="cat-chip" id="fil-pag-chip-pago" onclick="setPagFil(this,'pago')">✅ Pago</button>
-          <button class="cat-chip" id="fil-pag-chip-apagar" onclick="setPagFil(this,'a_pagar')">⏳ A Pagar</button>
+          <button class="cat-chip" id="fil-pag-chip-pago" onclick="setPagFil(this,'pago')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Pago</button>
+          <button class="cat-chip" id="fil-pag-chip-apagar" onclick="setPagFil(this,'a_pagar')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 00-.59-1.42L12 12l-4.41 4.41A2 2 0 007 17.83V22M7 2v4.17a2 2 0 00.59 1.42L12 12l4.41-4.41A2 2 0 0017 6.17V2"/></svg> A Pagar</button>
         </div>
         <!-- Select oculto — mantido para compatibilidade -->
         <select id="fil-pag" style="display:none" onchange="renderT();updFilBadge()">
@@ -2084,7 +2153,7 @@ input,select,textarea{min-height:44px}
         <div class="fil-row-btns">
           <label class="tbl-fil-todas" id="lbl-todas-obras">
             <input type="checkbox" id="fil-todas-obras" onchange="renderT();updFilBadge();this.closest('label').classList.toggle('ativa',this.checked)">
-            🏠 Todas as obras
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Todas as obras
           </label>
           <button class="btn-limpar-fil" onclick="limparFiltros()">✕ Limpar</button>
         </div>
@@ -2102,46 +2171,46 @@ input,select,textarea{min-height:44px}
     <div><div class="page-title">Pendências da Obra</div><div class="page-sub">Calendário de prazos e tarefas</div></div>
     <div class="pend-top-btns">
       <button class="btn btn-p btn-sm" onclick="togPF()" aria-label="Nova pendência">+ Nova</button>
-      <button class="btn btn-a btn-sm" onclick="togRF()" aria-label="Nova periódica">🔄 Periódica</button>
+      <button class="btn btn-a btn-sm" onclick="togRF()" aria-label="Nova periódica" style="display:inline-flex;align-items:center;gap:6px"><span id="pend-rf-ico"></span>Periódica</button>
     </div>
   </div>
   <div id="overdue-banner-wrap" role="alert" aria-live="assertive"></div>
   <div class="card" id="pf-wrap" style="display:none;margin-bottom:14px">
     <div class="card-title" style="margin-bottom:12px">Registrar Pendência</div>
-    <div class="confirm-banner" role="status"><span>⚠️ Obra: <strong id="pend-ob-nm">—</strong></span></div>
+    <div class="confirm-banner" role="status"><span style="display:inline-flex;align-items:center;gap:6px" id="pend-ob-banner">Obra: <strong id="pend-ob-nm">—</strong></span></div>
     <div class="fg">
       <div class="fgg"><label class="fl" for="p-tit">Título <span class="req">*</span></label><input type="text" id="p-tit" placeholder="Ex: Ligação de energia" aria-required="true"></div>
-      <div class="fgg"><label class="fl" for="p-tp">Tipo</label><select id="p-tp"><option value="energia">⚡ Energia Elétrica</option><option value="agua">💧 Água / Esgoto</option><option value="prefeitura">🏛️ Prefeitura Macaé</option><option value="corretor">🤝 Corretor</option><option value="cartorio">📜 Cartório</option><option value="fornecedor">📦 Fornecedor</option><option value="outro">📋 Outro</option></select></div>
+      <div class="fgg"><label class="fl" for="p-tp">Tipo</label><select id="p-tp"><option value="energia">Energia Elétrica</option><option value="agua">Água / Esgoto</option><option value="prefeitura">Prefeitura Macaé</option><option value="corretor">Corretor</option><option value="cartorio">Cartório</option><option value="fornecedor">Fornecedor</option><option value="outro">Outro</option></select></div>
       <div class="fgg"><label class="fl" for="p-resp">Responsável</label><input type="text" id="p-resp" placeholder="Nome ou empresa"></div>
     </div>
     <div class="fgg" style="margin-bottom:10px">
       <label class="fl">Prazo — vence em quantos dias?</label>
-      <div class="sl-row"><span class="sl-lbl">📅 Dias:</span><input type="range" id="p-sl" min="1" max="30" value="7" step="1" oninput="updSl()" aria-label="Dias para o prazo"><span class="sl-val" id="p-sv">7</span><span class="sl-unit">dias</span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:4px" role="status">📌 Prazo: <strong id="p-pc" style="color:var(--brand3)">—</strong></div>
+      <div class="sl-row"><span class="sl-lbl" id="pend-dias-lbl" style="display:inline-flex;align-items:center;gap:5px">Dias:</span><input type="range" id="p-sl" min="1" max="30" value="7" step="1" oninput="updSl()" aria-label="Dias para o prazo"><span class="sl-val" id="p-sv">7</span><span class="sl-unit">dias</span></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;display:flex;align-items:center;gap:5px" role="status" id="pend-prazo-lbl">Prazo: <strong id="p-pc" style="color:var(--brand3)">—</strong></div>
     </div>
     <div class="fgg" style="margin-bottom:10px">
       <label class="fl">Prioridade</label>
       <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:3px" role="radiogroup" aria-label="Prioridade">
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px"><input type="radio" name="p-prio" value="alta" style="width:auto" aria-label="Alta prioridade"> <span style="color:var(--red)">🔴 Alta</span></label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px"><input type="radio" name="p-prio" value="media" checked style="width:auto" aria-label="Média prioridade"> <span style="color:var(--yellow)">🟡 Média</span></label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px"><input type="radio" name="p-prio" value="baixa" style="width:auto" aria-label="Baixa prioridade"> <span style="color:var(--green)">🟢 Baixa</span></label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px"><input type="radio" name="p-prio" value="alta" style="width:auto" aria-label="Alta prioridade"> <span style="color:var(--red);display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;background:var(--red);border-radius:50%;display:inline-block" aria-hidden="true"></span>Alta</span></label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px"><input type="radio" name="p-prio" value="media" checked style="width:auto" aria-label="Média prioridade"> <span style="color:var(--yellow);display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;background:var(--yellow);border-radius:50%;display:inline-block" aria-hidden="true"></span>Média</span></label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px"><input type="radio" name="p-prio" value="baixa" style="width:auto" aria-label="Baixa prioridade"> <span style="color:var(--green);display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;background:var(--green);border-radius:50%;display:inline-block" aria-hidden="true"></span>Baixa</span></label>
       </div>
     </div>
     <div class="fgg" style="margin-bottom:10px"><label class="fl" for="p-dc">Descrição</label><textarea id="p-dc" placeholder="Detalhes da pendência..."></textarea></div>
     <div class="form-btns-row"><button class="btn btn-p btn-sm" onclick="salvarP()">Salvar</button><button class="btn btn-sm" onclick="togPF()">Cancelar</button></div>
   </div>
   <div class="card" id="rf-wrap" style="display:none;margin-bottom:14px">
-    <div class="card-title" style="margin-bottom:12px">🔄 Pendência Periódica Mensal</div>
+    <div class="card-title" style="margin-bottom:12px;display:flex;align-items:center;gap:7px" id="pend-per-title">Pendência Periódica Mensal</div>
     <div class="fg">
       <div class="fgg"><label class="fl" for="r-nm">Nome</label><input type="text" id="r-nm" placeholder="Ex: Conta de Luz"></div>
-      <div class="fgg"><label class="fl" for="r-tp">Tipo</label><select id="r-tp"><option value="energia">⚡ Energia</option><option value="agua">💧 Água</option><option value="outro">📋 Outro</option></select></div>
+      <div class="fgg"><label class="fl" for="r-tp">Tipo</label><select id="r-tp"><option value="energia">Energia</option><option value="agua">Água</option><option value="outro">Outro</option></select></div>
       <div class="fgg"><label class="fl">Dia de Vencimento (1–30)</label>
         <div class="sl-row"><span class="sl-lbl">Dia:</span><input type="range" id="r-sl" min="1" max="30" value="10" step="1" oninput="document.getElementById('r-sv').textContent=this.value" aria-label="Dia de vencimento"><span class="sl-val" id="r-sv">10</span></div>
       </div>
     </div>
     <div class="form-btns-row"><button class="btn btn-p btn-sm" onclick="salvarR()">Salvar Periódica</button><button class="btn btn-sm" onclick="togRF()">Cancelar</button></div>
   </div>
-  <div class="card" id="rc-card" style="display:none;margin-bottom:14px"><div class="card-hdr"><div class="card-title">🔄 Periódicas Cadastradas</div></div><div id="rc-list"></div></div>
+  <div class="card" id="rc-card" style="display:none;margin-bottom:14px"><div class="card-hdr"><div class="card-title" style="display:flex;align-items:center;gap:7px" id="pend-perc-title">Periódicas Cadastradas</div></div><div id="rc-list"></div></div>
   <div class="card" style="margin-bottom:14px">
     <div class="cal-nav">
       <button class="btn btn-sm" onclick="calPrev()" aria-label="Mês anterior">← Anterior</button>
@@ -2175,7 +2244,7 @@ input,select,textarea{min-height:44px}
 <!-- DOCUMENTOS -->
 <div id="page-documentos" class="page" role="main" style="position:relative">
   <div class="dz-overlay" id="doc-dz-overlay" aria-hidden="true">
-    <div class="dz-overlay-ico">📎</div>
+    <div class="dz-overlay-ico" style="display:flex;align-items:center;justify-content:center"></div>
     <div class="dz-overlay-txt">Solte o documento aqui</div>
     <div class="dz-overlay-sub">Imagem ou PDF</div>
   </div>
@@ -2188,10 +2257,10 @@ input,select,textarea{min-height:44px}
     <div class="doc-split-left">
       <div class="card">
         <div style="margin-bottom:12px">
-          <div class="card-title" style="margin-bottom:2px">📂 Documentos Salvos</div>
+          <div class="card-title" id="doc-saved-title" style="margin-bottom:2px;display:flex;align-items:center;gap:7px">Documentos Salvos</div>
           <div class="chart-subtitle" style="margin-bottom:10px"><span id="doc-count">0</span> documento(s) vinculados a esta obra</div>
           <div class="doc-filtros">
-            <input type="text" id="doc-search" placeholder="🔍 Buscar documento..." oninput="renderDocs()" aria-label="Buscar documentos">
+            <div style="flex:1;position:relative;display:flex;align-items:center"><span id="doc-search-ico" style="position:absolute;left:10px;display:flex;align-items:center;color:var(--text3);pointer-events:none"></span><input type="text" id="doc-search" placeholder="Buscar documento..." oninput="renderDocs()" aria-label="Buscar documentos" style="padding-left:32px;width:100%"></div>
           </div>
         </div>
         <div class="doc-chips" id="doc-chips" role="tablist" aria-label="Filtrar por categoria"></div>
@@ -2204,28 +2273,28 @@ input,select,textarea{min-height:44px}
     <div class="doc-split-right">
       <div class="card" id="doc-form-card">
         <div class="card-hdr" style="margin-bottom:12px">
-          <div><div class="card-title">📁 Anexar Documento</div><div class="chart-subtitle">Vinculado à obra selecionada</div></div>
+          <div><div class="card-title" id="doc-anexar-title" style="display:flex;align-items:center;gap:7px">Anexar Documento</div><div class="chart-subtitle">Vinculado à obra selecionada</div></div>
         </div>
         <div class="obra-banner" role="status">
           <div class="obra-banner-top">
-            <span class="obra-banner-badge">🏗️ Obra Ativa</span>
+            <span class="obra-banner-badge" id="doc-ob-badge" style="display:inline-flex;align-items:center;gap:5px">Obra Ativa</span>
             <span class="obra-banner-label">— documentos vinculados a</span>
           </div>
           <div class="obra-banner-plate">
             <div class="obra-banner-name" id="doc-ob-nm">—</div>
           </div>
-          <div class="obra-banner-warn">⚠️ Confirme a obra antes de salvar</div>
+          <div class="obra-banner-warn" id="doc-ob-warn" style="display:flex;align-items:center;gap:5px">Confirme a obra antes de salvar</div>
         </div>
 
         <!-- Categoria do documento -->
         <div class="fsec-title" style="margin-top:14px">Categoria do documento</div>
         <div class="doc-cat-picker" role="radiogroup" aria-label="Categoria do documento">
-          <button type="button" class="doc-cat-tile" data-cat="terreno" onclick="selectDocCat('terreno',this)" title="Tecla 1"><span class="doc-cat-tile-ico">🏡</span>Terreno / Imóvel</button>
-          <button type="button" class="doc-cat-tile" data-cat="obra" onclick="selectDocCat('obra',this)" title="Tecla 2"><span class="doc-cat-tile-ico">🏗️</span>Obra / Construção</button>
-          <button type="button" class="doc-cat-tile" data-cat="prefeitura" onclick="selectDocCat('prefeitura',this)" title="Tecla 3"><span class="doc-cat-tile-ico">🏛️</span>Prefeitura Macaé</button>
-          <button type="button" class="doc-cat-tile" data-cat="financeiro" onclick="selectDocCat('financeiro',this)" title="Tecla 4"><span class="doc-cat-tile-ico">💰</span>Financeiro</button>
-          <button type="button" class="doc-cat-tile" data-cat="contrato" onclick="selectDocCat('contrato',this)" title="Tecla 5"><span class="doc-cat-tile-ico">📝</span>Contratos</button>
-          <button type="button" class="doc-cat-tile" data-cat="outro" onclick="selectDocCat('outro',this)" title="Tecla 6"><span class="doc-cat-tile-ico">📦</span>Outros</button>
+          <button type="button" class="doc-cat-tile" data-cat="terreno" onclick="selectDocCat('terreno',this)" title="Tecla 1"><span class="doc-cat-tile-ico"></span>Terreno / Imóvel</button>
+          <button type="button" class="doc-cat-tile" data-cat="obra" onclick="selectDocCat('obra',this)" title="Tecla 2"><span class="doc-cat-tile-ico"></span>Obra / Construção</button>
+          <button type="button" class="doc-cat-tile" data-cat="prefeitura" onclick="selectDocCat('prefeitura',this)" title="Tecla 3"><span class="doc-cat-tile-ico"></span>Prefeitura Macaé</button>
+          <button type="button" class="doc-cat-tile" data-cat="financeiro" onclick="selectDocCat('financeiro',this)" title="Tecla 4"><span class="doc-cat-tile-ico"></span>Financeiro</button>
+          <button type="button" class="doc-cat-tile" data-cat="contrato" onclick="selectDocCat('contrato',this)" title="Tecla 5"><span class="doc-cat-tile-ico"></span>Contratos</button>
+          <button type="button" class="doc-cat-tile" data-cat="outro" onclick="selectDocCat('outro',this)" title="Tecla 6"><span class="doc-cat-tile-ico"></span>Outros</button>
         </div>
         <select id="d-cat" style="display:none">
           <option value="terreno">terreno</option><option value="obra">obra</option><option value="prefeitura">prefeitura</option>
@@ -2245,7 +2314,7 @@ input,select,textarea{min-height:44px}
         <!-- Validade destacada -->
         <div class="doc-val-box" id="doc-val-box">
           <div class="doc-val-box-top">
-            <span class="doc-val-ico" id="doc-val-ico">📅</span>
+            <span class="doc-val-ico" id="doc-val-ico" style="display:inline-flex;align-items:center"></span>
             <span class="doc-val-ttl">Validade / Vencimento</span>
             <span class="doc-val-hint">deixe vazio se não vence</span>
           </div>
@@ -2257,21 +2326,21 @@ input,select,textarea{min-height:44px}
         <div class="fsec-title" style="margin-top:14px">Arquivo <span class="req">*</span></div>
         <div class="dz-doc" id="doc-dz" onclick="docPickFile()">
           <div id="doc-dz-empty">
-            <div class="dz-doc-ico">📎</div>
+            <div class="dz-doc-ico" style="display:flex;align-items:center;justify-content:center"></div>
             <div class="dz-doc-title">Documento (PDF ou imagem)</div>
             <div class="dz-doc-sub">Arraste, cole com <kbd>Cmd+V</kbd> ou clique para escolher</div>
-            <button type="button" class="dz-doc-btn" onclick="event.stopPropagation();docPickFile()">📄 Escolher arquivo</button>
+            <button type="button" class="dz-doc-btn" id="doc-choose-btn" onclick="event.stopPropagation();docPickFile()" style="display:inline-flex;align-items:center;gap:6px">Escolher arquivo</button>
             <div class="dz-doc-req">* obrigatório — o arquivo é o documento</div>
           </div>
           <div id="doc-dz-preview" style="display:none">
             <div class="dz-preview">
-              <div class="dz-thumb" id="doc-dz-thumb">📄</div>
+              <div class="dz-thumb" id="doc-dz-thumb" style="display:flex;align-items:center;justify-content:center"></div>
               <div class="dz-info">
                 <div class="dz-nm" id="doc-dz-nm">arquivo.pdf</div>
                 <div class="dz-meta" id="doc-dz-meta">245 KB · anexado agora</div>
               </div>
               <div class="dz-actions">
-                <button onclick="event.stopPropagation();docPickFile()" title="Trocar arquivo">↻</button>
+                <button onclick="event.stopPropagation();docPickFile()" title="Trocar arquivo" id="doc-swap-btn" style="display:inline-flex;align-items:center;justify-content:center"></button>
                 <button class="del" onclick="event.stopPropagation();docResetFile()" title="Remover">✕</button>
               </div>
             </div>
@@ -2279,7 +2348,7 @@ input,select,textarea{min-height:44px}
           <input type="file" id="d-file" accept="image/*,application/pdf" style="display:none" onchange="onDocF(event)">
         </div>
 
-        <button onclick="salvarDoc()" aria-label="Salvar documento" style="width:100%;height:44px;margin-top:14px;border:none;border-radius:10px;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,.35);transition:filter .15s;font-family:'DM Sans',sans-serif">💾 Salvar Documento <span style="opacity:.7;font-weight:500;font-size:11px">(Cmd+↵)</span></button>
+        <button onclick="salvarDoc()" aria-label="Salvar documento" style="width:100%;height:44px;margin-top:14px;border:none;border-radius:10px;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,.35);transition:filter .15s;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:7px"><span id="doc-save-ico" style="display:inline-flex;align-items:center"></span>Salvar Documento <span style="opacity:.7;font-weight:500;font-size:11px">(Cmd+↵)</span></button>
       </div>
     </div>
   </div>
@@ -2289,9 +2358,9 @@ input,select,textarea{min-height:44px}
 <div id="page-cadastro" class="page" role="main">
   <div class="page-hdr"><div><div class="page-title">Empreendimentos</div><div class="page-sub">Terreno com uma ou mais casas — Macaé e região, RJ</div></div><button class="btn btn-p btn-sm" onclick="novaO()" aria-label="Novo empreendimento">+ Novo Empreendimento</button></div>
   <div class="card" id="form-obra" style="margin-bottom:14px;display:none">
-    <div class="card-title" style="margin-bottom:12px" id="fo-title">📐 Dados da Obra</div>
+    <div class="card-title" style="margin-bottom:12px;display:inline-flex;align-items:center;gap:8px" id="fo-title"><span id="fo-ico"></span><span id="fo-txt">Dados da Obra</span></div>
     <div class="fg">
-      <div class="fgg"><label class="fl" for="cfg-tipo">Tipo de Obra</label><select id="cfg-tipo" onchange="onTipoObra()" aria-label="Tipo de Obra"><option value="empreendimento">🏘️ Empreendimento (para venda)</option><option value="interna">🏢 Obra Interna / Reforma (sem venda)</option></select></div>
+      <div class="fgg"><label class="fl" for="cfg-tipo">Tipo de Obra</label><select id="cfg-tipo" onchange="onTipoObra()" aria-label="Tipo de Obra"><option value="empreendimento">Empreendimento (para venda)</option><option value="interna">Obra Interna / Reforma (sem venda)</option></select></div>
     </div>
     <div class="fg">
       <div class="fgg"><label class="fl" for="cfg-nm">Nome do Empreendimento <span class="req">*</span></label><input type="text" id="cfg-nm" placeholder="Ex: Terreno Barra de Macaé" aria-required="true"></div>
@@ -2304,33 +2373,33 @@ input,select,textarea{min-height:44px}
       <div class="fgg"><label class="fl" for="cfg-concl">Previsão de Conclusão</label><input type="date" id="cfg-concl" placeholder="dd/mm/aaaa"></div>
     </div>
     <div class="fg">
-      <div class="fgg"><label class="fl" for="cfg-st">Situação da construção</label><select id="cfg-st" aria-label="Situação da construção"><option value="andamento">🏗️ Em Andamento</option><option value="concluida">✅ Concluída</option></select></div>
+      <div class="fgg"><label class="fl" for="cfg-st">Situação da construção</label><select id="cfg-st" aria-label="Situação da construção"><option value="andamento">Em Andamento</option><option value="concluida">Concluída</option></select></div>
       <div class="fgg"><label class="fl" for="cfg-soc">Responsável / Sócio</label><input type="text" id="cfg-soc" placeholder="Nome do responsável"></div>
     </div>
     <div class="casas-sec" id="casas-sec">
       <div class="casas-hdr">
-        <div><div class="casas-tit">🏠 Casas / Unidades</div><div class="casas-sub">Os custos do empreendimento são rateados igualmente entre as casas.</div></div>
+        <div><div class="casas-tit" id="casas-tit">Casas / Unidades</div><div class="casas-sub">Os custos do empreendimento são rateados igualmente entre as casas.</div></div>
         <button type="button" class="btn btn-sm btn-s" onclick="addCasaRow()" aria-label="Adicionar casa">+ Casa</button>
       </div>
       <div id="casas-list"></div>
     </div>
     <input type="hidden" id="cfg-id">
     <div class="obra-btns-group">
-      <button class="btn btn-p" onclick="salvarO()" aria-label="Salvar empreendimento">✓ Salvar Empreendimento</button>
+      <button class="btn btn-p" id="cad-save-btn" onclick="salvarO()" aria-label="Salvar empreendimento">Salvar Empreendimento</button>
       <button class="btn" onclick="fecharFormObra()" aria-label="Cancelar" style="margin-top:8px">✕ Cancelar</button>
-      <button class="btn" onclick="expJSON()" aria-label="Exportar backup">⬇ Backup JSON</button>
-      <button class="btn btn-s" onclick="openImport()" aria-label="Importar backup">📥 Importar Backup</button>
+      <button class="btn" id="cad-backup-btn" onclick="expJSON()" aria-label="Exportar backup">Backup JSON</button>
+      <button class="btn btn-s" id="cad-import-btn" onclick="openImport()" aria-label="Importar backup">Importar Backup</button>
     </div>
   </div>
-  <div class="card"><div class="card-hdr"><div class="card-title">🏘️ Empreendimentos Cadastrados</div></div><div id="obras-adm"></div></div>
+  <div class="card"><div class="card-hdr"><div class="card-title" id="cad-list-title" style="display:inline-flex;align-items:center;gap:7px">Empreendimentos Cadastrados</div></div><div id="obras-adm"></div></div>
   <div style="text-align:center;padding:8px 0 4px">
-    <button onclick="togZonaPerigo()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text3);opacity:.5;padding:6px 12px;border-radius:6px;transition:opacity .2s" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='.5'">⚙ configurações avançadas</button>
+    <button onclick="togZonaPerigo()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text3);opacity:.5;padding:6px 12px;border-radius:6px;transition:opacity .2s" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='.5'"><span id="cad-cfg-ico" style="display:inline-flex;vertical-align:-2px;margin-right:4px"></span>configurações avançadas</button>
   </div>
   <div id="zona-perigo-panel" style="display:none;padding:0 2px 8px">
     <div style="border:1px dashed rgba(231,76,60,.3);border-radius:10px;padding:14px;background:rgba(231,76,60,.04)">
       <div style="font-size:11.5px;font-weight:600;color:var(--text3);margin-bottom:8px;letter-spacing:.03em">ZONA DE PERIGO</div>
       <p style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5">Apaga permanentemente todos os dados salvos. Esta ação é irreversível e exige confirmação por senha.</p>
-      <button class="btn btn-d" onclick="confirmarLimparTudo()" style="width:100%;font-size:12px;padding:8px" aria-label="Limpar todos os dados">🗑️ Limpar Todos os Dados</button>
+      <button class="btn btn-d" id="cad-wipe-btn" onclick="confirmarLimparTudo()" style="width:100%;font-size:12px;padding:8px;display:inline-flex;align-items:center;justify-content:center;gap:6px" aria-label="Limpar todos os dados">Limpar Todos os Dados</button>
     </div>
   </div>
 </div>
@@ -3058,6 +3127,67 @@ function normCasas(o){
 /* ══ UTILS ══ */
 // Sanitização XSS — sempre usar em dados digitados pelo usuário antes de inserir em innerHTML
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+/* Ícones de linha inline (mesmo estilo do menu) — substitui emojis sem dependência externa (PWA offline-safe).
+   Uso: ic('home'), ic('home',18), ic('check',14,'#E67E22'). */
+const ICN={
+  home:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  building:'<path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18"/><path d="M6 12H4a2 2 0 00-2 2v8h20v-8a2 2 0 00-2-2h-2"/><path d="M10 6h4M10 10h4M10 14h4"/>',
+  mappin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  checkcircle:'<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>',
+  hourglass:'<path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 00-.59-1.42L12 12l-4.41 4.41A2 2 0 007 17.83V22M7 2v4.17a2 2 0 00.59 1.42L12 12l4.41-4.41A2 2 0 0017 6.17V2"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  trendup:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+  barchart:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+  piechart:'<path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/>',
+  dollar:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+  wallet:'<path d="M20 12V8H6a2 2 0 010-4h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4z"/>',
+  target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  flame:'<path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/>',
+  ruler:'<path d="M16 2l6 6L8 22l-6-6z"/><path d="M7.5 10.5l2 2M11 7l2 2M14.5 3.5l2 2"/>',
+  alert:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  note:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+  eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  brick:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M8 3v6M16 3v6M8 15v6M16 15v6"/>',
+  hardhat:'<path d="M2 18a1 1 0 001 1h18a1 1 0 001-1v-2a1 1 0 00-1-1H3a1 1 0 00-1 1z"/><path d="M10 10V5a1 1 0 011-1h2a1 1 0 011 1v5"/><path d="M4 15v-3a6 6 0 016-6"/><path d="M14 6a6 6 0 016 6v3"/>',
+  clipboard:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/>',
+  trees:'<path d="M10 10v.2A3 3 0 018.9 16H5a3 3 0 01-1-5.8V10a3 3 0 016 0z"/><path d="M7 16v6M13 19v3"/><path d="M12 19h8.3a1 1 0 00.7-1.7L18 14h.3a1 1 0 00.7-1.7L16 9h.2a1 1 0 00.8-1.7L13 3l-1.4 1.5"/>',
+  package:'<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/>',
+  zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  paperclip:'<path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>',
+  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  save:'<path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+  eraser:'<path d="M7 21l-4.3-4.3a1 1 0 010-1.4l9.6-9.6a1 1 0 011.4 0l5.6 5.6a1 1 0 010 1.4L13 21"/><path d="M22 21H7"/><path d="M5 11l9 9"/>',
+  pencil:'<path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>',
+  receipt:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1z"/><path d="M8 7h8M8 11h8M8 15h5"/>',
+  cloud:'<path d="M17.5 19a4.5 4.5 0 100-9h-1.8A7 7 0 104 15.9"/>',
+  download:'<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  upload:'<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+  refresh:'<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>',
+  keyboard:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>',
+  close:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  droplet:'<path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>',
+  landmark:'<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+  users:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
+  scroll:'<path d="M19 17V5a2 2 0 00-2-2H4"/><path d="M8 21h12a2 2 0 002-2v-1a1 1 0 00-1-1H11a1 1 0 00-1 1v1a2 2 0 11-4 0V5a2 2 0 10-4 0v2a1 1 0 001 1h3"/>',
+  infinity:'<path d="M18.178 8c-2.072 0-3.342 1.96-4.178 3.5-.836 1.54-2.106 3.5-4.178 3.5a3.5 3.5 0 110-7c2.072 0 3.342 1.96 4.178 3.5.836 1.54 2.106 3.5 4.178 3.5a3.5 3.5 0 100-7z"/>',
+  folder:'<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>',
+  folderplus:'<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>'
+};
+// Categoria → ícone SVG (fonte única da verdade — usado em tiles, chips e tabela)
+const CAT_ICN={material:'brick',funcionario:'hardhat',burocracia:'clipboard',terreno:'trees',outro:'package'};
+// Tipo de pendência → ícone SVG (fonte única — usado em renderLP, renderRC, busca global)
+const TI_ICN={energia:'zap',agua:'droplet',prefeitura:'landmark',corretor:'users',cartorio:'scroll',fornecedor:'package',outro:'clipboard'};
+// Categoria de documento → ícone SVG (fonte única — usado em tiles, chips e cards)
+const DOC_ICN={terreno:'trees',obra:'building',prefeitura:'landmark',financeiro:'dollar',contrato:'note',outro:'package'};
+function ic(n,s,c){s=s||16;return '<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0" aria-hidden="true">'+(ICN[n]||'')+'</svg>';}
+function catIc(cat,s,c){return ic(CAT_ICN[cat]||'package',s,c);}
+function tiIc(tp,s,c){return ic(TI_ICN[tp]||'clipboard',s,c);}
+function docCatIc(cat,s,c){return ic(DOC_ICN[cat]||'package',s,c);}
 // Normaliza texto para evitar duplicatas: trim + capitaliza primeira letra
 // Mantém siglas em maiúsculas (ex: ITBI, ART, CEF)
 function norm(s){
@@ -3243,7 +3373,7 @@ document.addEventListener('keydown',e=>{
 function updBanners(){
   const ob=getOA();const nm=ob?ob.nome:'—';const end=ob?ob.endereco:'—';
   ['conf-ob-nm','pend-ob-nm','doc-ob-nm'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=nm;});
-  const ce=document.getElementById('conf-ob-end');if(ce)ce.textContent=end?'📍 '+end:'';
+  const ce=document.getElementById('conf-ob-end');if(ce)ce.innerHTML=end?ic('mappin',11)+' '+esc(end):'';
 }
 /* ── Bottom sheet lançamento ── */
 function openLancSheet(){
@@ -3395,7 +3525,7 @@ function lancRenderFotoPreview(){
   if(lancFotoFile.type.startsWith('image/')){
     thumb.innerHTML = `<img src="${esc(lancFotoFile.url)}" alt="preview">`;
   } else {
-    thumb.innerHTML = '📄';
+    thumb.innerHTML = ic('note',22);
   }
   document.getElementById('lanc-dz-nm').textContent = lancFotoFile.name;
   const kb = (lancFotoFile.size / 1024).toFixed(0);
@@ -3594,8 +3724,7 @@ function renderRecentChips(){
     const wrap=document.getElementById('forn-recentes');
     const chips=document.getElementById('forn-chips');
     if(!arr.length||!wrap||!chips){if(wrap)wrap.style.display='none';return;}
-    const catIco={material:'🧱',funcionario:'👷',burocracia:'📋',terreno:'🏡',outro:'📦'};
-    chips.innerHTML=arr.slice(0,4).map(r=>`<button type="button" class="recente-chip" onclick="applyFornChip(${JSON.stringify(r.forn)},${JSON.stringify(r.cat)})"><span class="recente-chip-ico">${catIco[r.cat]||'📦'}</span>${r.forn}</button>`).join('');
+    chips.innerHTML=arr.slice(0,4).map(r=>`<button type="button" class="recente-chip" onclick="applyFornChip(${JSON.stringify(r.forn)},${JSON.stringify(r.cat)})"><span class="recente-chip-ico">${catIc(r.cat,13)}</span>${esc(r.forn)}</button>`).join('');
     wrap.style.display='';
   }catch(e){}
 }
@@ -3612,8 +3741,7 @@ function renderRecentesRapido(){
     const wrap=document.getElementById('recentes-wrap');
     const chips=document.getElementById('recentes-chips');
     if(!arr.length||!wrap||!chips){if(wrap)wrap.style.display='none';return;}
-    const catIco={material:'🧱',funcionario:'👷',burocracia:'📋',terreno:'🏡',outro:'📦'};
-    chips.innerHTML=arr.slice(0,4).map(r=>`<button type="button" class="recente-chip" onclick="applyRapidoChip(${JSON.stringify(r.cat)},${JSON.stringify(r.desc)})"><span class="recente-chip-ico">${catIco[r.cat]||'📦'}</span>${r.desc}</button>`).join('');
+    chips.innerHTML=arr.slice(0,4).map(r=>`<button type="button" class="recente-chip" onclick="applyRapidoChip(${JSON.stringify(r.cat)},${JSON.stringify(r.desc)})"><span class="recente-chip-ico">${catIc(r.cat,13)}</span>${esc(r.desc)}</button>`).join('');
     wrap.style.display='';
   }catch(e){}
 }
@@ -3660,7 +3788,7 @@ function globalSearch(){
   const obs=ST.obras.filter(o=>o.nome.toLowerCase().includes(q)).slice(0,2);
   let html='';
   if(ls.length){html+=`<div class="gs-section">Lançamentos</div>`;html+=ls.map(l=>`<div class="gs-item" onclick="showPage('lancamentos',null);closeGS()" role="option"><div class="gs-item-icon" style="background:rgba(230,126,34,.12)">💰</div><div><div class="gs-item-main">${esc(l.desc||l.descricao||'—')}</div><div class="gs-item-sub">${fD(l.data)} · ${fmt(l.valor)}</div></div></div>`).join('');}
-  if(ps.length){html+=`<div class="gs-section">Pendências</div>`;html+=ps.map(p=>`<div class="gs-item" onclick="showPage('pendencias',null);closeGS()" role="option"><div class="gs-item-icon" style="background:${p.prio==='alta'?'var(--red-bg)':'var(--yellow-bg)'}"><span>${TI[p.tipo]||'📋'}</span></div><div><div class="gs-item-main">${esc(p.titulo)}</div><div class="gs-item-sub">Prazo: ${fD(p.prazo)}</div></div></div>`).join('');}
+  if(ps.length){html+=`<div class="gs-section">Pendências</div>`;html+=ps.map(p=>`<div class="gs-item" onclick="showPage('pendencias',null);closeGS()" role="option"><div class="gs-item-icon" style="background:${p.prio==='alta'?'var(--red-bg)':'var(--yellow-bg)'}">${tiIc(p.tipo,15)}</div><div><div class="gs-item-main">${esc(p.titulo)}</div><div class="gs-item-sub">Prazo: ${fD(p.prazo)}</div></div></div>`).join('');}
   if(obs.length){html+=`<div class="gs-section">Obras</div>`;html+=obs.map(o=>`<div class="gs-item" onclick="setOA('${o.id}');renderDash();closeGS()" role="option"><div class="gs-item-icon" style="background:var(--blue-bg)">🏠</div><div><div class="gs-item-main">${esc(o.nome)}</div><div class="gs-item-sub">${esc(o.endereco)}</div></div></div>`).join('');}
   if(!html)html='<div style="padding:12px;color:var(--text3);font-size:12.5px">Nenhum resultado para "'+q+'"</div>';
   res.innerHTML=html;res.classList.add('open');
@@ -3688,7 +3816,7 @@ function checkOverdueBanner(){
   const ob=getOA();
   const overdue=ST.pendencias.filter(p=>p.status==='aberta'&&p.prazo&&dif(p.prazo,td())>0&&(!ob||p.obraId===ob.id));
   if(!overdue.length){wrap.innerHTML='';return;}
-  wrap.innerHTML=`<div class="budget-alert" role="alert"><div class="budget-alert-icon">🔴</div><div class="budget-alert-text"><strong>${overdue.length} pendência(s) vencida(s)!</strong> — ${overdue.map(p=>esc(p.titulo)).slice(0,3).join(', ')}${overdue.length>3?' e mais...':''}</div></div>`;
+  wrap.innerHTML=`<div class="budget-alert" role="alert"><div class="budget-alert-icon" style="display:flex;align-items:center;color:var(--red)">${ic('alert',20)}</div><div class="budget-alert-text"><strong>${overdue.length} pendência(s) vencida(s)!</strong> — ${overdue.map(p=>esc(p.titulo)).slice(0,3).join(', ')}${overdue.length>3?' e mais...':''}</div></div>`;
 }
 
 /* ══ A PAGAR ══ */
@@ -3722,7 +3850,7 @@ function updAPagar(){
       const valDisplay=ob&&obItems.length?fmt(totOb):fmt(tot);
       const nDisplay=ob&&obItems.length?obItems.length:n;
       wrap.innerHTML=`<button class="apagar-compact" onclick="setPagFil(document.getElementById('fil-pag-chip-apagar'),'a_pagar')" role="alert">
-        <span style="font-size:16px;flex-shrink:0">⏳</span>
+        <span style="flex-shrink:0;display:inline-flex;color:var(--yellow)">${ic('hourglass',16)}</span>
         <span class="apagar-compact-text"><strong style="color:var(--yellow)">${nDisplay} a pagar</strong> · <strong>${valDisplay}</strong>${ob&&obItems.length&&n>obItems.length?` <span style="color:var(--text3);font-size:11px">(${n} no total)</span>`:''}
         </span>
         <span class="apagar-compact-action">Ver →</span>
@@ -3756,8 +3884,8 @@ function checkDocAlert(){
   });
   if(!expiring.length&&!expired.length){wrap.innerHTML='';return;}
   let html='';
-  if(expired.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon">📛</div><div class="doc-alert-text"><strong>${expired.length} documento(s) vencido(s):</strong> ${expired.map(d=>d.tipo).slice(0,3).join(', ')}${expired.length>3?' e mais...':''}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
-  if(expiring.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon">⏰</div><div class="doc-alert-text"><strong>${expiring.length} documento(s) vencem em até 30 dias:</strong> ${expiring.map(d=>d.tipo+' ('+dif(today,d.validade)+'d)').slice(0,3).join(', ')}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
+  if(expired.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon" style="display:flex;align-items:center;color:var(--red)">${ic('alert',20)}</div><div class="doc-alert-text"><strong>${expired.length} documento(s) vencido(s):</strong> ${expired.map(d=>d.tipo).slice(0,3).join(', ')}${expired.length>3?' e mais...':''}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
+  if(expiring.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon" style="display:flex;align-items:center;color:var(--yellow)">${ic('clock',20)}</div><div class="doc-alert-text"><strong>${expiring.length} documento(s) vencem em até 30 dias:</strong> ${expiring.map(d=>d.tipo+' ('+dif(today,d.validade)+'d)').slice(0,3).join(', ')}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
   wrap.innerHTML=html;
 }
 
@@ -3820,17 +3948,19 @@ function gerarPDF(){
 
 /* ══ DASHBOARD ══ */
 function renderDash(){
-  const idsInterna=new Set(ST.obras.filter(o=>o.tipo==='interna').map(o=>o.id));
-  const totAll=ST.lancamentos.filter(l=>!idsInterna.has(l.obraId)).reduce((a,l)=>a+l.valor,0);
-  let totalCasas=0,vendidasTot=0,vgvReal=0,recebTot=0,aReceberTot=0,margemTot=0,temVenda=false;
-  ST.obras.forEach(o=>{if(o.tipo==='interna')return;const r=empResumo(o);totalCasas+=r.nCasas;vendidasTot+=r.vendidas+r.naPlanta;vgvReal+=r.vgvRealizado;recebTot+=r.recebido;aReceberTot+=r.aReceber;margemTot+=r.margemTotal;if(r.vgvRealizado>0)temVenda=true;});
+  // Cabeçalho de carteira (ex.: "Carteira consolidada · 6 obras (2 concluídas · 4 em andamento)")
+  const sub=document.getElementById('dash-sub');
+  if(sub){
+    const obrasReais=ST.obras.filter(o=>o.tipo!=='interna');
+    const nC=obrasReais.filter(o=>o.status==='concluida').length;
+    const nA=obrasReais.length-nC;
+    sub.textContent='Carteira consolidada · '+obrasReais.length+' obra'+(obrasReais.length!==1?'s':'')+(obrasReais.length?' ('+nC+' concluída'+(nC!==1?'s':'')+' · '+nA+' em andamento)':'');
+  }
+  // KPIs (escopo carteira↔obra), resumo e comparativo
+  renderKpiGlob();
+  renderCartSum();
+  renderComparativo();
   const pnd=ST.pendencias.filter(p=>p.status==='aberta').length;
-  document.getElementById('k-obras').textContent=totalCasas?`${vendidasTot}/${totalCasas}`:'0';
-  if(!valoresOcultos){document.getElementById('k-total').textContent=fmt(totAll);
-  document.getElementById('k-vgv').textContent=fmtS(vgvReal);
-  document.getElementById('k-lucro').textContent=temVenda?fmtS(margemTot):'—';}
-  const cxStrip=document.getElementById('caixa-strip');
-  if(cxStrip){cxStrip.style.display=temVenda?'flex':'none';if(!valoresOcultos){document.getElementById('cx-receb').textContent=fmt(recebTot);document.getElementById('cx-areceber').textContent=fmt(aReceberTot);}}
   document.getElementById('k-pend').textContent=pnd;
   document.getElementById('badge-pend').textContent=pnd;
   document.getElementById('badge-pend').style.display=pnd>0?'':'none';
@@ -3851,27 +3981,118 @@ function renderDash(){
     return `<div class="obra-card${o.id===ST.obraAtiva?' sel':''}" onclick="selOD('${o.id}')" role="button" tabindex="0" aria-label="Selecionar empreendimento ${esc(o.nome)}" aria-pressed="${o.id===ST.obraAtiva}">
       <div class="oc-accent ${o.status}" aria-hidden="true"></div>
       <div class="oc-hdr">
-        <div><div class="oc-name">${esc(o.nome)}</div><div class="oc-addr">📍 ${esc(o.endereco)}</div></div>
-        <span class="oc-sbadge ${o.status==='concluida'?'sb-con':'sb-and'}">${o.status==='concluida'?'✅ Concluída':'⚙️ Andamento'}</span>
+        <div><div class="oc-name">${esc(o.nome)}</div><div class="oc-addr">${ic('mappin',12)} ${esc(o.endereco)}</div></div>
+        <span class="oc-sbadge ${o.status==='concluida'?'sb-con':'sb-and'}">${o.status==='concluida'?ic('check',11)+' Concluída':ic('gear',11)+' Andamento'}</span>
       </div>
-      ${o.tipo==='interna'?'':`<div class="oc-casas-line">🏠 ${r.nCasas} casa${r.nCasas>1?'s':''} · ${r.vendidas} vendida${r.vendidas!==1?'s':''}${r.naPlanta?` · ${r.naPlanta} na planta`:''}${r.disponiveis?` · ${r.disponiveis} disponíve${r.disponiveis>1?'is':'l'}`:''}</div>`}
-      ${o.status==='concluida'&&r.naPlanta>0?`<div><span class="sign-pend-pill">📝 Pendente de Assinatura Final</span></div>`:''}
+      ${o.tipo==='interna'?'':`<div class="oc-casas-line">${ic('home',12)} ${r.nCasas} casa${r.nCasas>1?'s':''} · ${r.vendidas} vendida${r.vendidas!==1?'s':''}${r.naPlanta?` · ${r.naPlanta} na planta`:''}${r.disponiveis?` · ${r.disponiveis} disponíve${r.disponiveis>1?'is':'l'}`:''}</div>`}
+      ${o.status==='concluida'&&r.naPlanta>0?`<div><span class="sign-pend-pill">${ic('note',11)} Pendente de Assinatura Final</span></div>`:''}
       <div><div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${pct}% do orçamento utilizado"><div class="prog-f" style="width:${pct}%;background:${pct>90?'var(--red)':pct>70?'var(--yellow)':'var(--accent)'}"></div></div>
       <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:9.5px;color:var(--text3)">${pct}% do orçamento</span><span style="font-size:9.5px;color:var(--text3)">${fmt(o.orcamento||0)}</span></div></div>
       <div class="oc-kpis">
-        <div class="omk"><div class="omk-l">Investido</div><div class="omk-v ac">${fmtS(gasto)}</div></div>
+        <div class="omk"><div class="omk-l">Investido</div><div class="omk-v">${fmtS(gasto)}</div></div>
         ${o.tipo==='interna'?'':`<div class="omk"><div class="omk-l">Custo/casa</div><div class="omk-v">${fmtS(cpCasa)}</div></div>`}
-        ${temVenda&&o.tipo!=='interna'?`<div class="omk"><div class="omk-l">VGV</div><div class="omk-v ac">${fmtS(r.vgvRealizado)}</div></div>
+        ${temVenda&&o.tipo!=='interna'?`<div class="omk"><div class="omk-l">VGV</div><div class="omk-v">${fmtS(r.vgvRealizado)}</div></div>
         <div class="omk"><div class="omk-l">Lucro ${o.status==='concluida'?'':'est.'}</div><div class="omk-v ${r.margemTotal>=0?'su':'da'}">${fmtS(r.margemTotal)}</div></div>`
         :`<div class="omk"><div class="omk-l">Saldo orç.</div><div class="omk-v ${saldo>=0?'su':'da'}">${fmtS(saldo)}</div></div>
         <div class="omk"><div class="omk-l">Lançamentos</div><div class="omk-v">${ls.length}</div></div>`}
-        ${r.aReceber>0?`<div class="omk" style="grid-column:1/-1"><div class="omk-l">⏳ A receber (assinatura)</div><div class="omk-v" style="color:var(--yellow)">${fmt(r.aReceber)}</div></div>`:''}
+        ${r.aReceber>0?`<div class="omk" style="grid-column:1/-1"><div class="omk-l">${ic('hourglass',11)} A receber (assinatura)</div><div class="omk-v" style="color:var(--yellow)">${fmt(r.aReceber)}</div></div>`:''}
       </div></div>`;
   }).join('');
   const ob=getOA();if(ob)renderDetail(ob);
 }
 
-function selOD(id){setOA(id);updKpis();}
+function selOD(id){dashScope='obra';setOA(id);updKpis();}
+
+/* ══ Sub-abas & escopo do Painel (visão dupla: Carteira ↔ Obra) ══ */
+let dashTab='visao', dashScope='carteira';
+function setDashTab(t,el){
+  dashTab=t;
+  document.querySelectorAll('.dtab').forEach(b=>{const on=b.dataset.dtab===t;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false');});
+  ['visao','fin','graf'].forEach(k=>{const p=document.getElementById('dtp-'+k);if(p)p.classList.toggle('show',k===t);});
+  // Financeiro e Gráficos precisam de container visível p/ dimensionar canvas
+  if(t==='fin'||t==='graf'){const ob=getOA();if(ob)renderDetail(ob);}
+  const sc=document.querySelector('.main-content');if(sc)sc.scrollTop=0;
+}
+function setDashScope(s){dashScope=s;renderKpiGlob();renderCartSum();renderComparativo();}
+function setKd(id,txt,up){const e=document.getElementById(id);if(e){e.textContent=txt;e.classList.toggle('up',!!up);}}
+function renderKpiGlob(){
+  const ob=getOA();
+  const idsInterna=new Set(ST.obras.filter(o=>o.tipo==='interna').map(o=>o.id));
+  const so=document.getElementById('scope-obra');
+  if(so)so.innerHTML='<span class="sc" style="background:var(--accent)"></span> '+esc(ob?ob.nome:'Obra ativa');
+  const sc=document.getElementById('scope-cart');
+  if(sc)sc.classList.toggle('active',dashScope==='carteira');
+  if(so)so.classList.toggle('active',dashScope==='obra');
+  let vend,totCasas,inv,vgv,lucro,temVenda,receb,aReceber,s1,s2,s3,s4;
+  if(dashScope==='obra'&&ob){
+    const r=empResumo(ob);
+    inv=ST.lancamentos.filter(l=>l.obraId===ob.id).reduce((a,l)=>a+l.valor,0);
+    vend=r.vendidas+r.naPlanta;totCasas=r.nCasas;vgv=r.vgvRealizado;lucro=r.margemTotal;temVenda=r.vgvRealizado>0;receb=r.recebido;aReceber=r.aReceber;
+    s1=ob.status==='concluida'?'Obra concluída':'Em andamento';
+    s2=ob.orcamento?Math.round(inv/ob.orcamento*100)+'% de '+fmtS(ob.orcamento):'sem orçamento';
+    s3=vend+' unidade'+(vend!==1?'s':'')+' vendida'+(vend!==1?'s':'');
+    s4=temVenda?(ob.status==='concluida'?'lucro realizado':'estimado'):'sem vendas';
+  }else{
+    let tc=0,vt=0,vr=0,mt=0,rc=0,ar=0,tv=false;
+    inv=ST.lancamentos.filter(l=>!idsInterna.has(l.obraId)).reduce((a,l)=>a+l.valor,0);
+    ST.obras.forEach(o=>{if(o.tipo==='interna')return;const r=empResumo(o);tc+=r.nCasas;vt+=r.vendidas+r.naPlanta;vr+=r.vgvRealizado;mt+=r.margemTotal;rc+=r.recebido;ar+=r.aReceber;if(r.vgvRealizado>0)tv=true;});
+    const obrasReais=ST.obras.filter(o=>o.tipo!=='interna');
+    const nConcl=obrasReais.filter(o=>o.status==='concluida').length;
+    const orcTot=obrasReais.reduce((a,o)=>a+(o.orcamento||0),0);
+    vend=vt;totCasas=tc;vgv=vr;lucro=mt;temVenda=tv;receb=rc;aReceber=ar;
+    s1=obrasReais.length+' obra'+(obrasReais.length!==1?'s':'')+' · '+nConcl+' concluída'+(nConcl!==1?'s':'');
+    s2=orcTot?Math.round(inv/orcTot*100)+'% de '+fmtS(orcTot):'';
+    s3=vt+' unidade'+(vt!==1?'s':'')+' vendida'+(vt!==1?'s':'');
+    s4='carteira consolidada';
+  }
+  document.getElementById('k-obras').textContent=totCasas?vend+'/'+totCasas:'0';
+  setKd('kd-obras',s1,false);
+  if(!valoresOcultos){
+    document.getElementById('k-total').textContent=fmtS(inv);setKd('kd-total',s2,false);
+    document.getElementById('k-vgv').textContent=fmtS(vgv);setKd('kd-vgv',s3,false);
+    document.getElementById('k-lucro').textContent=temVenda?fmtS(lucro):'—';setKd('kd-lucro',s4,temVenda&&lucro>=0);
+  }
+  const cx=document.getElementById('caixa-strip');
+  if(cx){cx.style.display=temVenda?'flex':'none';if(!valoresOcultos){document.getElementById('cx-receb').textContent=fmt(receb);document.getElementById('cx-areceber').textContent=fmt(aReceber);}}
+}
+function renderCartSum(){
+  const box=document.getElementById('cart-sum');if(!box)return;
+  const obrasReais=ST.obras.filter(o=>o.tipo!=='interna');
+  if(dashScope!=='carteira'||obrasReais.length<2||valoresOcultos){box.style.display='none';return;}
+  const idsInterna=new Set(ST.obras.filter(o=>o.tipo==='interna').map(o=>o.id));
+  const inv=ST.lancamentos.filter(l=>!idsInterna.has(l.obraId)).reduce((a,l)=>a+l.valor,0);
+  let vr=0,mt=0,mReal=0,vt=0,tc=0;
+  obrasReais.forEach(o=>{const r=empResumo(o);vr+=r.vgvRealizado;mt+=r.margemTotal;vt+=r.vendidas+r.naPlanta;tc+=r.nCasas;if(o.status==='concluida')mReal+=r.margemTotal;});
+  const orcTot=obrasReais.reduce((a,o)=>a+(o.orcamento||0),0);
+  const nConcl=obrasReais.filter(o=>o.status==='concluida').length;
+  box.style.display='block';
+  box.innerHTML='<div class="cart-sum-h">'+ic('barchart',16)+' Resumo da carteira · '+obrasReais.length+' obras</div>'
+    +'<div class="cart-sum-row"><span class="cl">Orçamento total</span><span class="cv">'+fmtS(orcTot)+'</span></div>'
+    +'<div class="cart-sum-row"><span class="cl">Investido (realizado)</span><span class="cv">'+fmtS(inv)+(orcTot?' · '+Math.round(inv/orcTot*100)+'%':'')+'</span></div>'
+    +'<div class="cart-sum-row"><span class="cl">VGV realizado ('+vt+'/'+tc+' un.)</span><span class="cv">'+fmtS(vr)+'</span></div>'
+    +'<div class="cart-sum-row"><span class="cl">Lucro estimado</span><span class="cv" style="color:var(--green)">'+fmtS(mt)+'</span></div>'
+    +(nConcl?'<div class="cart-sum-row"><span class="cl">Lucro realizado ('+nConcl+' concluída'+(nConcl!==1?'s':'')+')</span><span class="cv" style="color:var(--green)">'+fmtS(mReal)+'</span></div>':'');
+}
+function renderComparativo(){
+  const card=document.getElementById('cmp-card'),list=document.getElementById('cmp-list');if(!card||!list)return;
+  const obrasReais=ST.obras.filter(o=>o.tipo!=='interna');
+  if(dashScope!=='carteira'||obrasReais.length<2){card.style.display='none';return;}
+  card.style.display='';
+  list.innerHTML=obrasReais.map(o=>{
+    const r=empResumo(o);
+    const gasto=ST.lancamentos.filter(l=>l.obraId===o.id).reduce((a,l)=>a+l.valor,0);
+    const pct=o.orcamento?Math.min(100,Math.round(gasto/o.orcamento*100)):0;
+    const done=o.status==='concluida';
+    const w=Math.max(6,pct);
+    const lucroTxt=r.vgvRealizado?fmtS(r.margemTotal):'—';
+    const chip=done?'realizado':(r.vgvRealizado?'est.':(gasto>0?'em obra':'sem vendas'));
+    return '<div class="cmp-row2">'
+      +'<div class="cmp-nm"><span class="sc" style="background:'+(done?'var(--green)':'var(--brand3)')+'"></span><div style="min-width:0"><span class="nm">'+esc(o.nome)+'</span><small>'+r.nCasas+' un · '+r.vendidas+' vendida'+(r.vendidas!==1?'s':'')+'</small></div></div>'
+      +'<div class="cmp-trk"><i class="'+(done?'cmp-fill-done':'cmp-fill-and')+'" style="width:'+w+'%">'+pct+'%</i></div>'
+      +'<div class="cmp-vl"><b>'+lucroTxt+'</b>'+chip+'</div>'
+      +'</div>';
+  }).join('');
+}
 
 function getPeriodoDates(){
   const now=new Date(),y=now.getFullYear(),m=now.getMonth();
@@ -3910,27 +4131,27 @@ function renderCasasResult(ob,res){
         `:`<div class="crc-item"><div class="crc-l">Situação</div><div class="crc-v" style="color:var(--text3)">Não vendida</div></div>`}
         ${cr.naPlanta?`
         <div class="crc-item crc-full"><div class="crc-sep"></div></div>
-        <div class="crc-item"><div class="crc-l">💵 Recebido</div><div class="crc-v" style="color:var(--green)">${fmtS(cr.recebido)}</div></div>
-        <div class="crc-item"><div class="crc-l">⏳ A receber</div><div class="crc-v" style="color:var(--yellow)">${fmtS(cr.aReceber)}</div></div>
+        <div class="crc-item"><div class="crc-l">${ic('checkcircle',11)} Recebido</div><div class="crc-v" style="color:var(--green)">${fmtS(cr.recebido)}</div></div>
+        <div class="crc-item"><div class="crc-l">${ic('hourglass',11)} A receber</div><div class="crc-v" style="color:var(--yellow)">${fmtS(cr.aReceber)}</div></div>
         `:''}
       </div>
     </div>`;
   }).join('');
   box.innerHTML=`<div class="card">
-    <div class="card-hdr"><div class="card-title">🏠 Resultado por casa</div><span style="font-size:10px;color:var(--text3)">Custo/casa: ${fmtS(custoCasa)}</span></div>
+    <div class="card-hdr"><div class="card-title" style="display:flex;align-items:center;gap:7px">${ic('home',15)} Resultado por casa</div><span style="font-size:10px;color:var(--text3)">Custo/casa: ${fmtS(custoCasa)}</span></div>
     <div class="casas-result-list">${casaCards}</div>
     ${temVenda?`<div class="caixa-box">
-      <div class="cxb-item"><div class="cxb-l">💵 Recebido</div><div class="cxb-v g">${fmtS(res.recebido)}</div></div>
-      <div class="cxb-item"><div class="cxb-l">⏳ A receber</div><div class="cxb-v y">${fmtS(res.aReceber)}</div></div>
-      <div class="cxb-item"><div class="cxb-l">📈 Lucro ${estimando?'est.':'final'}</div><div class="cxb-v ${res.margemTotal>=0?'g':'r'}">${fmtS(res.margemTotal)}</div></div>
-    </div>${estimando&&res.naPlanta?'<div class="cxb-note">⚠️ Vendida na planta — margem estimada. Se ajusta conforme custos entram, fecha quando concluído.</div>':''}`:'<div class="cxb-note" style="margin-top:12px">Nenhuma casa vendida ainda. Edite o empreendimento para atualizar a situação de cada casa.</div>'}
+      <div class="cxb-item"><div class="cxb-l">${ic('checkcircle',11)} Recebido</div><div class="cxb-v g">${fmtS(res.recebido)}</div></div>
+      <div class="cxb-item"><div class="cxb-l">${ic('hourglass',11)} A receber</div><div class="cxb-v y">${fmtS(res.aReceber)}</div></div>
+      <div class="cxb-item"><div class="cxb-l">${ic('trendup',11)} Lucro ${estimando?'est.':'final'}</div><div class="cxb-v ${res.margemTotal>=0?'g':'r'}">${fmtS(res.margemTotal)}</div></div>
+    </div>${estimando&&res.naPlanta?`<div class="cxb-note">${ic('alert',11)} Vendida na planta — margem estimada. Se ajusta conforme custos entram, fecha quando concluído.</div>`:''}`:'<div class="cxb-note" style="margin-top:12px">Nenhuma casa vendida ainda. Edite o empreendimento para atualizar a situação de cada casa.</div>'}
   </div>`;
   box.style.display='block';
 }
 function renderDetail(ob){
   const[de]=getPeriodoDates();
   const periodoLabel=de?` (${dashPeriodo==='mes'?'Este Mês':dashPeriodo==='trimestre'?'Trimestre':'Este Ano'})`:'';
-  document.getElementById('detail-title').textContent='📊 '+ob.nome+' — Detalhe Financeiro'+periodoLabel;
+  document.getElementById('detail-title').innerHTML=ic('barchart',16)+' '+esc(ob.nome)+' — Detalhe Financeiro'+esc(periodoLabel);
   const ls=filterByPeriodo(ST.lancamentos.filter(l=>l.obraId===ob.id));
   const tot=ls.reduce((a,l)=>a+l.valor,0);
   const saldo=(ob.orcamento||0)-tot;
@@ -3942,15 +4163,15 @@ function renderDetail(ob){
   const res=empResumo(ob);
   const roi=res.custoTotal&&res.vgvRealizado?Math.round(res.margemTotal/res.custoTotal*100):null;
   document.getElementById('kpi-obra').innerHTML=`
-    <div class="kc cb"><div class="ki b" aria-hidden="true">📅</div><div class="kl">Dias em Obra</div><div class="kv b">${dias}</div><div class="kd">${fD(ob.inicio)} → ${fD(ob.previsao)}</div></div>
-    <div class="kc cr"><div class="ki r" aria-hidden="true">💸</div><div class="kl">Total Gasto</div><div class="kv r">${fmt(tot)}</div><div class="kd">${ls.length} lançamentos</div></div>
-    <div class="kc cy"><div class="ki y" aria-hidden="true">🎯</div><div class="kl">Orçamento Usado</div><div class="kv y">${pct}%</div><div class="kd">${fmt(ob.orcamento||0)} limite</div></div>
-    <div class="kc cg"><div class="ki g" aria-hidden="true">💰</div><div class="kl">Saldo</div><div class="kv ${saldo>=0?'g':'r'}">${fmtS(saldo)}</div><div class="kd">${saldo>=0?'Dentro do limite':'⚠️ Estourado'}</div></div>
-    ${res.vgvRealizado?`<div class="kc ca"><div class="ki a" aria-hidden="true">📈</div><div class="kl">VGV Realizado</div><div class="kv a">${fmtS(res.vgvRealizado)}</div><div class="kd">Lucro ${ob.status==='concluida'?'':'est. '}${fmtS(res.margemTotal)}</div></div>`:''}
-    ${diasFim!==null?`<div class="kc ${diasFim<0?'cr':diasFim<30?'cy':'cg'}"><div class="ki ${diasFim<0?'r':diasFim<30?'y':'g'}" aria-hidden="true">⏱️</div><div class="kl">Dias Restantes</div><div class="kv ${diasFim<0?'r':diasFim<30?'y':'g'}">${diasFim<0?'Atrasado':diasFim+'d'}</div><div class="kd">Conclusão: ${fD(ob.previsao)}</div></div>`:''}
-    ${burnRate?`<div class="kc ca"><div class="ki a" aria-hidden="true">🔥</div><div class="kl">Burn Rate Mensal</div><div class="kv a">${fmtS(burnRate)}</div><div class="kd">Média últimos meses</div></div>`:''}
-    ${cpM2?`<div class="kc cb"><div class="ki b" aria-hidden="true">📐</div><div class="kl">Custo por m²</div><div class="kv b">${fmt(cpM2)}</div><div class="kd">${ob.area}m² construídos</div></div>`:''}
-    ${roi!==null?`<div class="kc cg"><div class="ki g" aria-hidden="true">📊</div><div class="kl">ROI Estimado</div><div class="kv ${roi>=0?'g':'r'}">${roi}%</div><div class="kd">Sobre o custo das vendidas</div></div>`:''}
+    <div class="kc cb"><div class="ki b" aria-hidden="true">${ic('calendar',18)}</div><div class="kl">Dias em Obra</div><div class="kv">${dias}</div><div class="kd">${fD(ob.inicio)} → ${fD(ob.previsao)}</div></div>
+    <div class="kc cr"><div class="ki r" aria-hidden="true">${ic('wallet',18)}</div><div class="kl">Total Gasto</div><div class="kv">${fmt(tot)}</div><div class="kd">${ls.length} lançamentos</div></div>
+    <div class="kc cy"><div class="ki y" aria-hidden="true">${ic('target',18)}</div><div class="kl">Orçamento Usado</div><div class="kv">${pct}%</div><div class="kd">${fmt(ob.orcamento||0)} limite</div></div>
+    <div class="kc cg"><div class="ki g" aria-hidden="true">${ic('dollar',18)}</div><div class="kl">Saldo</div><div class="kv ${saldo>=0?'g':'r'}">${fmtS(saldo)}</div><div class="kd">${saldo>=0?'Dentro do limite':ic('alert',11)+' Estourado'}</div></div>
+    ${res.vgvRealizado?`<div class="kc ca"><div class="ki a" aria-hidden="true">${ic('trendup',18)}</div><div class="kl">VGV Realizado</div><div class="kv">${fmtS(res.vgvRealizado)}</div><div class="kd">Lucro ${ob.status==='concluida'?'':'est. '}${fmtS(res.margemTotal)}</div></div>`:''}
+    ${diasFim!==null?`<div class="kc ${diasFim<0?'cr':diasFim<30?'cy':'cg'}"><div class="ki ${diasFim<0?'r':diasFim<30?'y':'g'}" aria-hidden="true">${ic('clock',18)}</div><div class="kl">Dias Restantes</div><div class="kv ${diasFim<0?'r':diasFim<30?'y':'g'}">${diasFim<0?'Atrasado':diasFim+'d'}</div><div class="kd">Conclusão: ${fD(ob.previsao)}</div></div>`:''}
+    ${burnRate?`<div class="kc ca"><div class="ki a" aria-hidden="true">${ic('flame',18)}</div><div class="kl">Burn Rate Mensal</div><div class="kv">${fmtS(burnRate)}</div><div class="kd">Média últimos meses</div></div>`:''}
+    ${cpM2?`<div class="kc cb"><div class="ki b" aria-hidden="true">${ic('ruler',18)}</div><div class="kl">Custo por m²</div><div class="kv">${fmt(cpM2)}</div><div class="kd">${ob.area}m² construídos</div></div>`:''}
+    ${roi!==null?`<div class="kc cg"><div class="ki g" aria-hidden="true">${ic('piechart',18)}</div><div class="kl">ROI Estimado</div><div class="kv ${roi>=0?'g':'r'}">${roi}%</div><div class="kd">Sobre o custo das vendidas</div></div>`:''}
   `;
   renderCasasResult(ob,res);
   const bycat={};ls.forEach(l=>{bycat[l.cat]=(bycat[l.cat]||0)+l.valor;});
@@ -4058,7 +4279,7 @@ function onCat(){
 function openMat(){const l=document.getElementById('mat-dd');if(!l)return;l.classList.add('open');if(!l.innerHTML)bMat('');}
 function bMat(q){const l=document.getElementById('mat-dd');if(!l)return;const h=q?MATS.filter(m=>m.n.toLowerCase().includes(q.toLowerCase())):MATS;l.innerHTML=h.slice(0,40).map(m=>`<div class="mat-item" onclick="pickM('${m.n.replace(/'/g,"\\'")}','${m.c}')" role="option"><span>${m.n}</span><span class="mat-cat">${m.c}</span></div>`).join('');if(!h.length)l.innerHTML='<div style="padding:9px 11px;color:var(--text3);font-size:12.5px">Nenhum resultado</div>';}
 function fMat(){const ms=document.getElementById('mat-s');if(ms)bMat(ms.value);}
-function pickM(n){selMat=n;const ms=document.getElementById('mat-s');if(ms)ms.value=n;const md=document.getElementById('mat-dd');if(md)md.classList.remove('open');const mt=document.getElementById('mat-tag');if(mt)mt.innerHTML=`<div class="mat-tag">🧱 ${n} <span onclick="clrM()" style="cursor:pointer;margin-left:4px;opacity:.7" aria-label="Remover seleção">✕</span></div>`;}
+function pickM(n){selMat=n;const ms=document.getElementById('mat-s');if(ms)ms.value=n;const md=document.getElementById('mat-dd');if(md)md.classList.remove('open');const mt=document.getElementById('mat-tag');if(mt)mt.innerHTML=`<div class="mat-tag">${ic('brick',12)} ${esc(n)} <span onclick="clrM()" style="cursor:pointer;margin-left:4px;opacity:.7" aria-label="Remover seleção">✕</span></div>`;}
 function clrM(){selMat=null;const ms=document.getElementById('mat-s');if(ms)ms.value='';const mt=document.getElementById('mat-tag');if(mt)mt.innerHTML='';}
 function readB64(file,cb){const r=new FileReader();r.onload=ev=>cb(ev.target.result);r.readAsDataURL(file);}
 function onComp(e){
@@ -4403,10 +4624,9 @@ function selectNFCat(cat,el){
   document.getElementById('nf-row-mat').style.display=cat==='material'?'':'none';
   document.getElementById('nf-row-gen').style.display=cat!=='material'?'':'none';
   const title=document.getElementById('nf-items-title');
-  const catNames={material:'🧱 Materiais',funcionario:'👷 Funcionários',burocracia:'📋 Burocracia',terreno:'🏡 Terreno',outro:'📦 Outros'};
-  if(title)title.textContent='Itens da NF — '+(catNames[cat]||cat);
+  if(title)title.textContent='Itens da NF — '+(CL[cat]||cat);
   const secTitle=document.getElementById('fsec-cat-title');
-  if(secTitle)secTitle.textContent='Categoria: '+(catNames[cat]||cat)+' ✓';
+  if(secTitle)secTitle.textContent='Categoria: '+(CL[cat]||cat);
   // Se tem itens do OCR, importa automaticamente
   if(window._ocrItens&&window._ocrItens.length){
     nfItems=window._ocrItens.map(it=>({id:uid(),desc:norm(it.desc),valor:it.valor,extra:{}}));
@@ -4538,12 +4758,12 @@ function renderNFItems(){
     <span class="nf-item-dot" style="background:${catClr}"></span>
     <span class="nf-item-desc" title="${x.desc}">${x.desc}${sub}</span>
     <span class="nf-item-val">${fmt(x.valor)}</span>
-    <button type="button" onclick="editNFItem('${x.id}')" class="nf-item-edit-btn" title="Editar item">✏️</button>
+    <button type="button" onclick="editNFItem('${x.id}')" class="nf-item-edit-btn" title="Editar item">${ic('pencil',13)}</button>
     <button type="button" onclick="removeNFItem('${x.id}')" class="nf-item-del-btn" title="Remover">✕</button>
   </div>`;}).join('');
   const btn=document.getElementById('btn-salvar-nf');
   if(btn){
-    btn.textContent=nfItems.length?`💾 Salvar NF — ${nfItems.length} item${nfItems.length!==1?'s':''} · ${fmt(total)}`:'⚠️ Adicione itens para salvar';
+    btn.innerHTML=nfItems.length?`${ic('save',15)} Salvar NF — ${nfItems.length} item${nfItems.length!==1?'s':''} · ${fmt(total)}`:`${ic('alert',15)} Adicione itens para salvar`;
     btn.style.background=nfItems.length?'linear-gradient(135deg,#27AE60,#1E8449)':'linear-gradient(135deg,#7F8C8D,#6C7A7D)';
     btn.style.boxShadow=nfItems.length?'0 3px 12px rgba(39,174,96,.35)':'none';
     btn.style.cursor=nfItems.length?'pointer':'not-allowed';
@@ -4719,7 +4939,7 @@ function renderT(keepPage=false){
     <span>${items.length} lançamento${items.length!==1?'s':''}</span>
     <span style="opacity:.4">·</span>
     <strong>${fmt(totalFil)}</strong>
-    ${(aPagar>0&&filPag!=='a_pagar')?`<span style="opacity:.4">·</span><span style="color:var(--yellow)">⏳ ${fmt(aPagar)} a pagar</span>`:''}
+    ${(aPagar>0&&filPag!=='a_pagar')?`<span style="opacity:.4">·</span><span style="color:var(--yellow)">${ic('hourglass',12)} ${fmt(aPagar)} a pagar</span>`:''}
   </div>`;
   const cards=pageItems.map(l=>{
     const isPago=(l.statusPag||'pago')==='pago';
@@ -4728,26 +4948,31 @@ function renderT(keepPage=false){
     const desc=l.desc||l.descricao||'—';
     const obsDisplay=(l.obs&&l.obs!=='Lançamento rápido')?l.obs:'';
     let compBtn='';
-    if(l.cloudinaryUrl)compBtn=`<a href="${l.cloudinaryUrl}" target="_blank" class="lanc-card-comp" title="Ver comprovante">☁️ Ver comprovante</a>`;
-    else if(l.fileB64)compBtn=`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" class="lanc-card-comp">📎 ${esc((l.comprovante||'arquivo').slice(0,28))}</a>`;
-    else if(l.comprovante)compBtn=`<span class="lanc-card-comp">📎 ${esc(l.comprovante.slice(0,28))}</span>`;
-    const meta=[fD(l.data),l.fornecedor?'🏢 '+l.fornecedor:'',l.nfNum?'🧾 '+l.nfNum:'',obraNm?'🏠 '+obraNm:'',l.extra?.qtd?(l.extra.qtd+' '+(l.extra.un||'')):'',obsDisplay].filter(Boolean);
+    if(l.cloudinaryUrl)compBtn=`<a href="${l.cloudinaryUrl}" target="_blank" class="lanc-card-comp" title="Ver comprovante">${ic('cloud',13)} Ver comprovante</a>`;
+    else if(l.fileB64)compBtn=`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" class="lanc-card-comp">${ic('paperclip',13)} ${esc((l.comprovante||'arquivo').slice(0,28))}</a>`;
+    else if(l.comprovante)compBtn=`<span class="lanc-card-comp">${ic('paperclip',13)} ${esc(l.comprovante.slice(0,28))}</span>`;
+    const metaParts=[`<span>${esc(fD(l.data))}</span>`];
+    if(l.fornecedor)metaParts.push(`<span>${ic('building',11)} ${esc(l.fornecedor)}</span>`);
+    if(l.nfNum)metaParts.push(`<span>${ic('receipt',11)} ${esc(l.nfNum)}</span>`);
+    if(obraNm)metaParts.push(`<span>${ic('home',11)} ${esc(obraNm)}</span>`);
+    if(l.extra?.qtd)metaParts.push(`<span>${esc(l.extra.qtd+' '+(l.extra.un||''))}</span>`);
+    if(obsDisplay)metaParts.push(`<span>${esc(obsDisplay)}</span>`);
     return `<div class="lanc-card" style="border-left-color:${catClr}">
       <div class="lanc-card-top">
         <span class="badge" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${CL[l.cat]||l.cat}</span>
-        <span class="badge ${isPago?'b-pago':'b-apagar'}">${isPago?'✅ Pago':'⏳ A Pagar'}</span>
+        <span class="badge ${isPago?'b-pago':'b-apagar'}">${isPago?ic('check',12)+' Pago':ic('hourglass',12)+' A Pagar'}</span>
       </div>
       <div class="lanc-card-desc">${esc(desc)}</div>
       <div class="lanc-card-bottom">
-        <div class="lanc-card-meta">${meta.map(m=>`<span>${esc(m)}</span>`).join('')}</div>
+        <div class="lanc-card-meta">${metaParts.join('')}</div>
         <div class="lanc-card-valor">${fmt(l.valor)}</div>
       </div>
       <div class="lanc-card-actions">
         ${compBtn||'<span class="lanc-card-comp" style="color:var(--text3)">Sem comprovante</span>'}
         <div style="display:flex;gap:5px;flex-shrink:0">
-          ${!isPago?`<button class="lanc-act-btn pay" onclick="marcarPago('${l.id}')" title="Marcar como pago">✓ Pago</button>`:''}
-          <button class="lanc-act-btn" onclick="openEditLanc('${l.id}')" title="Editar">✏️</button>
-          <button class="lanc-act-btn del" onclick="delL('${l.id}')" title="Remover">🗑</button>
+          ${!isPago?`<button class="lanc-act-btn pay" onclick="marcarPago('${l.id}')" title="Marcar como pago">${ic('check',12)} Pago</button>`:''}
+          <button class="lanc-act-btn" onclick="openEditLanc('${l.id}')" title="Editar">${ic('pencil',13)}</button>
+          <button class="lanc-act-btn del" onclick="delL('${l.id}')" title="Remover">${ic('trash',13)}</button>
         </div>
       </div>
     </div>`;
@@ -4764,23 +4989,23 @@ function renderT(keepPage=false){
     const desc=l.desc||l.descricao||'—';
     const obraNm=todasObras?(ST.obras.find(o=>o.id===l.obraId)?.nome||''):'';
     let compCell='<span style="color:var(--text3)">—</span>';
-    if(l.cloudinaryUrl)compCell=`<a href="${esc(l.cloudinaryUrl)}" target="_blank" class="hist-comp" title="Ver comprovante">☁️ Ver</a>`;
-    else if(l.fileB64)compCell=`<a href="${esc(l.fileB64)}" download="${esc(l.comprovante||'comprovante')}" class="hist-comp">📎 baixar</a>`;
-    else if(l.comprovante)compCell=`<span class="hist-comp" style="color:var(--text3)">📎 ${esc(l.comprovante.slice(0,14))}</span>`;
+    if(l.cloudinaryUrl)compCell=`<a href="${esc(l.cloudinaryUrl)}" target="_blank" class="hist-comp" title="Ver comprovante">${ic('cloud',12)} Ver</a>`;
+    else if(l.fileB64)compCell=`<a href="${esc(l.fileB64)}" download="${esc(l.comprovante||'comprovante')}" class="hist-comp">${ic('paperclip',12)} baixar</a>`;
+    else if(l.comprovante)compCell=`<span class="hist-comp" style="color:var(--text3)">${ic('paperclip',12)} ${esc(l.comprovante.slice(0,14))}</span>`;
     const catName=(CL[l.cat]||l.cat||'').slice(0,4);
     return `<tr>
       <td class="data">${esc(fD(l.data))}</td>
       <td class="cat-cell"><span class="cat-tag" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${esc(catName)}</span></td>
-      <td>${esc(desc)}${obraNm?`<span style="margin-left:6px;font-size:10.5px;color:var(--text3)">🏠 ${esc(obraNm)}</span>`:''}</td>
+      <td>${esc(desc)}${obraNm?`<span style="margin-left:6px;font-size:10.5px;color:var(--text3)">${ic('home',11)} ${esc(obraNm)}</span>`:''}</td>
       <td style="color:var(--text2);font-size:12px">${esc(l.fornecedor||'—')}</td>
       <td class="valor">${fmt(l.valor)}</td>
-      <td><span class="pag-badge ${isPago?'pago':'a_pagar'}">${isPago?'✅ Pago':'⏳ Pag.'}</span></td>
+      <td><span class="pag-badge ${isPago?'pago':'a_pagar'}">${isPago?ic('check',11)+' Pago':ic('hourglass',11)+' Pag.'}</span></td>
       <td style="color:var(--text3);font-size:11px">${esc(l.nfNum||'—')}</td>
       <td>${compCell}</td>
       <td class="actions">
-        ${!isPago?`<button onclick="marcarPago('${l.id}')" title="Marcar pago">✓</button>`:''}
-        <button onclick="openEditLanc('${l.id}')" title="Editar">✏️</button>
-        <button class="del" onclick="delL('${l.id}')" title="Remover">🗑</button>
+        ${!isPago?`<button onclick="marcarPago('${l.id}')" title="Marcar pago">${ic('check',13)}</button>`:''}
+        <button onclick="openEditLanc('${l.id}')" title="Editar">${ic('pencil',13)}</button>
+        <button class="del" onclick="delL('${l.id}')" title="Remover">${ic('trash',13)}</button>
       </td>
     </tr>`;
   }).join('');
@@ -4794,7 +5019,7 @@ function renderT(keepPage=false){
         <th onclick="sortT('valor')" class="${sortCol==='valor'?'sort-active':''}" style="text-align:right" title="Ordenar por valor">Valor ${sortCol==='valor'?(sortDir==='desc'?'↓':'↑'):''}</th>
         <th>Pag</th>
         <th>NF</th>
-        <th>📎</th>
+        <th title="Comprovante">${ic('paperclip',13)}</th>
         <th></th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -4846,6 +5071,7 @@ function openEditLanc(id){
   document.getElementById('el-obs').value=l.obs||'';
   document.getElementById('el-forn').value=l.fornecedor||'';
   document.getElementById('el-pag').value=l.statusPag||'pago';
+  var _eli=document.getElementById('edit-lanc-ico');if(_eli)_eli.innerHTML=ic('pencil',16);
   document.getElementById('edit-lanc-modal').classList.add('open');
 }
 function closeEditLanc(){document.getElementById('edit-lanc-modal').classList.remove('open');}
@@ -4889,7 +5115,7 @@ function gerarNF(){
           <div class="mat-wrap"><input type="text" id="ni-d-${i}" placeholder="🔍 Buscar ou digitar..." oninput="bNFM(${i})" onfocus="oNFM(${i})" autocomplete="off" aria-label="Descrição do item ${i}">
           <div class="mat-dd" id="ni-dd-${i}" role="listbox"></div></div>
         </div>
-        <div class="fgg"><label class="fl">Categoria</label><select id="ni-c-${i}" aria-label="Categoria item ${i}"><option value="material">🧱 Material</option><option value="funcionario">👷 Funcionário</option><option value="burocracia">📋 Burocracia</option><option value="terreno">🏡 Terreno</option><option value="outro">📦 Outro</option></select></div>
+        <div class="fgg"><label class="fl">Categoria</label><select id="ni-c-${i}" aria-label="Categoria item ${i}"><option value="material">Material</option><option value="funcionario">Funcionário</option><option value="burocracia">Burocracia</option><option value="terreno">Terreno</option><option value="outro">Outro</option></select></div>
         <div class="fgg"><label class="fl">Qtd</label><input type="number" id="ni-q-${i}" placeholder="50" min="0" step="any" aria-label="Quantidade item ${i}"></div>
         <div class="fgg"><label class="fl">Unidade</label><select id="ni-u-${i}" aria-label="Unidade item ${i}"><option>un</option><option>kg</option><option>m</option><option>m²</option><option>m³</option><option>saco</option><option>caixa</option><option>litro</option><option>barra</option><option>rolo</option></select></div>
         <div class="fgg"><label class="fl">Valor (R$)</label><input type="number" id="ni-v-${i}" placeholder="0,00" min="0" step="0.01" aria-label="Valor item ${i}"></div>
@@ -4969,9 +5195,9 @@ function renderRC(){
   if(!items.length){card.style.display='none';return;}
   card.style.display='block';
   document.getElementById('rc-list').innerHTML=items.map(r=>`<div class="rec-item" role="listitem">
-    <div style="width:32px;height:32px;border-radius:7px;background:${r.tipo==='energia'?'var(--yellow-bg)':'var(--blue-bg)'};display:flex;align-items:center;justify-content:center;font-size:14px" aria-hidden="true">${TI[r.tipo]||'📋'}</div>
+    <div style="width:32px;height:32px;border-radius:7px;background:${r.tipo==='energia'?'var(--yellow-bg)':'var(--blue-bg)'};display:flex;align-items:center;justify-content:center" aria-hidden="true">${tiIc(r.tipo,15)}</div>
     <div style="flex:1"><div style="font-size:13px;font-weight:500">${esc(r.nome)}</div><div style="font-size:11px;color:var(--text3)">Todo dia <strong style="color:var(--brand3)">${r.dia}</strong> do mês</div></div>
-    <button class="btn btn-sm btn-d" onclick="delR('${r.id}')" aria-label="Remover periódica ${esc(r.nome)}">✕</button>
+    <button class="btn btn-sm btn-d" onclick="delR('${r.id}')" aria-label="Remover periódica ${esc(r.nome)}">${ic('close',13)}</button>
   </div>`).join('');
 }
 
@@ -4981,7 +5207,17 @@ function setPF(f,el){
   if(el){el.style.borderColor='var(--brand2)';el.style.color='var(--brand3)';el.setAttribute('aria-pressed','true');}
   renderLP();
 }
+function pendStaticIcons(){
+  var R=document.getElementById('pend-rf-ico');if(R)R.innerHTML=ic('refresh',14);
+  var pre=function(id,icon){var e=document.getElementById(id);if(e&&e.dataset.ico!=='1'){e.insertAdjacentHTML('afterbegin',icon);e.dataset.ico='1';}};
+  pre('pend-ob-banner',ic('alert',13));
+  pre('pend-dias-lbl',ic('calendar',13));
+  pre('pend-prazo-lbl',ic('clock',12));
+  pre('pend-per-title',ic('refresh',15));
+  pre('pend-perc-title',ic('refresh',15));
+}
 function renderLP(){
+  pendStaticIcons();
   const ob=getOA();let items=ob?ST.pendencias.filter(p=>p.obraId===ob.id):ST.pendencias;
   const today=td();
   if(pFiltro==='aberta')items=items.filter(p=>p.status==='aberta'&&(!p.prazo||p.prazo>=today));
@@ -4992,20 +5228,20 @@ function renderLP(){
   div.innerHTML=items.map(p=>{
     const overdue=p.status==='aberta'&&p.prazo&&p.prazo<today;
     return `<div class="pend-item${overdue?' pend-overdue':''}" role="listitem" aria-label="Pendência: ${esc(p.titulo)}, prioridade ${esc(p.prio)}">
-      <div class="pend-ico ${esc(p.prio)}" aria-hidden="true">${TI[p.tipo]||'📋'}</div>
+      <div class="pend-ico ${esc(p.prio)}" aria-hidden="true">${tiIc(p.tipo,18)}</div>
       <div style="flex:1">
         <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px">
           <div class="pt">${esc(p.titulo)}</div>
           <span class="badge ${p.prio==='alta'?'b-red':p.prio==='media'?'b-yellow':'b-green'}" aria-label="Prioridade ${esc(p.prio)}">${esc(p.prio)}</span>
-          ${overdue?'<span class="badge b-red">🔴 Vencida</span>':''}
-          ${p.status==='concluida'?'<span class="badge b-green">✓ Concluída</span>':''}
+          ${overdue?`<span class="badge b-red" style="display:inline-flex;align-items:center;gap:3px">${ic('alert',11)} Vencida</span>`:''}
+          ${p.status==='concluida'?`<span class="badge b-green" style="display:inline-flex;align-items:center;gap:3px">${ic('check',11)} Concluída</span>`:''}
         </div>
         <div class="pm">${esc(p.desc||'')}</div>
-        <div class="pm" style="margin-top:2px">📅 Prazo: <strong style="color:${pClr(p.prazo)}">${fD(p.prazo)}</strong> · Resp: ${esc(p.resp||'—')}</div>
+        <div class="pm" style="margin-top:2px;display:flex;align-items:center;gap:4px">${ic('calendar',12)} Prazo: <strong style="color:${pClr(p.prazo)}">${fD(p.prazo)}</strong> · Resp: ${esc(p.resp||'—')}</div>
       </div>
       <div style="display:flex;gap:4px;flex-shrink:0">
-        ${p.status==='aberta'?`<button class="btn btn-sm" onclick="openEditPend('${p.id}')" aria-label="Editar pendência">✏️</button><button class="btn btn-sm btn-s" onclick="conclP('${p.id}')" aria-label="Concluir pendência">✓</button>`:''}
-        <button class="btn btn-sm btn-d" onclick="delP('${p.id}')" aria-label="Remover pendência">✕</button>
+        ${p.status==='aberta'?`<button class="btn btn-sm" onclick="openEditPend('${p.id}')" aria-label="Editar pendência">${ic('pencil',13)}</button><button class="btn btn-sm btn-s" onclick="conclP('${p.id}')" aria-label="Concluir pendência">${ic('check',14)}</button>`:''}
+        <button class="btn btn-sm btn-d" onclick="delP('${p.id}')" aria-label="Remover pendência">${ic('close',13)}</button>
       </div>
     </div>`;
   }).join('');
@@ -5030,6 +5266,7 @@ function openEditPend(id){
   document.getElementById('ep-resp').value=p.resp||'';
   document.getElementById('ep-prio').value=p.prio||'media';
   document.getElementById('ep-desc').value=p.desc||'';
+  var _epi=document.getElementById('edit-pend-ico');if(_epi)_epi.innerHTML=ic('pencil',16);
   document.getElementById('edit-pend-modal').classList.add('open');
 }
 function closeEditPend(){document.getElementById('edit-pend-modal').classList.remove('open');}
@@ -5073,11 +5310,11 @@ function calNext(){calM++;if(calM>11){calM=0;calY++;}renderCal();}
 /* ══ DOCUMENTOS ══ */
 let docDropInit=false,docFilCat='',docFileMeta=null;
 function DOC_STATUS(validade){
-  if(!validade)return{key:'perene',ord:3,ico:'♾️',label:'Sem vencimento',color:'var(--text3)'};
+  if(!validade)return{key:'perene',ord:3,ico:'infinity',label:'Sem vencimento',color:'var(--text3)'};
   const dv=dif(td(),validade);
-  if(dv<0)return{key:'vencido',ord:0,ico:'⚠️',label:`Vencido ${fD(validade)}`,color:'var(--red)'};
-  if(dv<=30)return{key:'vencendo',ord:1,ico:'⏰',label:`Vence em ${dv}d`,color:'var(--yellow)'};
-  return{key:'vigente',ord:2,ico:'✅',label:`Vigente até ${fD(validade)}`,color:'var(--green)'};
+  if(dv<0)return{key:'vencido',ord:0,ico:'alert',label:`Vencido ${fD(validade)}`,color:'var(--red)'};
+  if(dv<=30)return{key:'vencendo',ord:1,ico:'clock',label:`Vence em ${dv}d`,color:'var(--yellow)'};
+  return{key:'vigente',ord:2,ico:'check',label:`Vigente até ${fD(validade)}`,color:'var(--green)'};
 }
 function docPickFile(){const i=document.getElementById('d-file');if(i)i.click();}
 function onDocF(e){const f=e.target.files&&e.target.files[0];if(f)docProcessFile(f,'seleção');}
@@ -5103,7 +5340,7 @@ function docRenderPreview(){
   dz.classList.add('filled');dz.classList.remove('missing');
   empty.style.display='none';prev.style.display='';
   const thumb=document.getElementById('doc-dz-thumb');
-  thumb.innerHTML=docFileMeta.type.startsWith('image/')?`<img src="${esc(docFileMeta.url)}" alt="preview">`:'📄';
+  thumb.innerHTML=docFileMeta.type.startsWith('image/')?`<img src="${esc(docFileMeta.url)}" alt="preview">`:ic('note',22);
   document.getElementById('doc-dz-nm').textContent=docFileMeta.name;
   document.getElementById('doc-dz-meta').textContent=`${(docFileMeta.size/1024).toFixed(0)} KB · via ${docFileMeta.source}`;
 }
@@ -5113,9 +5350,9 @@ function onDocValidade(){
   const el=document.getElementById('d-validade');if(!el)return;
   const v=el.value;
   const box=document.getElementById('doc-val-box'),ico=document.getElementById('doc-val-ico'),fb=document.getElementById('doc-val-fb');
-  if(!v){box.classList.remove('has');ico.textContent='📅';fb.textContent='';return;}
-  const s=DOC_STATUS(v);box.classList.add('has');ico.textContent=s.ico;
-  fb.innerHTML=`<span style="color:${s.color};font-weight:700">${s.ico} ${s.label}</span>`;
+  if(!v){box.classList.remove('has');ico.innerHTML=ic('calendar',16);fb.textContent='';return;}
+  const s=DOC_STATUS(v);box.classList.add('has');ico.innerHTML=ic(s.ico,16,s.color);
+  fb.innerHTML=`<span style="color:${s.color};font-weight:700;display:inline-flex;align-items:center;gap:5px">${ic(s.ico,13)} ${s.label}</span>`;
 }
 function docLimparForm(){
   ['d-tipo','d-desc','d-data','d-validade'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
@@ -5124,10 +5361,10 @@ function docLimparForm(){
 function pickDocFil(cat){docFilCat=cat;renderDocs();}
 function docRenderChips(base){
   const wrap=document.getElementById('doc-chips');if(!wrap)return;
-  const CATS=[['terreno','🏡','Terreno'],['obra','🏗️','Obra'],['prefeitura','🏛️','Prefeitura'],['financeiro','💰','Financeiro'],['contrato','📝','Contratos'],['outro','📦','Outros']];
+  const CATS=[['terreno','Terreno'],['obra','Obra'],['prefeitura','Prefeitura'],['financeiro','Financeiro'],['contrato','Contratos'],['outro','Outros']];
   const counts={};base.forEach(d=>{counts[d.cat]=(counts[d.cat]||0)+1;});
   let html=`<span class="doc-chip${docFilCat===''?' active':''}" role="tab" onclick="pickDocFil('')">Todos (${base.length})</span>`;
-  html+=CATS.filter(c=>counts[c[0]]).map(c=>`<span class="doc-chip${docFilCat===c[0]?' active':''}" role="tab" onclick="pickDocFil('${c[0]}')">${c[1]} ${c[2]} (${counts[c[0]]})</span>`).join('');
+  html+=CATS.filter(c=>counts[c[0]]).map(c=>`<span class="doc-chip${docFilCat===c[0]?' active':''}" role="tab" onclick="pickDocFil('${c[0]}')" style="display:inline-flex;align-items:center;gap:5px">${docCatIc(c[0],12)} ${c[1]} (${counts[c[0]]})</span>`).join('');
   wrap.innerHTML=html;
 }
 function docRenderTipos(){
@@ -5180,7 +5417,26 @@ async function salvarDoc(){
   docLimparForm();
   renderDocs();
 }
+function docStaticIcons(){
+  var pg=document.getElementById('page-documentos');if(!pg)return;
+  pg.querySelectorAll('.doc-cat-tile').forEach(function(t){var s=t.querySelector('.doc-cat-tile-ico');if(s)s.innerHTML=docCatIc(t.getAttribute('data-cat'),22);});
+  var sel=function(s,html){var e=pg.querySelector(s);if(e)e.innerHTML=html;};
+  sel('.dz-overlay-ico',ic('paperclip',34));
+  sel('.dz-doc-ico',ic('paperclip',26));
+  var si=document.getElementById('doc-search-ico');if(si)si.innerHTML=ic('search',15);
+  var sw=document.getElementById('doc-swap-btn');if(sw)sw.innerHTML=ic('refresh',14);
+  var cb=document.getElementById('doc-choose-btn');if(cb&&!cb.dataset.ico){cb.insertAdjacentHTML('afterbegin',ic('note',14));cb.dataset.ico='1';}
+  var sb=document.getElementById('doc-save-ico');if(sb)sb.innerHTML=ic('save',16);
+  var vi=document.getElementById('doc-val-ico');if(vi&&!vi.querySelector('svg'))vi.innerHTML=ic('calendar',16);
+  var th=document.getElementById('doc-dz-thumb');if(th&&!th.querySelector('svg')&&!th.querySelector('img'))th.innerHTML=ic('note',22);
+  var pre=function(id,icon){var e=document.getElementById(id);if(e&&e.dataset.ico!=='1'){e.insertAdjacentHTML('afterbegin',icon);e.dataset.ico='1';}};
+  pre('doc-saved-title',ic('folder',16));
+  pre('doc-anexar-title',ic('folderplus',16));
+  pre('doc-ob-badge',ic('building',12));
+  pre('doc-ob-warn',ic('alert',12));
+}
 function renderDocs(){
+  docStaticIcons();
   const ob=getOA();
   const q=(document.getElementById('doc-search').value||'').toLowerCase();
   const base=ob?ST.documentos.filter(d=>d.obraId===ob.id):ST.documentos;
@@ -5195,10 +5451,10 @@ function renderDocs(){
   g.innerHTML=items.map(d=>{
     const s=DOC_STATUS(d.validade);
     const expClass=s.key==='vencido'?' expired':s.key==='vencendo'?' expiring':s.key==='vigente'?' vigente':'';
-    const expBadge=d.validade?`<span class="badge ${s.key==='vencido'?'b-red':s.key==='vencendo'?'b-yellow':'b-green'}" style="font-size:9.5px">${s.ico} ${s.label}</span>`:'';
+    const expBadge=d.validade?`<span class="badge ${s.key==='vencido'?'b-red':s.key==='vencendo'?'b-yellow':'b-green'}" style="font-size:9.5px;display:inline-flex;align-items:center;gap:4px">${ic(s.ico,11)} ${s.label}</span>`:'';
     return `<div class="doc-card-new${expClass}" role="listitem" aria-label="Documento: ${esc(d.tipo)}">
       <div style="display:flex;align-items:flex-start;gap:10px">
-        <span style="font-size:30px;line-height:1;flex-shrink:0">${DI[d.cat]||'📄'}</span>
+        <span style="line-height:1;flex-shrink:0;color:var(--brand3);display:inline-flex">${docCatIc(d.cat,28)}</span>
         <div style="min-width:0;flex:1">
           <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--text);word-break:break-word">${esc(d.tipo)}</div>
           <div style="font-size:10.5px;color:var(--text3);margin-top:2px">${DOC_CAT_LABELS[d.cat]||d.cat}${d.data?' · '+fD(d.data):''}</div>
@@ -5206,10 +5462,10 @@ function renderDocs(){
         </div>
       </div>
       ${expBadge?`<div style="margin-top:6px">${expBadge}</div>`:''}
-      ${d.fileName?`<div style="font-size:9.5px;color:var(--text3);word-break:break-all;margin-top:2px">📎 ${esc(d.fileName)}</div>`:''}
+      ${d.fileName?`<div style="font-size:9.5px;color:var(--text3);word-break:break-all;margin-top:2px;display:flex;align-items:center;gap:4px">${ic('paperclip',10)} ${esc(d.fileName)}</div>`:''}
       <div class="doc-card-acts" style="margin-top:8px">
-        ${d.cloudinaryUrl?`<a href="${d.cloudinaryUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Ver ${esc(d.tipo)}">☁️ Ver</a>`:d.fileB64?`<a href="${d.fileB64}" download="${esc(d.fileName||d.tipo)}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center" aria-label="Baixar ${esc(d.tipo)}">⬇ Baixar</a>`:''}
-        <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${esc(d.tipo)}">🗑 Remover</button>
+        ${d.cloudinaryUrl?`<a href="${d.cloudinaryUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center;display:inline-flex;align-items:center;gap:5px" aria-label="Ver ${esc(d.tipo)}">${ic('cloud',13)} Ver</a>`:d.fileB64?`<a href="${d.fileB64}" download="${esc(d.fileName||d.tipo)}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center;display:inline-flex;align-items:center;gap:5px" aria-label="Baixar ${esc(d.tipo)}">${ic('download',13)} Baixar</a>`:''}
+        <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${esc(d.tipo)}" style="display:inline-flex;align-items:center;gap:5px">${ic('trash',13)} Remover</button>
       </div>
     </div>`;
   }).join('');
@@ -5253,7 +5509,7 @@ function casaRowHTML(c){
         <input type="date" class="casa-dt" value="${esc(c.dataVenda||'')}">
       </div>
       <div class="cf-full casa-adto">
-        <span class="casa-mini-l">💵 Adiantamento já recebido (R$)</span>
+        <span class="casa-mini-l" style="display:inline-flex;align-items:center;gap:4px">${ic('dollar',12)} Adiantamento já recebido (R$)</span>
         <input type="text" class="casa-adt fin-val" inputmode="decimal" placeholder="Ex: 50k" data-raw="${c.adiantamento||''}" value="${c.adiantamento?fmtFinDisp(c.adiantamento):''}">
         <div style="font-size:9.5px;color:var(--text3);margin-top:3px">O restante entra na assinatura final, quando a casa ficar pronta.</div>
       </div>
@@ -5311,7 +5567,8 @@ function novaO(){
   document.getElementById('cfg-tipo').value='empreendimento';
   onTipoObra();
   renderCasasForm(null);
-  document.getElementById('fo-title').textContent='🏗️ Novo Empreendimento';
+  document.getElementById('fo-ico').innerHTML=ic('building',16);
+  document.getElementById('fo-txt').textContent='Novo Empreendimento';
   document.getElementById('form-obra').style.display='block';
   document.getElementById('form-obra').scrollIntoView({behavior:'smooth'});
 }
@@ -5328,7 +5585,8 @@ function editO(id){
   document.getElementById('cfg-tipo').value=ob.tipo==='interna'?'interna':'empreendimento';
   onTipoObra();
   renderCasasForm(ob.casas);
-  document.getElementById('fo-title').textContent='✏️ Editando: '+ob.nome;
+  document.getElementById('fo-ico').innerHTML=ic('pencil',16);
+  document.getElementById('fo-txt').textContent='Editando: '+ob.nome;
   document.getElementById('form-obra').style.display='block';
   document.getElementById('form-obra').scrollIntoView({behavior:'smooth'});
 }
@@ -5387,7 +5645,19 @@ function delO(id){
   addAudit('Empreendimento removido',oNome);
   save();toast('Empreendimento removido.');renderOA();updSB();renderDash();
 }
+function cadStaticIcons(){
+  var set=function(id,html){var e=document.getElementById(id);if(e)e.innerHTML=html;};
+  var pre=function(id,icon){var e=document.getElementById(id);if(e&&e.dataset.ico!=='1'){e.insertAdjacentHTML('afterbegin',icon);e.dataset.ico='1';}};
+  var sb=document.getElementById('cad-save-btn');if(sb&&sb.dataset.ico!=='1'){sb.insertAdjacentHTML('afterbegin',ic('save',15)+' ');sb.dataset.ico='1';}
+  var bb=document.getElementById('cad-backup-btn');if(bb&&bb.dataset.ico!=='1'){bb.insertAdjacentHTML('afterbegin',ic('download',14)+' ');bb.dataset.ico='1';}
+  var ib=document.getElementById('cad-import-btn');if(ib&&ib.dataset.ico!=='1'){ib.insertAdjacentHTML('afterbegin',ic('upload',14)+' ');ib.dataset.ico='1';}
+  var wb=document.getElementById('cad-wipe-btn');if(wb&&wb.dataset.ico!=='1'){wb.insertAdjacentHTML('afterbegin',ic('trash',14));wb.dataset.ico='1';}
+  set('cad-cfg-ico',ic('gear',12));
+  var ct=document.getElementById('casas-tit');if(ct&&ct.dataset.ico!=='1'){ct.insertAdjacentHTML('afterbegin',ic('home',15)+' ');ct.dataset.ico='1';}
+  pre('cad-list-title',ic('building',15));
+}
 function renderOA(){
+  cadStaticIcons();
   const div=document.getElementById('obras-adm');
   if(!ST.obras.length){div.innerHTML='<p style="color:var(--text3);font-size:12.5px;padding:7px 0">Nenhum empreendimento cadastrado. <a href="#" onclick="novaO();return false;">Cadastrar →</a></p>';return;}
   const rows=ST.obras.map(o=>{
@@ -5396,7 +5666,7 @@ function renderOA(){
     const badgeTxt=o.status==='concluida'?'Concluída':'Andamento';
     const vgvHtml=r.vgvRealizado?fmt(r.vgvRealizado):'<span style="color:var(--text3)">—</span>';
     const vendStr=o.tipo==='interna'?'<span style="color:var(--text3)">— obra interna</span>':`${r.nCasas} <span style="color:var(--text3);font-size:10px">(${r.vendidas+r.naPlanta} vend.)</span>`;
-    const acoes=`<button class="btn btn-sm" onclick="editO('${o.id}')" aria-label="Editar ${esc(o.nome)}">✏️</button><button class="btn btn-sm btn-d" onclick="delO('${o.id}')" aria-label="Remover ${esc(o.nome)}">✕</button>`;
+    const acoes=`<button class="btn btn-sm" onclick="editO('${o.id}')" aria-label="Editar ${esc(o.nome)}">${ic('pencil',14)}</button><button class="btn btn-sm btn-d" onclick="delO('${o.id}')" aria-label="Remover ${esc(o.nome)}">${ic('trash',14)}</button>`;
     return {o,r,badgeCls,badgeTxt,vgvHtml,vendStr,acoes};
   });
 
@@ -5828,6 +6098,58 @@ function initApp(){
       initApp(); // initApp já chama initIdleTimer()
     }catch(e){sessionStorage.removeItem('lupa_user');}
   }
+})();
+</script>
+<script>
+/* ===== MODO DEMO (apenas desenvolvimento) =====
+   Ativa só em localhost E com ?demo=1 na URL. Mostra o Painel redesenhado com dados
+   fictícios 100% em memória: NÃO chama load()/save()/initFirebase()/initGoogleAuth().
+   Nunca toca o Firestore. Inerte em produção (gated por hostname + parâmetro). */
+(function(){
+  try{
+    var isLocal=['localhost','127.0.0.1','[::1]'].indexOf(location.hostname)>=0;
+    var demo=new URLSearchParams(location.search).get('demo')==='1';
+    if(!(isLocal&&demo))return;
+    window.addEventListener('load',function(){
+      try{
+        currentUser={nome:'Demo (visual)'};
+        var ov=document.getElementById('login-ov'); if(ov)ov.style.display='none';
+        var app=document.getElementById('app'); if(app)app.style.display='flex';
+        var un=document.getElementById('sb-user-name'); if(un)un.textContent=currentUser.nome;
+        ST.obras=[
+          {id:'o1',nome:'Residencial Vista Mar',endereco:'Rua das Palmeiras, 220 — Cavaleiros',inicio:'2026-02-10',orcamento:1850000,area:420,previsao:'2026-12-20',socio:'',status:'andamento',tipo:'obra',casas:[
+            {id:'c1',nome:'Casa 1',situacao:'vendida',valorVenda:720000,adiantamento:200000,dataVenda:'2026-05-01'},
+            {id:'c2',nome:'Casa 2',situacao:'vendida_planta',valorVenda:695000,adiantamento:120000,dataVenda:'2026-07-01'},
+            {id:'c3',nome:'Casa 3',situacao:'disponivel',valorVenda:0,adiantamento:0,dataVenda:''}
+          ]},
+          {id:'o2',nome:'Jardim das Acácias',endereco:'Rua dos Ipês, 75 — Granja dos Cavaleiros',inicio:'2025-03-01',orcamento:2400000,area:600,previsao:'2026-06-30',socio:'',status:'concluida',tipo:'obra',casas:[
+            {id:'d1',nome:'Casa 1',situacao:'vendida',valorVenda:900000,adiantamento:900000,dataVenda:'2026-01-10'},
+            {id:'d2',nome:'Casa 2',situacao:'vendida',valorVenda:900000,adiantamento:900000,dataVenda:'2026-02-10'},
+            {id:'d3',nome:'Casa 3',situacao:'vendida',valorVenda:900000,adiantamento:900000,dataVenda:'2026-03-10'},
+            {id:'d4',nome:'Casa 4',situacao:'vendida',valorVenda:900000,adiantamento:900000,dataVenda:'2026-04-10'}
+          ]}
+        ];
+        ST.lancamentos=[
+          {id:'l1',obraId:'o1',cat:'material',desc:'Cimento e areia',valor:28000,data:'2026-03-05',statusPag:'pago',ts:Date.now()},
+          {id:'l2',obraId:'o1',cat:'funcionario',desc:'Pedreiros',valor:22000,data:'2026-04-05',statusPag:'pago',ts:Date.now()},
+          {id:'l3',obraId:'o1',cat:'corretagem',desc:'Comissão venda',valor:28280,data:'2026-05-05',statusPag:'a_pagar',ts:Date.now()},
+          {id:'l4',obraId:'o2',cat:'material',desc:'Acabamento',valor:1200000,data:'2025-10-05',statusPag:'pago',ts:Date.now()},
+          {id:'l5',obraId:'o2',cat:'terreno',desc:'Terreno',valor:1080000,data:'2025-03-05',statusPag:'pago',ts:Date.now()}
+        ];
+        ST.pendencias=[{id:'p1',obraId:'o1',titulo:'Renovar alvará',tipo:'documento',desc:'',prazo:'2026-10-10',prio:'alta',resp:'',status:'aberta',ts:Date.now()}];
+        ST.documentos=[]; ST.recorrentes=[]; ST.auditLog=[]; ST.obraAtiva='o1';
+        if(typeof updSB==='function')updSB();
+        if(typeof showPage==='function')showPage('dashboard',null);
+        if(typeof setOA==='function')setOA('o1');
+        if(typeof renderDash==='function')renderDash();
+        if(typeof updBanners==='function')updBanners();
+        var tag=document.createElement('div');
+        tag.textContent='MODO DEMO · dados fictícios · nada é salvo';
+        tag.style.cssText='position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(230,126,34,.95);color:#fff;font:600 11px/1 system-ui;padding:7px 14px;border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.3)';
+        document.body.appendChild(tag);
+      }catch(e){console.error('demo err',e);}
+    });
+  }catch(e){}
 })();
 </script>
 <script>
