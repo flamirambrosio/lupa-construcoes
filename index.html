@@ -1130,9 +1130,9 @@ input[type=date].rapido-inline-input{color-scheme:dark}
 .nf-item-del-btn:hover{color:var(--red)}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @media(max-width:900px){
-  /* form card hidden on mobile by default — opens as bottom sheet */
-  #lanc-form-card{display:none}
-  #btn-novo-lanc{display:inline-flex!important}
+  /* ★ Opção B (mobile): form Rápido SEMPRE inline — sem bottom-sheet, sem botão +Lançar */
+  #lanc-form-card{display:block}
+  #btn-novo-lanc{display:none!important}
   /* bottom sheet mode */
   #lanc-form-card.sheet-open{
     display:block;position:fixed;bottom:0;left:0;right:0;
@@ -1193,6 +1193,68 @@ input[type=date].rapido-inline-input{color-scheme:dark}
     padding-left:18px;padding-right:18px;
     z-index:5;box-shadow:0 -6px 20px rgba(0,0,0,.4)
   }
+}
+/* ═══════════════════════════════════════════════════════════════
+   ★ LANÇAR MOBILE — Opção B "tudo numa tela" (aprovado 2026-10-01)
+   Form Rápido inline, reordenado e sem entulho de desktop.
+   TUDO escopado em max-width:900px + display:contents no desktop
+   → desktop (>900px) permanece 100% idêntico.
+   ═══════════════════════════════════════════════════════════════ */
+#rl-flow{display:contents}
+#rl-mais-wrap{display:contents}
+#rl-mais-body{display:contents}
+#rl-mais-btn{display:none}
+.rl-m-only{display:none}   /* elementos só-mobile ficam ocultos no desktop */
+@media(max-width:900px){
+  .rl-d-only{display:none!important}   /* some no mobile */
+  .rl-m-only{display:block}
+  /* container flex só quando Rápido visível (#mode-rapido herda display do setLancMode) */
+  #lanc-form-card #rl-flow{display:flex;flex-direction:column}
+  /* reordenação Opção B: valor → categoria → descrição → foto → pago → mais opções */
+  #rl-flow>.rapido-title-row{display:none}
+  #rl-flow>#recentes-wrap{order:0}
+  #rl-flow>.rapido-val-wrap{order:1}
+  #rl-flow>.rl-catlbl-m{order:2;display:block}
+  #rl-flow>.cat-picker{order:3}
+  #rl-flow>.rapido-desc-row{order:4}
+  #rl-flow>.rl-foto-m{order:5;display:flex}
+  #rl-flow>#rl-pag-wrap{order:6}
+  #rl-flow>#rl-mais-wrap{order:7;display:block}
+  #rl-flow>.rapido-sticky-spacer{display:none}
+  /* categoria 5-em-linha compacta */
+  #lanc-form-card .cat-picker{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:6px!important;overflow:visible!important}
+  #lanc-form-card .cat-tile{min-width:0;padding:9px 2px 7px!important}
+  #lanc-form-card .cat-tile-ico svg{width:19px!important;height:19px!important}
+  #lanc-form-card .cat-tile-label{font-size:9.5px!important}
+  /* valor em destaque */
+  #lanc-form-card .rapido-val-input{font-size:30px;text-align:left;padding-left:48px}
+  #lanc-form-card .rapido-prefix{top:50%;transform:translateY(-50%);font-size:20px}
+  /* obra-banner + título "Lançamentos" são redundantes com o cabeçalho do topo → ocultos */
+  #lanc-form-card .obra-banner{display:none!important}
+  #page-lancamentos .page-hdr{display:none!important}
+  /* botão grande "Tirar foto" + Galeria (fluxo de foto do comprovante) */
+  .rl-foto-m{display:flex;gap:10px;margin-bottom:16px}
+  .rl-cam-m{flex:1;background:linear-gradient(135deg,rgba(41,128,185,.18),rgba(41,128,185,.08));border:1px solid var(--brand2);border-radius:13px;padding:15px;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--brand3);cursor:pointer;text-align:center}
+  .rl-cam-m svg{display:block}
+  .rl-cam-m.has{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+  .rl-cam-m-t{font-size:13px;font-weight:700}
+  .rl-cam-m-s{font-size:10.5px;color:var(--text3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rl-cam-m.has .rl-cam-m-s{color:var(--green)}
+  .rl-gal-m{width:92px;background:var(--surface);border:1px solid var(--border);border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text2);font-size:10.5px;cursor:pointer}
+  .rl-gal-m svg{display:block}
+  /* "Mais opções" colapsável */
+  #rl-mais-wrap{margin-bottom:14px}
+  #rl-mais-btn{display:flex;align-items:center;gap:7px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px;font-size:13px;font-weight:600;color:var(--text2);font-family:'DM Sans',sans-serif;cursor:pointer;text-align:left}
+  .rl-mais-ico{display:inline-flex;width:16px;justify-content:center;font-size:17px;line-height:1}
+  #rl-mais-body{display:none;padding-top:12px}
+  #rl-mais-wrap.open #rl-mais-body{display:block}
+  /* footer: só Salvar grande (chip de foto some — já temos o botão grande acima) */
+  #rapido-footer-bar label[for="rl-comp"]{display:none!important}
+  #rapido-footer-bar{padding:0!important;border:none!important;background:none!important;margin:4px 0 0!important;box-shadow:none!important}
+  #btn-salvar-rapido{flex:1;height:52px!important;font-size:16px!important;border-radius:14px}
+  /* esconde entulho de desktop no mobile (drop zone Cmd+V, atalhos de teclado) */
+  #page-lancamentos .dz-lanc{display:none!important}
+  #page-lancamentos .split-shortcuts{display:none!important}
 }
 /* ═══ MODO RÁPIDO ═══ */
 .mode-switch{display:flex;gap:0;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:3px;margin-bottom:14px}
@@ -1890,6 +1952,7 @@ input,select,textarea{min-height:44px}
 
     <!-- ═══ MODO RÁPIDO (v2 desktop — matches mockup Split aprovado 2026-09-28) ═══ -->
     <div id="mode-rapido">
+     <div id="rl-flow"><!-- mobile: flex-column reordenado (Opção B); desktop: display:contents = idêntico -->
       <!-- Título / status — visível só desktop-split -->
       <div class="rapido-title-row">
         <span class="rapido-title-badge">SEMPRE ATIVO</span>
@@ -1916,7 +1979,8 @@ input,select,textarea{min-height:44px}
       </div>
 
       <!-- CATEGORIA (1-5) -->
-      <div class="rapido-val-lbl" style="margin-top:4px">Categoria (1-5)</div>
+      <div class="rapido-val-lbl rl-d-only" id="rl-cat-lbl-d" style="margin-top:4px">Categoria (1-5)</div>
+      <div class="rapido-val-lbl rl-m-only rl-catlbl-m" style="margin-top:4px">Categoria</div>
       <div class="cat-picker" role="radiogroup" style="margin-bottom:14px">
         <button type="button" class="cat-tile" data-rlcat="material" onclick="selectRLCat('material',this)" title="Tecla 1"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M8 3v6M16 3v6M8 15v6M16 15v6"/></svg></span><span class="cat-tile-label">Mate</span></button>
         <button type="button" class="cat-tile" data-rlcat="funcionario" onclick="selectRLCat('funcionario',this)" title="Tecla 2"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18a1 1 0 001 1h18a1 1 0 001-1v-2a1 1 0 00-1-1H3a1 1 0 00-1 1z"/><path d="M10 10V5a1 1 0 011-1h2a1 1 0 011 1v5"/><path d="M4 15v-3a6 6 0 016-6"/><path d="M14 6a6 6 0 016 6v3"/></svg></span><span class="cat-tile-label">Func</span></button>
@@ -1925,6 +1989,24 @@ input,select,textarea{min-height:44px}
         <button type="button" class="cat-tile" data-rlcat="outro" onclick="selectRLCat('outro',this)" title="Tecla 5"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg></span><span class="cat-tile-label">Outr</span></button>
       </div>
 
+      <!-- COMPROVANTE (mobile Opção B) — câmera em destaque; oculto no desktop -->
+      <div class="rl-foto-m rl-m-only">
+        <label for="rl-comp" class="rl-cam-m">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span class="rl-cam-m-t">Tirar foto do comprovante</span>
+          <span class="rl-cam-m-s" id="rl-cam-m-sub">Abre a câmera</span>
+        </label>
+        <label for="rl-comp-gal" class="rl-gal-m">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span>Galeria</span>
+        </label>
+        <input type="file" id="rl-comp-gal" style="display:none" accept="image/*" onchange="onRLComp(event)">
+      </div>
+
+      <!-- MAIS OPÇÕES — desktop: display:contents (fornecedor/data/NF soltos, idêntico); mobile: colapsável -->
+      <div id="rl-mais-wrap">
+        <button type="button" id="rl-mais-btn" class="rl-m-only" onclick="toggleRlMais(this)" aria-expanded="false"><span class="rl-mais-ico">+</span> Mais opções (data, NF, fornecedor)</button>
+        <div id="rl-mais-body">
       <!-- FORNECEDOR -->
       <div class="rapido-desc-row">
         <div class="rapido-val-lbl">Fornecedor</div>
@@ -1943,9 +2025,11 @@ input,select,textarea{min-height:44px}
           <input type="text" id="rl-nf" class="rapido-inline-input" placeholder="NF-1234">
         </div>
       </div>
+        </div><!-- /rl-mais-body -->
+      </div><!-- /rl-mais-wrap -->
 
       <!-- PAGAMENTO -->
-      <div style="margin-bottom:4px">
+      <div id="rl-pag-wrap" style="margin-bottom:4px">
         <div class="rapido-val-lbl" style="margin-bottom:4px">Pagamento</div>
         <div class="pag-toggle">
           <label class="pag-opt sel-pago" id="rl-opt-pago" onclick="setRLPag('pago')" style="display:flex;align-items:center;justify-content:center;gap:5px"><input type="radio" name="rl-pag" value="pago" checked style="position:absolute;opacity:0;width:0;height:0"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Pago</label>
@@ -1954,6 +2038,7 @@ input,select,textarea{min-height:44px}
       </div>
 
       <div class="rapido-sticky-spacer" style="padding-bottom:80px"></div><!-- espaço para footer sticky não cobrir conteúdo (só mobile) -->
+     </div><!-- /rl-flow -->
     </div>
     <!-- footer sticky do modo Rápido — igual ao NF Completa -->
     <div class="form-footer-bar" id="rapido-footer-bar">
@@ -3267,7 +3352,7 @@ function showPage(id,el){
   if(id==='documentos')renderDocs();
   if(id==='cadastro')renderOA();
   if(id==='auditoria')renderAudit();
-  if(id==='lancamentos'){renderT();updAPagar(); if(window.innerWidth>900){setLancMode('rapido');}}
+  if(id==='lancamentos'){renderT();updAPagar(); setLancMode('rapido');}
   closeSidebar();updBanners();
   localStorage.setItem('lupa_active_page',id);
 }
@@ -3418,7 +3503,7 @@ function setLancMode(mode){
     lancRefreshDataLists();
     /* Data hoje se vazio */
     const rlData=document.getElementById('rl-data'); if(rlData&&!rlData.value) rlData.value=td();
-    setTimeout(()=>document.getElementById('rl-val').focus(),80);
+    if(window.innerWidth>900) setTimeout(()=>{var v=document.getElementById('rl-val');if(v)v.focus();},80);
   }
 }
 
@@ -3464,6 +3549,17 @@ function onRLComp(e){
     if(nm)nm.textContent='';
     if(ph)ph.textContent='Foto';
   }
+  /* sincroniza botão grande "Tirar foto" (mobile Opção B) */
+  var camb=document.querySelector('.rl-cam-m');
+  var cams=document.getElementById('rl-cam-m-sub');
+  if(camb)camb.classList.toggle('has',!!rlFile);
+  if(cams)cams.textContent=rlFile?('✓ '+(rlFile.name||'foto anexada')):'Abre a câmera';
+}
+/* ══ Mais opções (colapsável no mobile) ══ */
+function toggleRlMais(btn){
+  var w=document.getElementById('rl-mais-wrap');if(!w)return;
+  var open=w.classList.toggle('open');
+  if(btn){btn.setAttribute('aria-expanded',open?'true':'false');var i=btn.querySelector('.rl-mais-ico');if(i)i.textContent=open?'−':'+';}
 }
 /* ═══════════════════════════════════════════════════════════════
    ★ DROP ZONE COMPROVANTE (Split desktop) — approved 2026-09-28
@@ -3692,6 +3788,13 @@ function lancLimparRapido(){
   const rlCompNm=document.getElementById('rl-comp-nm'); if(rlCompNm) rlCompNm.textContent='';
   rlFile=null; rlFileB64=null;
   lancResetFoto();
+  /* reset UI mobile Opção B (botão câmera + galeria + colapsável) */
+  const rlCompPh=document.getElementById('rl-comp-placeholder'); if(rlCompPh) rlCompPh.innerHTML='Foto <span style="color:var(--red)">*</span>';
+  const rlGal=document.getElementById('rl-comp-gal'); if(rlGal) rlGal.value='';
+  const camb=document.querySelector('.rl-cam-m'); if(camb) camb.classList.remove('has');
+  const cams=document.getElementById('rl-cam-m-sub'); if(cams) cams.textContent='Abre a câmera';
+  const mw=document.getElementById('rl-mais-wrap'); if(mw) mw.classList.remove('open');
+  const mb=document.getElementById('rl-mais-btn'); if(mb){mb.setAttribute('aria-expanded','false');const mi=mb.querySelector('.rl-mais-ico');if(mi)mi.textContent='+';}
   rlCat='';
   document.querySelectorAll('[data-rlcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   setRLPag('pago');

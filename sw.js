@@ -1,6 +1,6 @@
 // LUPA Controle Financeiro — Service Worker
 // Versão bumped a cada deploy para forçar reinstalação no mobile
-const CACHE = 'lupa-v14-20260930b';
+const CACHE = 'lupa-v15-20261001a';
 const APP_SHELL = ['/lupa-construcoes/', '/lupa-construcoes/index.html'];
 
 // Instala e faz cache do app shell
