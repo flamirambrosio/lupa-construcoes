@@ -2062,7 +2062,6 @@ input,select,textarea{min-height:44px}
         <!-- Preview do resultado OCR -->
         <div class="ocr-preview" id="ocr-preview"></div>
         <div class="fg" style="margin-bottom:10px">
-          <div class="fgg"><label class="fl" for="nfm-num">Nº da NF <span style="font-size:10px;color:var(--text3);font-weight:400">(opcional)</span></label><input type="text" id="nfm-num" placeholder="Ex: NF-001234 (auto se vazio)" autocomplete="off"></div>
           <div class="fgg"><label class="fl" for="nfm-forn">Emissor / Fornecedor</label>
             <div style="position:relative">
               <input type="text" id="nfm-forn" placeholder="Razão social ou nome" oninput="showFornAC()" onfocus="showFornAC();renderRecentChips()" autocomplete="off">
@@ -2072,6 +2071,7 @@ input,select,textarea{min-height:44px}
               <div class="recentes-chips" id="forn-chips"></div>
             </div>
           </div>
+          <div class="fgg"><label class="fl" for="nfm-cnpj">CNPJ / CPF <span style="font-size:10px;color:var(--text3);font-weight:400">(auto)</span></label><input type="text" id="nfm-cnpj" placeholder="Preenchido pelo OCR" autocomplete="off"></div>
           <div class="fgg"><label class="fl" for="nf-data-f">Data <span class="req">*</span></label><input type="date" id="nf-data-f" placeholder="dd/mm/aaaa"></div>
         </div>
         <div>
@@ -4690,9 +4690,8 @@ async function fillNFFromOCR(parsed, textoOriginal){
   // Monta painel de preview
   const conf=c=>`<span class="ocr-confidence ${c==='ok'?'ocr-conf-ok':'ocr-conf-warn'}">${c==='ok'?'✓':'~'}</span>`;
   let html=`<div class="ocr-preview-title">Escaneamento concluído</div>`;
-  if(parsed.nfNum)  html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Nº da NF</span><strong>${esc(parsed.nfNum)}</strong>${conf(parsed.confianca.nfNum)}</div>`;
   if(parsed.fornecedor)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Fornecedor</span><strong>${esc(parsed.fornecedor)}</strong>${conf(parsed.confianca.fornecedor)}</div>`;
-  if(parsed.cnpj)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">CNPJ</span><span>${esc(parsed.cnpj)}</span>${conf(parsed.confianca.cnpj)}</div>`;
+  if(parsed.cnpj)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">CNPJ / CPF</span><span>${esc(parsed.cnpj)}</span>${conf(parsed.confianca.cnpj)}</div>`;
   if(parsed.data)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Data</span><strong>${fD(parsed.data)}</strong>${conf(parsed.confianca.data)}</div>`;
   if(parsed.total)  html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Total</span><strong>${fmt(parsed.total)}</strong>${conf(parsed.confianca.total)}</div>`;
   if(parsed.itens.length){
@@ -4702,15 +4701,20 @@ async function fillNFFromOCR(parsed, textoOriginal){
   }
   if(preview){preview.innerHTML=html;preview.classList.add('open');}
 
-  // Preenche campos com efeito de digitação
-  await typeIntoField('nfm-num',  parsed.nfNum||'',   40);
+  // Preenche campos com efeito de digitação (fornecedor), CNPJ/CPF e data direto
   await typeIntoField('nfm-forn', norm(parsed.fornecedor||''), 30);
+  if(parsed.cnpj){const ec=document.getElementById('nfm-cnpj');if(ec)ec.value=parsed.cnpj;}
   if(parsed.data){const el=document.getElementById('nf-data-f');if(el)el.value=parsed.data;}
 
-  // Guarda itens para inserção quando categoria for selecionada
+  // Guarda itens e já insere na categoria Materiais — traz quantidade + valor sem clique extra
   window._ocrItens=parsed.itens;
-
-  toast('NF detectada! Selecione a categoria para adicionar os itens.','success');
+  if(parsed.itens.length){
+    const tile=document.querySelector('[data-nfcat="material"]');
+    if(typeof selectNFCat==='function') selectNFCat('material',tile);
+    toast('✅ NF lida: fornecedor, CNPJ, data, valor e quantidade preenchidos. Confira e salve.','success');
+  } else {
+    toast('NF detectada, mas não identifiquei os itens. Selecione a categoria e lance manualmente.','warn');
+  }
 }
 
 // Simula digitação campo a campo (efeito autocomplete visual)
@@ -4986,12 +4990,10 @@ async function salvarNFMulti(){
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
   if(!cFile){toast('📎 Anexe o comprovante da NF (obrigatório).','error');lancDzMissingFlash();return;}
-  const nfNum=document.getElementById('nfm-num').value.trim()||'NF-'+Date.now();
   const nfForn=norm(document.getElementById('nfm-forn').value||'');
+  const nfCnpj=(document.getElementById('nfm-cnpj')?.value||'').trim();
   const data=document.getElementById('nf-data-f').value||td();
   const statusPag=document.querySelector('input[name="nf-pag"]:checked')?.value||'pago';
-  const dup=ST.lancamentos.find(l=>l.nfNum===nfNum&&l.obraId===ob.id);
-  if(dup&&!confirm(`NF "${nfNum}" já existe nesta obra. Inserir mesmo assim?`))return;
   // Upload comprovante para Cloudinary
   let cloudinaryUrl='';
   if(cFile){
@@ -5000,17 +5002,19 @@ async function salvarNFMulti(){
     if(result)cloudinaryUrl=result.url;
   }
   nfItems.forEach(x=>{
+    const ex=Object.assign({},x.extra||{});
+    if(nfCnpj)ex.cnpj=nfCnpj;
     ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:nfCat,subcat:'',desc:norm(x.desc),valor:x.valor,
-      data,obs:'NF: '+nfNum,comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',
-      cloudinaryUrl,fornecedor:nfForn,statusPag,nfNum,extra:x.extra||{},ts:Date.now()});
+      data,obs:'',comprovante:cFile?cFile.name:'',fileB64:cFileB64||'',
+      cloudinaryUrl,fornecedor:nfForn,statusPag,nfNum:'',extra:ex,ts:Date.now()});
   });
-  addAudit('NF inserida','NF '+nfNum+' — '+nfItems.length+' item(s) · '+nfCat);
+  addAudit('NF inserida',(nfForn||'Sem fornecedor')+' — '+nfItems.length+' item(s) · '+nfCat);
   if(nfForn)saveFornRecente(nfForn,nfCat);
   const total=nfItems.reduce((a,x)=>a+x.valor,0);
   if(cFile&&cloudinaryUrl){
     toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! ☁️ Comprovante na nuvem.','success');
   } else {
-    toast(nfItems.length+' item(s) · '+fmt(total)+' da NF '+nfNum+' salvos!','success');
+    toast(nfItems.length+' item(s) · '+fmt(total)+' salvos!','success');
   }
   nfItems=[];nfCat='';
   lancResetFoto();
@@ -5047,7 +5051,7 @@ function selectDocCat(cat,el){
 }
 function limparL(){
   // Limpar campos do modo NF
-  ['nfm-num','nfm-forn'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['nfm-cnpj','nfm-forn'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   nfItems=[];nfCat='';
   document.querySelectorAll('[data-nfcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   const niw=document.getElementById('nf-items-wrap');if(niw)niw.style.display='none';
