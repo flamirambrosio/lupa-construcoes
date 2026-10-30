@@ -4545,79 +4545,118 @@ async function iniciarOCR(e){
 function parseNFText(txt){
   const r={nfNum:'',fornecedor:'',data:'',cnpj:'',itens:[],total:0,confianca:{}};
   const linhas=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const isSep=l=>/^[=\-_*.\s]+$/.test(l);
+  const isHdr=l=>/descri[cç][aã]o|vl\.?\s*unit|qtde|pre[cç]o\s*unit|c[oó]d(igo)?\b/i.test(l);
 
-  // Número da NF — procura padrões comuns
+  // ─── Número do documento (NF-e formal primeiro, depois cupom térmico) ───
   const nfPatterns=[
-    /n[oº°]\.?\s*:?\s*(\d[\d./-]{2,})/i,
-    /nota\s+fiscal\s+(?:n[oº°]\.?\s*:?\s*)?(\d[\d./-]{2,})/i,
-    /nf[e\s-]*n[oº°]?\s*:?\s*(\d[\d./-]{2,})/i,
-    /\bNF[e]?\s*(\d{6,})/i,
-    /número\s*:?\s*(\d[\d./-]{2,})/i,
+    /nota\s+fiscal\s+(?:eletr[oô]nica\s+)?(?:n[oº°.\s]*)?(\d[\d.]{3,})/i,
+    /\bNF[-\s]?e?\s*[:nºo]*\s*(\d{4,})/i,
+    /n[úu]mero\s*:?\s*(\d{3,})/i,
+    /\bn[oº°]\.?\s*:?\s*(\d{3,})/i,
+    /\b(?:doc|documento|cupom|pedido|venda|c\.?f\.?e?|coo)\s*:?\s*(\d{3,})/i,
   ];
   for(const p of nfPatterns){
     const m=txt.match(p);
     if(m){r.nfNum=m[1].replace(/\./g,'').trim();r.confianca.nfNum='ok';break;}
   }
 
-  // CNPJ — formato XX.XXX.XXX/XXXX-XX
+  // ─── CNPJ (XX.XXX.XXX/XXXX-XX) ou CPF/MEI (XXX.XXX.XXX-XX) ───
   const cnpjM=txt.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/);
-  if(cnpjM){r.cnpj=cnpjM[0];r.confianca.cnpj='ok';}
+  const cpfLikeM=txt.match(/\d{2,3}\.\d{3}\.\d{3}[-/]\d{2}/);
+  const docIdM=cnpjM||cpfLikeM;
+  if(docIdM){r.cnpj=docIdM[0];r.confianca.cnpj=cnpjM?'ok':'warn';}
 
-  // Fornecedor — linha antes ou depois do CNPJ, ou razão social
+  // ─── Fornecedor — razão social, ou linha com cara de empresa, ou vizinha ao CNPJ ───
   const razaoM=txt.match(/raz[aã]o\s+social\s*:?\s*([^\n\r]{4,60})/i);
-  if(razaoM){r.fornecedor=razaoM[1].trim();r.confianca.fornecedor='ok';}
-  else if(cnpjM){
-    // Pega a linha mais próxima ao CNPJ que parece nome de empresa
-    const idx=linhas.findIndex(l=>l.includes(cnpjM[0]));
-    for(let delta=-3;delta<=3;delta++){
-      const l=linhas[idx+delta];
-      if(l&&!l.match(/\d{2}\.\d{3}/)&&l.length>4&&l.length<80&&/[A-Za-z]/.test(l)){
-        r.fornecedor=l;r.confianca.fornecedor='warn';break;
+  const bizRx=/materi[ae]l|materiais|constru|com[eé]rcio|comercial|distribuid|dep[oó]sito|atacad|ferragem|ferragens|loja|casa\s+d|ltda|eireli|\bme\b|\bmei\b|ind[uú]stria|com\.|ind\./i;
+  if(razaoM){
+    r.fornecedor=razaoM[1].trim();r.confianca.fornecedor='ok';
+  } else {
+    let best='';
+    for(let i=0;i<Math.min(linhas.length,12);i++){
+      const l=linhas[i];
+      if(isSep(l)||isHdr(l))continue;
+      if(l.match(/\d{2}\.\d{3}/)||/cnpj|cpf|\bie\b|inscri|endere|bairro|cidade|\bcep\b|\btel\b|fone|data|hora|cliente/i.test(l))continue;
+      if(bizRx.test(l)&&l.length>best.length&&l.length<70)best=l;
+    }
+    if(best){r.fornecedor=best.replace(/\s{2,}/g,' ').trim();r.confianca.fornecedor='warn';}
+    else if(docIdM){
+      const idx=linhas.findIndex(l=>l.includes(docIdM[0]));
+      for(let delta=-3;delta<=3;delta++){
+        const l=linhas[idx+delta];
+        if(l&&!l.match(/\d{2}\.\d{3}/)&&l.length>4&&l.length<70&&/[A-Za-zÀ-ú]/.test(l)&&!isHdr(l)){
+          r.fornecedor=l;r.confianca.fornecedor='warn';break;
+        }
       }
     }
   }
 
-  // Data — DD/MM/YYYY ou YYYY-MM-DD
+  // ─── Data — DD/MM/YYYY ───
   const dataPatterns=[
-    /data\s*(?:de\s*emiss[aã]o)?\s*:?\s*(\d{2}\/\d{2}\/\d{4})/i,
+    /data\s*(?:\/\s*hora)?\s*(?:de\s*emiss[aã]o)?\s*:?\s*(\d{2}\/\d{2}\/\d{4})/i,
     /emiss[aã]o\s*:?\s*(\d{2}\/\d{2}\/\d{4})/i,
     /(\d{2}\/\d{2}\/\d{4})/,
   ];
   for(const p of dataPatterns){
     const m=txt.match(p);
-    if(m){
-      const[d,mo,y]=m[1].split('/');
-      r.data=`${y}-${mo.padStart(2,'0')}-${d.padStart(2,'0')}`;
-      r.confianca.data='ok';break;
-    }
+    if(m){const[d,mo,y]=m[1].split('/');r.data=`${y}-${mo.padStart(2,'0')}-${d.padStart(2,'0')}`;r.confianca.data='ok';break;}
   }
 
-  // Total — procura VALOR TOTAL, TOTAL, TOTAL NF
+  // ─── Total — "Total a Pagar" (cupom) primeiro, depois outros ───
   const totalPatterns=[
-    /total\s+(?:geral|nf|nota|a\s+pagar|do\s+documento)?\s*:?\s*R?\$?\s*([\d.,]+)/i,
+    /total\s+a\s+pagar\s*:?\s*R?\$?\s*([\d.,]+)/i,
     /valor\s+total\s*:?\s*R?\$?\s*([\d.,]+)/i,
+    /total\s+(?:geral|nf|nota|do\s+documento|l[ií]quido)?\s*:?\s*R?\$?\s*([\d.,]+)/i,
     /\bTOTAL\b[^\d]*([\d]{1,3}(?:[.,]\d{3})*[.,]\d{2})/i,
   ];
   for(const p of totalPatterns){
     const m=txt.match(p);
-    if(m){r.total=parseBRNum(m[1]);r.confianca.total='ok';break;}
+    if(m){const v=parseBRNum(m[1]);if(v>0){r.total=v;r.confianca.total='ok';break;}}
   }
 
-  // Itens — linhas com valor monetário ao final (R$ X.XXX,XX ou X.XXX,XX)
-  const valorRx=/R?\$?\s*([\d]{1,3}(?:[.,]\d{3})*[.,]\d{2})\s*$/;
-  linhas.forEach(l=>{
-    if(l.length<4||l.length>120)return;
-    // Ignora linhas que são só cabeçalho/totais
-    if(/total|subtotal|desconto|frete|imposto|iss|icms|pis|cofins|ipi|cst|cfop|ncm|aliq|base/i.test(l))return;
-    const m=l.match(valorRx);
+  // ─── Itens ───
+  // Estratégia A (cupom térmico): "QTD x UNIT [TOTAL]", descrição na mesma linha ou na anterior
+  const skipItem=l=>/total|subtotal|desconto|frete|troco|dinheiro|cart[aã]o|\bpix\b|acr[eé]scimo|\bimposto|\biss\b|icms/i.test(l);
+  const itemRx=/^(.*?)([\d]+(?:[.,]\d+)?)\s*[xX*×]\s*(?:R?\$?\s*)?([\d.,]+)(?:\s+R?\$?\s*([\d.,]+))?\s*$/;
+  for(let i=0;i<linhas.length;i++){
+    const l=linhas[i];
+    if(isSep(l)||isHdr(l)||skipItem(l))continue;
+    const m=l.match(itemRx);
     if(m){
-      const valor=parseBRNum(m[1]);
-      if(valor>0&&valor<500000){
-        const desc=l.replace(m[0],'').replace(/^[\d\s.]+/,'').trim();
-        if(desc.length>2)r.itens.push({desc,valor});
+      let desc=(m[1]||'').trim();
+      const qtd=parseQtyBR(m[2]);
+      const unit=parseBRNum(m[3]);
+      let tot=m[4]?parseBRNum(m[4]):0;
+      if(!(tot>0))tot=qtd*unit;
+      if(!desc){
+        for(let k=i-1;k>=0&&k>=i-3;k--){
+          if(!isSep(linhas[k])&&!isHdr(linhas[k])&&/[A-Za-zÀ-ú]/.test(linhas[k])){desc=linhas[k];break;}
+        }
       }
+      desc=desc.replace(/^\d{3,}\s+/,'').replace(/^\d+\s*[-.)]\s*/,'').replace(/\s{2,}/g,' ').trim();
+      if(desc.length<2)desc='Item';
+      if(tot>0&&tot<500000)r.itens.push({desc,qtd,un:'',unitPrice:unit,valor:tot});
     }
-  });
+  }
+
+  // Estratégia B (fallback NF formal): linha termina em valor monetário
+  if(!r.itens.length){
+    const valorRx=/R?\$?\s*([\d]{1,3}(?:[.,]\d{3})*[.,]\d{2})\s*$/;
+    linhas.forEach(l=>{
+      if(l.length<4||l.length>120)return;
+      if(isSep(l)||isHdr(l))return;
+      if(/total|subtotal|desconto|frete|imposto|iss|icms|pis|cofins|ipi|cst|cfop|ncm|aliq|base|troco|dinheiro|cart[aã]o|\bpix\b/i.test(l))return;
+      const m=l.match(valorRx);
+      if(m){
+        const valor=parseBRNum(m[1]);
+        if(valor>0&&valor<500000){
+          const desc=l.replace(m[0],'').replace(/^[\d\s.]+/,'').trim();
+          if(desc.length>2)r.itens.push({desc,valor});
+        }
+      }
+    });
+  }
 
   // Se não encontrou itens mas tem total, cria um item genérico
   if(!r.itens.length&&r.total>0){
@@ -4633,6 +4672,15 @@ function parseBRNum(s){
   if(s.match(/\d+\.\d{3},\d{2}/))return parseFloat(s.replace(/\./g,'').replace(',','.'));
   // Formato 1234,56
   if(s.match(/\d+,\d{2}$/))return parseFloat(s.replace(',','.'));
+  return parseFloat(s)||0;
+}
+
+// Quantidades de cupom: "5,000"→5, "2,500"→2.5, "1.000,00"→1000, "1.000"→1000
+function parseQtyBR(s){
+  s=String(s).trim().replace(/\s+/g,'');
+  if(/^\d{1,3}(\.\d{3})+,\d+$/.test(s))return parseFloat(s.replace(/\./g,'').replace(',','.')); // 1.000,00
+  if(/,\d+$/.test(s))return parseFloat(s.replace(/\./g,'').replace(',','.'));                   // 5,000 → 5 ; 2,500 → 2.5
+  if(/^\d{1,3}(\.\d{3})+$/.test(s))return parseFloat(s.replace(/\./g,''));                       // 1.000 → 1000
   return parseFloat(s)||0;
 }
 
@@ -4775,9 +4823,12 @@ function selectNFCat(cat,el){
   if(title)title.textContent='Itens da NF — '+(CL[cat]||cat);
   const secTitle=document.getElementById('fsec-cat-title');
   if(secTitle)secTitle.textContent='Categoria: '+(CL[cat]||cat);
-  // Se tem itens do OCR, importa automaticamente
+  // Se tem itens do OCR, importa automaticamente (carrega qtd/un/valor unit. quando o cupom traz)
   if(window._ocrItens&&window._ocrItens.length){
-    nfItems=window._ocrItens.map(it=>({id:uid(),desc:norm(it.desc),valor:it.valor,extra:{}}));
+    nfItems=window._ocrItens.map(it=>{
+      const temQtd=it.qtd>0&&it.unitPrice>0;
+      return {id:uid(),desc:norm(it.desc),valor:it.valor,extra:temQtd?{qtd:it.qtd,un:it.un||'un',unitPrice:it.unitPrice}:{}};
+    });
     window._ocrItens=null;
     toast(`${nfItems.length} item(s) importados do OCR. Confira e salve.`,'success');
   } else {
