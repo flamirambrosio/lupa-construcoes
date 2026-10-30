@@ -540,7 +540,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .nf-add-hint{font-size:10.5px;color:var(--text2);margin:4px 0 10px;display:flex;align-items:center;gap:5px}
 .nf-item-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;margin-bottom:6px;animation:slideDown .15s ease}
 .nf-item-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
-.nf-item-desc{flex:1;font-size:12.5px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nf-item-desc{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.nf-item-name{font-size:12.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nf-item-qty{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nf-item-val{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--green);flex-shrink:0}
 .nf-total-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(41,128,185,.07);border:1px solid rgba(41,128,185,.18);border-radius:9px;margin:10px 0}
 .nf-total-label{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.6px;text-transform:uppercase}
@@ -3307,7 +3309,7 @@ const fmt=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL
 function fmtHtml(v){const n=Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});return`<span class="curr">R$</span><span class="amt">${n}</span>`;};
 const fmtS=n=>n>=1e6?'R$'+(n/1e6).toFixed(1)+'M':n>=1e3?'R$'+(n/1e3).toFixed(0)+'k':fmt(n);
 const fD=s=>{if(!s)return'—';const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;};
-const td=()=>new Date().toISOString().split('T')[0];
+const td=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
 const uid=()=>Math.random().toString(36).slice(2,10);
 const addD=(b,n)=>{const d=new Date(b+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
 const dif=(a,b)=>Math.floor((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
@@ -4993,10 +4995,10 @@ function renderNFItems(){
   const tv=document.getElementById('nf-total-val');if(tv){const n=Number(total||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});tv.innerHTML=`<span class="tcurr">R$</span><span class="tamt">${n}</span>`;}
   list.innerHTML=nfItems.map(x=>{
     const hasQty=x.extra?.qtd&&x.extra.qtd>0;
-    const sub=hasQty&&x.extra?.unitPrice?` · ${x.extra.qtd} ${x.extra.un||''} × ${fmt(x.extra.unitPrice)}`:(hasQty?` · ${x.extra.qtd} ${x.extra.un||''}`:``);
+    const qtyTxt=hasQty?(x.extra?.unitPrice?`${x.extra.qtd} ${x.extra.un||'un'} × ${fmt(x.extra.unitPrice)}`:`${x.extra.qtd} ${x.extra.un||'un'}`):'';
     return`<div class="nf-item-row">
     <span class="nf-item-dot" style="background:${catClr}"></span>
-    <span class="nf-item-desc" title="${x.desc}">${x.desc}${sub}</span>
+    <span class="nf-item-desc" title="${esc(x.desc)}"><span class="nf-item-name">${esc(x.desc)}</span>${qtyTxt?`<span class="nf-item-qty">${esc(qtyTxt)}</span>`:''}</span>
     <span class="nf-item-val">${fmt(x.valor)}</span>
     <button type="button" onclick="editNFItem('${x.id}')" class="nf-item-edit-btn" title="Editar item">${ic('pencil',13)}</button>
     <button type="button" onclick="removeNFItem('${x.id}')" class="nf-item-del-btn" title="Remover">✕</button>
