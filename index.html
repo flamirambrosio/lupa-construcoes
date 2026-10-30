@@ -3597,8 +3597,24 @@ function lancProcessFile(file, source){
     rlFileB64 = ev.target.result;
     cFile = file;
     cFileB64 = ev.target.result;
+    /* Mantém UI legada do botão "Anexar NF" em sincronia (caso ainda visível) */
+    const legadoNm=document.getElementById('nf-comp-nm');
+    if(legadoNm) legadoNm.textContent='📎 '+(file.name||'comprovante');
+    const legadoLbl=document.getElementById('lbl-nf-comp');
+    if(legadoLbl) legadoLbl.style.display='none';
     lancRenderFotoPreview();
     toast(`📎 Comprovante anexado (${source||'arquivo'})`,'success');
+
+    /* ★ AUTO-OCR — se for imagem e Google conectado, lê a NF e preenche sozinho */
+    const isImage=(file.type||'').startsWith('image/');
+    if(isImage && gToken){
+      /* OCR preenche campos da NF Completa — garante que o modo esteja ativo */
+      if(typeof setLancMode==='function') setLancMode('nf');
+      /* Pequeno delay pra UI do toast "Comprovante anexado" aparecer antes do overlay OCR */
+      setTimeout(()=>runOCRAutoFill(file), 200);
+    } else if(isImage && !gToken){
+      setTimeout(()=>toast('💡 Conecte o Google (botão OCR no topo) para autopreencher da próxima vez.','info'), 1200);
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -4437,21 +4453,25 @@ let lancMode='nf',nfItems=[],nfCat='';
    OCR DE NOTAS FISCAIS via Google Drive
    ═══════════════════════════════════════ */
 
-async function iniciarOCR(e){
-  const file=e.target.files[0];
-  e.target.value='';
-  if(!file)return;
-  if(!gToken){toast('⚠️ Conecte o Google para usar o OCR. Clique em "● Sheets" no topo.','warn');return;}
-  if(!file.type.startsWith('image/')){toast('Use uma imagem (JPG, PNG, etc.).','error');return;}
+/*
+ * runOCRAutoFill(file) — núcleo reutilizável do OCR.
+ * Faz upload → extrai texto → parseia → preenche campos da NF Completa.
+ * NÃO anexa o arquivo como comprovante (responsabilidade do chamador).
+ * Retorna true em sucesso, false em falha/skip.
+ * Usado por iniciarOCR (câmera) e lancProcessFile (drop/paste).
+ */
+async function runOCRAutoFill(file){
+  if(!file) return false;
+  if(!gToken){toast('⚠️ Conecte o Google (botão OCR no topo) para autopreencher.','warn');return false;}
+  if(!file.type.startsWith('image/')){toast('OCR só funciona com imagem (JPG/PNG). PDF segue anexado sem leitura.','info');return false;}
 
   const overlay=document.getElementById('ocr-overlay');
   const msgEl=document.getElementById('ocr-msg');
-  overlay.classList.add('open');
-  msgEl.textContent='Enviando imagem...';
+  if(overlay) overlay.classList.add('open');
+  if(msgEl) msgEl.textContent='Lendo nota fiscal com OCR...';
 
   try{
     // 1. Upload temporário com OCR (converte para Google Doc)
-    msgEl.textContent='Lendo nota fiscal com OCR...';
     const meta={name:'_lupa_ocr_tmp_'+Date.now(),mimeType:'application/vnd.google-apps.document',parents:[DRIVE_FOLDER_ID]};
     const form=new FormData();
     form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
@@ -4465,7 +4485,7 @@ async function iniciarOCR(e){
     const {id:docId}=await upRes.json();
 
     // 2. Exporta texto puro
-    msgEl.textContent='Extraindo texto...';
+    if(msgEl) msgEl.textContent='Extraindo texto...';
     const txtRes=await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/export?mimeType=text/plain`,{
       headers:{Authorization:`Bearer ${gToken}`}
     });
@@ -4474,27 +4494,39 @@ async function iniciarOCR(e){
     // 3. Apaga o Doc temporário (não a imagem original)
     fetch(`https://www.googleapis.com/drive/v3/files/${docId}`,{method:'DELETE',headers:{Authorization:`Bearer ${gToken}`}});
 
-    overlay.classList.remove('open');
+    if(overlay) overlay.classList.remove('open');
 
-    // 4. Registra a foto como comprovante (mesmo destino do "Anexar NF")
-    cFile=file;
-    cFileB64=null;
-    if(file.size<=2097152) readB64(file,b64=>{cFileB64=b64;});
-    // Atualiza UI: mostra nome do arquivo e esconde botão Anexar
-    const nm=document.getElementById('nf-comp-nm');
-    if(nm)nm.textContent='📷 '+file.name;
-    const lbl=document.getElementById('lbl-nf-comp');
-    if(lbl)lbl.style.display='none';
-
-    // 5. Parseia e preenche
+    // 4. Parseia e preenche
     const parsed=parseNFText(texto);
     fillNFFromOCR(parsed,texto);
+    return true;
 
   }catch(err){
-    overlay.classList.remove('open');
+    if(overlay) overlay.classList.remove('open');
     console.error('OCR error:',err);
     toast('Erro no OCR: '+err.message,'error');
+    return false;
   }
+}
+
+async function iniciarOCR(e){
+  const file=e.target.files[0];
+  e.target.value='';
+  if(!file)return;
+  if(!gToken){toast('⚠️ Conecte o Google para usar o OCR. Clique em "● OCR" no topo.','warn');return;}
+  if(!file.type.startsWith('image/')){toast('Use uma imagem (JPG, PNG, etc.).','error');return;}
+
+  // Anexa o arquivo como comprovante (mesmo destino do "Anexar NF")
+  cFile=file;
+  cFileB64=null;
+  if(file.size<=2097152) readB64(file,b64=>{cFileB64=b64;});
+  const nm=document.getElementById('nf-comp-nm');
+  if(nm)nm.textContent='📷 '+file.name;
+  const lbl=document.getElementById('lbl-nf-comp');
+  if(lbl)lbl.style.display='none';
+
+  // Roda OCR e preenche campos
+  await runOCRAutoFill(file);
 }
 
 function parseNFText(txt){
