@@ -4513,7 +4513,7 @@ async function runOCRAutoFill(file){
 
     // 4. Parseia e preenche
     const parsed=parseNFText(texto);
-    fillNFFromOCR(parsed,texto);
+    fillNFFromOCR(parsed,texto,file&&file.name);
     return true;
 
   }catch(err){
@@ -4714,15 +4714,53 @@ function parseQtyBR(s){
   return parseFloat(s)||0;
 }
 
-async function fillNFFromOCR(parsed, textoOriginal){
+// Recupera data a partir do NOME do arquivo (ex.: "WhatsApp Image 2026-08-05 at...",
+// "IMG-20260805-WA0001.jpg", "05-08-2026.jpg"). Usada como palpite quando o OCR
+// corrompe a data (ex.: lê "85/08/2026"). Valida calendário e faixa plausível.
+function dateFromFilename(name){
+  if(!name) return '';
+  const s=String(name);
+  const now=new Date();
+  const amanha=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,23,59,59);
+  const limite=new Date(now.getFullYear()-6,now.getMonth(),now.getDate());
+  const ok=(y,mo,d)=>{
+    if(d<1||d>31||mo<1||mo>12||y<2000||y>2099)return null;
+    const dt=new Date(y,mo-1,d);
+    if(dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==d)return null; // rejeita 31/02 etc.
+    if(dt>amanha||dt<limite)return null;                                          // futuro/antigo demais
+    return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  };
+  let m,re;
+  re=/(20\d{2})[-_.]?(\d{2})[-_.]?(\d{2})/g;          // YYYY-MM-DD / YYYYMMDD
+  while(m=re.exec(s)){const v=ok(+m[1],+m[2],+m[3]);if(v)return v;}
+  re=/(\d{2})[-_./](\d{2})[-_./](20\d{2})/g;          // DD-MM-YYYY / DD/MM/YYYY
+  while(m=re.exec(s)){const v=ok(+m[3],+m[2],+m[1]);if(v)return v;}
+  return '';
+}
+
+async function fillNFFromOCR(parsed, textoOriginal, fileName){
   const preview=document.getElementById('ocr-preview');
+
+  // Data efetiva: usa a do OCR; se vazia/corrompida, tenta recuperar do nome do arquivo.
+  let dataEff=parsed.data||'';
+  let dataDoArquivo=false;
+  if(!dataEff){
+    const fnDate=dateFromFilename(fileName);
+    if(fnDate){dataEff=fnDate;dataDoArquivo=true;}
+  }
 
   // Monta painel de preview
   const conf=c=>`<span class="ocr-confidence ${c==='ok'?'ocr-conf-ok':'ocr-conf-warn'}">${c==='ok'?'✓':'~'}</span>`;
   let html=`<div class="ocr-preview-title">Escaneamento concluído</div>`;
   if(parsed.fornecedor)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Fornecedor</span><strong>${esc(parsed.fornecedor)}</strong>${conf(parsed.confianca.fornecedor)}</div>`;
   if(parsed.cnpj)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">CNPJ / CPF</span><span>${esc(parsed.cnpj)}</span>${conf(parsed.confianca.cnpj)}</div>`;
-  if(parsed.data)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Data</span><strong>${fD(parsed.data)}</strong>${conf(parsed.confianca.data)}</div>`;
+  if(dataEff){
+    const dataLbl=dataDoArquivo?'Data <small style="opacity:.7">(do nome do arquivo)</small>':'Data';
+    const dataMark=dataDoArquivo
+      ?`<span class="ocr-confidence ocr-conf-warn" title="O OCR não leu a data; peguei do nome do arquivo. Confira!">~</span>`
+      :conf(parsed.confianca.data);
+    html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">${dataLbl}</span><strong>${fD(dataEff)}</strong>${dataMark}</div>`;
+  }
   if(parsed.total)  html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Total</span><strong>${fmt(parsed.total)}</strong>${conf(parsed.confianca.total)}</div>`;
   if(parsed.itens.length){
     html+=`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:rgba(142,68,173,.07);border-radius:6px;padding:8px 10px">💡 Selecione a categoria abaixo — os itens serão adicionados automaticamente.</div>`;
@@ -4743,7 +4781,7 @@ async function fillNFFromOCR(parsed, textoOriginal){
   // Preenche campos com efeito de digitação (fornecedor), CNPJ/CPF e data direto
   await typeIntoField('nfm-forn', norm(parsed.fornecedor||''), 30);
   if(parsed.cnpj){const ec=document.getElementById('nfm-cnpj');if(ec)ec.value=parsed.cnpj;}
-  if(parsed.data){const el=document.getElementById('nf-data-f');if(el)el.value=parsed.data;}
+  if(dataEff){const el=document.getElementById('nf-data-f');if(el)el.value=dataEff;}
 
   // Guarda itens e já insere na categoria Materiais — traz quantidade + valor sem clique extra
   window._ocrItens=parsed.itens;
