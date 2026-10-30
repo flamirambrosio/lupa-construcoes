@@ -3352,7 +3352,7 @@ function showPage(id,el){
   if(id==='documentos')renderDocs();
   if(id==='cadastro')renderOA();
   if(id==='auditoria')renderAudit();
-  if(id==='lancamentos'){renderT();updAPagar(); setLancMode('rapido');}
+  if(id==='lancamentos'){renderT();updAPagar(); setLancMode('nf');}
   closeSidebar();updBanners();
   localStorage.setItem('lupa_active_page',id);
 }
