@@ -3666,18 +3666,31 @@ function initLancDropZone(){
   const overlay = document.getElementById('lanc-dz-overlay');
   if(!dz || !panel || !overlay) return;
 
+  /* Overlay do painel inteiro — contador declarado antes do dz.drop
+     para que o handler da zona específica também possa zerá-lo. */
+  let dragDepth = 0;
+
   /* Drop zone específica */
   dz.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('dragover'); });
   dz.addEventListener('dragleave', e => { e.stopPropagation(); dz.classList.remove('dragover'); });
   dz.addEventListener('drop', e => {
     e.preventDefault(); e.stopPropagation();
     dz.classList.remove('dragover');
+    /* ★ FIX: stopPropagation acima impede o drop de chegar ao panel —
+       então zera o overlay aqui também, senão fica travado. */
+    dragDepth = 0;
+    overlay.classList.remove('show');
     const f = e.dataTransfer && e.dataTransfer.files[0];
     if(f) lancProcessFile(f, 'drag-and-drop');
   });
 
-  /* Overlay do painel inteiro */
-  let dragDepth = 0;
+  /* ★ Fallbacks de segurança — se o drag for cancelado fora da janela,
+     Esc for pressionado, ou o arquivo for solto num outro elemento. */
+  window.addEventListener('dragend', () => { dragDepth = 0; overlay.classList.remove('show'); dz.classList.remove('dragover'); });
+  window.addEventListener('drop', () => { dragDepth = 0; overlay.classList.remove('show'); dz.classList.remove('dragover'); }, true);
+  document.addEventListener('keydown', e => { if(e.key==='Escape'){ dragDepth = 0; overlay.classList.remove('show'); dz.classList.remove('dragover'); } });
+
+  /* Original: declaração do dragDepth movida pra cima */
   panel.addEventListener('dragenter', e => {
     if(!e.dataTransfer || !e.dataTransfer.types.includes('Files')) return;
     e.preventDefault();
