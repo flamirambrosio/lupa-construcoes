@@ -538,6 +538,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .nf-add-row{display:flex;gap:8px;flex-wrap:wrap;padding:12px;background:var(--bg3);border-radius:10px;border:1px dashed var(--border2);align-items:center;margin-bottom:8px}
 .nf-add-row input,.nf-add-row select{height:38px}
 .nf-add-hint{font-size:10.5px;color:var(--text2);margin:4px 0 10px;display:flex;align-items:center;gap:5px}
+.nf-add-toggle{display:inline-flex;align-items:center;gap:6px;margin:2px 0 10px;padding:7px 12px;background:transparent;border:1px dashed var(--border2);border-radius:8px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:-.1px}
+.nf-add-toggle:hover{background:var(--bg3);color:var(--text);border-color:var(--brand2)}
+.nf-add-toggle.open{color:var(--text);border-style:solid;background:var(--bg3)}
 .nf-item-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;margin-bottom:6px;animation:slideDown .15s ease}
 .nf-item-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
 .nf-item-desc{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
@@ -2098,6 +2101,7 @@ input,select,textarea{min-height:44px}
         <div class="fsec" style="margin-top:14px">
           <div class="fsec-title" id="nf-items-title">Itens da NF</div>
           <div id="nf-items-list"></div>
+          <button type="button" id="nf-add-toggle" class="nf-add-toggle" onclick="toggleNFAdd()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span>Adicionar item manualmente</span></button>
           <!-- Linha para materiais -->
           <div class="nf-add-row" id="nf-row-mat" style="display:none">
             <div style="position:relative;flex:2;min-width:140px">
@@ -4896,6 +4900,25 @@ function setNFPag(val){
   document.getElementById('nf-opt-apagar').classList.toggle('sel-apagar',val==='a_pagar');
   document.getElementById('nf-opt-apagar').classList.remove('sel-pago');
 }
+let _nfAddOpen=false;
+/* Mostra/esconde o formulário de adição manual de itens (recolhido por padrão após o OCR) */
+function toggleNFAdd(force){
+  _nfAddOpen=(typeof force==='boolean')?force:!_nfAddOpen;
+  const isMat=nfCat==='material';
+  const rowMat=document.getElementById('nf-row-mat');
+  const rowGen=document.getElementById('nf-row-gen');
+  const hint=document.querySelector('#nf-items-wrap .nf-add-hint');
+  const tog=document.getElementById('nf-add-toggle');
+  if(rowMat)rowMat.style.display=(_nfAddOpen&&isMat)?'':'none';
+  if(rowGen)rowGen.style.display=(_nfAddOpen&&!isMat)?'':'none';
+  if(hint)hint.style.display=_nfAddOpen?'flex':'none';
+  if(tog){
+    tog.classList.toggle('open',_nfAddOpen);
+    const lbl=tog.querySelector('span');
+    if(lbl)lbl.textContent=_nfAddOpen?'Ocultar campos':'Adicionar item manualmente';
+  }
+  if(_nfAddOpen)setTimeout(()=>{const f=document.getElementById(isMat?'nf-mat-s':'nf-gen-desc');if(f)f.focus();},60);
+}
 function selectNFCat(cat,el){
   nfCat=cat;
   document.querySelectorAll('[data-nfcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
@@ -4906,8 +4929,6 @@ function selectNFCat(cat,el){
   document.getElementById('nf-mat-dd')?.classList.remove('open');
   document.getElementById('nf-gen-dd')?.classList.remove('open');
   const wrap=document.getElementById('nf-items-wrap');if(wrap)wrap.style.display='';
-  document.getElementById('nf-row-mat').style.display=cat==='material'?'':'none';
-  document.getElementById('nf-row-gen').style.display=cat!=='material'?'':'none';
   const title=document.getElementById('nf-items-title');
   if(title)title.textContent='Itens da NF — '+(CL[cat]||cat);
   const secTitle=document.getElementById('fsec-cat-title');
@@ -4924,15 +4945,13 @@ function selectNFCat(cat,el){
     nfItems=[];
   }
   renderNFItems();
-  // Auto-scroll: foca no input primeiro, depois ajusta posição (evita footer cobrir seção de itens)
+  // Form de adição manual: recolhido quando o OCR já trouxe itens; aberto no fluxo manual
+  toggleNFAdd(!nfItems.length);
+  // Auto-scroll até a seção de itens (sem roubar foco quando recolhido)
   setTimeout(()=>{
-    const f=document.getElementById(cat==='material'?'nf-mat-s':'nf-gen-desc');
-    if(f)f.focus();
-    setTimeout(()=>{
-      const card=document.getElementById('lanc-form-card');
-      const itemsWrap=document.getElementById('nf-items-wrap');
-      if(card&&itemsWrap)card.scrollTop=Math.max(0,itemsWrap.offsetTop-60);
-    },80);
+    const card=document.getElementById('lanc-form-card');
+    const itemsWrap=document.getElementById('nf-items-wrap');
+    if(card&&itemsWrap)card.scrollTop=Math.max(0,itemsWrap.offsetTop-60);
   },150);
 }
 /* Busca material para modo NF */
@@ -5003,6 +5022,7 @@ function removeNFItem(id){nfItems=nfItems.filter(x=>x.id!==id);renderNFItems();}
 function editNFItem(id){
   const item=nfItems.find(x=>x.id===id);
   if(!item)return;
+  toggleNFAdd(true);
   if(nfCat==='material'){
     document.getElementById('nf-mat-s').value=item.desc||'';
     document.getElementById('nf-mat-qty').value=item.extra?.qtd||1;
@@ -5140,6 +5160,11 @@ function limparL(){
   nfItems=[];nfCat='';
   document.querySelectorAll('[data-nfcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   const niw=document.getElementById('nf-items-wrap');if(niw)niw.style.display='none';
+  _nfAddOpen=false;
+  const nrm=document.getElementById('nf-row-mat');if(nrm)nrm.style.display='none';
+  const nrg=document.getElementById('nf-row-gen');if(nrg)nrg.style.display='none';
+  const nah=document.querySelector('#nf-items-wrap .nf-add-hint');if(nah)nah.style.display='none';
+  const nat=document.getElementById('nf-add-toggle');if(nat){nat.classList.remove('open');const l=nat.querySelector('span');if(l)l.textContent='Adicionar item manualmente';}
   const nil=document.getElementById('nf-items-list');if(nil)nil.innerHTML='';
   const ncn=document.getElementById('nf-comp-nm');if(ncn)ncn.textContent='';
   const nci=document.getElementById('nf-comp');if(nci)nci.value='';
