@@ -609,6 +609,13 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .ocr-cell-warn svg{color:var(--accent)}
 .ocr-cell-bad{border-color:color-mix(in srgb,var(--red) 34%,transparent);background:color-mix(in srgb,var(--red) 11%,transparent)}
 .ocr-cell-bad svg{color:var(--red)}
+/* Campo de data com botão de calendário (clicar em vez de digitar) */
+.date-wrap{position:relative;display:block}
+.date-wrap>input{padding-right:42px!important}
+.cal-btn{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;transition:background .15s,color .15s;padding:0}
+.cal-btn:hover{background:var(--bg3);color:var(--brand2)}
+.cal-btn:active{transform:translateY(-50%) scale(.92)}
+.cal-btn svg{width:18px;height:18px;pointer-events:none}
 .form-reveal{animation:slideDown .2s ease}
 @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 /* ═══ DOC CAT PICKER ═══ */
@@ -2093,7 +2100,7 @@ input,select,textarea{min-height:44px}
             </div>
           </div>
           <div class="fgg"><label class="fl" for="nfm-cnpj">CNPJ / CPF <span style="font-size:10px;color:var(--text3);font-weight:400">(auto)</span></label><input type="text" id="nfm-cnpj" placeholder="Preenchido pelo OCR" autocomplete="off"></div>
-          <div class="fgg"><label class="fl" for="nf-data-f">Data <span class="req">*</span></label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="nf-data-f" oninput="maskBRDate(this)"></div>
+          <div class="fgg"><label class="fl" for="nf-data-f">Data <span class="req">*</span></label><div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="nf-data-f" oninput="maskBRDate(this)"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('nf-data-f')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div></div>
         </div>
         <div>
           <label class="fl" style="margin-bottom:6px">Pagamento</label>
@@ -3339,6 +3346,19 @@ const brToISO=br=>{const m=String(br||'').trim().match(/^(\d{2})\/(\d{2})\/(\d{4
 function maskBRDate(el){let v=el.value.replace(/\D/g,'').slice(0,8);if(v.length>4)v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);else if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);el.value=v;}
 const gD=id=>{const el=document.getElementById(id);return el?brToISO(el.value):'';};
 const sD=(id,iso)=>{const el=document.getElementById(id);if(el)el.value=isoToBR(iso);};
+// Abre o calendário nativo e devolve a data escolhida em dd/mm/aaaa no campo de texto (padrão BR intacto).
+function calPick(textId){
+  const t=document.getElementById(textId); if(!t)return;
+  let c=document.getElementById('_calpick');
+  if(!c){c=document.createElement('input');c.type='date';c.id='_calpick';document.body.appendChild(c);}
+  c.style.cssText='position:fixed!important;width:1px!important;height:1px!important;min-width:0!important;max-width:1px!important;opacity:0!important;border:0!important;padding:0!important;margin:0!important;background:transparent!important;pointer-events:none;z-index:-1';
+  const r=t.getBoundingClientRect();
+  c.style.left=Math.round(r.left)+'px'; c.style.top=Math.round(r.bottom)+'px';
+  c.value=brToISO(t.value)||new Date().toISOString().slice(0,10);
+  c.oninput=()=>{ if(c.value){ t.value=isoToBR(c.value); t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); } };
+  if(c.showPicker){ try{ c.showPicker(); return; }catch(e){} }
+  c.focus(); c.click();
+}
 const uid=()=>Math.random().toString(36).slice(2,10);
 const addD=(b,n)=>{const d=new Date(b+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
 const dif=(a,b)=>Math.floor((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
