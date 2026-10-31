@@ -1507,7 +1507,7 @@ input,select,textarea{min-height:44px}
   <div class="modal-hdr"><div class="modal-title">🧾 Inserção por Nota Fiscal</div><button class="modal-close" onclick="closeNF()" aria-label="Fechar">✕</button></div>
   <div class="fg" style="margin-bottom:12px">
     <div class="fgg"><label class="fl">Nº da Nota Fiscal</label><input type="text" id="nf-num" placeholder="Ex: NF-001234" aria-label="Número da nota fiscal"></div>
-    <div class="fgg"><label class="fl">Data da NF</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="nf-data" oninput="maskBRDate(this)" aria-label="Data da nota fiscal"></div>
+    <div class="fgg"><label class="fl">Data da NF</label><div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="nf-data" oninput="maskBRDate(this)" aria-label="Data da nota fiscal"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('nf-data')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div></div>
     <div class="fgg"><label class="fl">Fornecedor</label><input type="text" id="nf-forn" placeholder="Ex: Materiais Macaé Ltda" aria-label="Fornecedor"></div>
     <div class="fgg"><label class="fl">Qtd de Itens <span class="req">*</span></label>
       <div style="display:flex;gap:7px;align-items:center">
@@ -1536,7 +1536,7 @@ input,select,textarea{min-height:44px}
   <div class="modal-hdr"><div class="modal-title" style="display:inline-flex;align-items:center;gap:8px"><span id="edit-lanc-ico"></span>Editar Lançamento</div><button class="modal-close" onclick="closeEditLanc()">✕</button></div>
   <div class="fg">
     <div class="fgg"><label class="fl">Descrição</label><input type="text" id="el-desc" aria-label="Descrição"></div>
-    <div class="fgg"><label class="fl">Data</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="el-data" oninput="maskBRDate(this)" aria-label="Data"></div>
+    <div class="fgg"><label class="fl">Data</label><div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="el-data" oninput="maskBRDate(this)" aria-label="Data"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('el-data')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div></div>
   </div>
   <div class="fg">
     <div class="fgg"><label class="fl">Valor (R$)</label><input type="text" id="el-valor" class="fin-val" inputmode="decimal" placeholder="Ex: 1.5k" aria-label="Valor"></div>
@@ -1578,7 +1578,7 @@ input,select,textarea{min-height:44px}
     </div>
   </div>
   <div class="fg">
-    <div class="fgg"><label class="fl">Prazo</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="ep-prazo" oninput="maskBRDate(this)" aria-label="Prazo"></div>
+    <div class="fgg"><label class="fl">Prazo</label><div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="ep-prazo" oninput="maskBRDate(this)" aria-label="Prazo"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('ep-prazo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div></div>
     <div class="fgg"><label class="fl">Responsável</label><input type="text" id="ep-resp" aria-label="Responsável"></div>
     <div class="fgg"><label class="fl">Prioridade</label>
       <select id="ep-prio" aria-label="Prioridade">
@@ -2046,7 +2046,7 @@ input,select,textarea{min-height:44px}
       <div class="rapido-two-col">
         <div>
           <div class="rapido-val-lbl">Data</div>
-          <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" id="rl-data" class="rapido-inline-input br-date" oninput="maskBRDate(this)">
+          <div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" id="rl-data" class="rapido-inline-input br-date" oninput="maskBRDate(this)"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('rl-data')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div>
         </div>
         <div>
           <div class="rapido-val-lbl">NF (opcional)</div>
@@ -2248,11 +2248,11 @@ input,select,textarea{min-height:44px}
         <div class="fil-datas">
           <div class="fil-date-grp">
             <label class="fil-date-lbl" for="fil-de">De</label>
-            <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="fil-de" oninput="maskBRDate(this)" onchange="renderT();updFilBadge()" title="De">
+            <div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="fil-de" oninput="maskBRDate(this)" onchange="renderT();updFilBadge()" title="De"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('fil-de')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div>
           </div>
           <div class="fil-date-grp">
             <label class="fil-date-lbl" for="fil-ate">Até</label>
-            <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="fil-ate" oninput="maskBRDate(this)" onchange="renderT();updFilBadge()" title="Até">
+            <div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="fil-ate" oninput="maskBRDate(this)" onchange="renderT();updFilBadge()" title="Até"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('fil-ate')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div>
           </div>
         </div>
         <!-- Chips de pagamento -->
@@ -2422,7 +2422,7 @@ input,select,textarea{min-height:44px}
         <datalist id="doc-tipos"></datalist>
 
         <div class="fg" style="margin-top:12px;margin-bottom:0">
-          <div class="fgg"><label class="fl" for="d-data">Data de emissão</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="d-data" oninput="maskBRDate(this)"></div>
+          <div class="fgg"><label class="fl" for="d-data">Data de emissão</label><div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="d-data" oninput="maskBRDate(this)"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('d-data')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div></div>
           <div class="fgg" style="margin-bottom:0"><label class="fl" for="d-desc">Descrição / Nº processo</label><input type="text" id="d-desc" placeholder="Breve descrição..."></div>
         </div>
 
@@ -2433,7 +2433,7 @@ input,select,textarea{min-height:44px}
             <span class="doc-val-ttl">Validade / Vencimento</span>
             <span class="doc-val-hint">deixe vazio se não vence</span>
           </div>
-          <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="d-validade" oninput="maskBRDate(this);onDocValidade()" title="Deixe em branco se não vencer">
+          <div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="d-validade" oninput="maskBRDate(this);onDocValidade()" title="Deixe em branco se não vencer"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('d-validade')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div>
           <div class="doc-val-fb" id="doc-val-fb"></div>
         </div>
 
@@ -2482,10 +2482,10 @@ input,select,textarea{min-height:44px}
       <div class="fgg"><label class="fl" for="cfg-end">Endereço Completo <span class="req">*</span></label><input type="text" id="cfg-end" placeholder="Rua, nº, bairro — Macaé/RJ" aria-required="true"></div>
     </div>
     <div class="fg">
-      <div class="fgg"><label class="fl" for="cfg-ini">Data de Início <span class="req">*</span></label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="cfg-ini" oninput="maskBRDate(this)" aria-required="true"></div>
+      <div class="fgg"><label class="fl" for="cfg-ini">Data de Início <span class="req">*</span></label><div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="cfg-ini" oninput="maskBRDate(this)" aria-required="true"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('cfg-ini')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div></div>
       <div class="fgg"><label class="fl" for="cfg-orc">Orçamento Máximo (R$) <span class="req">*</span></label><input type="text" id="cfg-orc" class="fin-val" inputmode="decimal" placeholder="Ex: 500k ou 1.2m" aria-required="true"></div>
       <div class="fgg"><label class="fl" for="cfg-area">Área por casa (m²)</label><input type="number" id="cfg-area" min="0" step="0.1" placeholder="Ex: 120"></div>
-      <div class="fgg"><label class="fl" for="cfg-concl">Previsão de Conclusão</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="cfg-concl" oninput="maskBRDate(this)"></div>
+      <div class="fgg"><label class="fl" for="cfg-concl">Previsão de Conclusão</label><div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="cfg-concl" oninput="maskBRDate(this)"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('cfg-concl')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div></div>
     </div>
     <div class="fg">
       <div class="fgg"><label class="fl" for="cfg-st">Situação da construção</label><select id="cfg-st" aria-label="Situação da construção"><option value="andamento">Em Andamento</option><option value="concluida">Concluída</option></select></div>
@@ -3347,8 +3347,11 @@ function maskBRDate(el){let v=el.value.replace(/\D/g,'').slice(0,8);if(v.length>
 const gD=id=>{const el=document.getElementById(id);return el?brToISO(el.value):'';};
 const sD=(id,iso)=>{const el=document.getElementById(id);if(el)el.value=isoToBR(iso);};
 // Abre o calendário nativo e devolve a data escolhida em dd/mm/aaaa no campo de texto (padrão BR intacto).
-function calPick(textId){
-  const t=document.getElementById(textId); if(!t)return;
+function calPick(ref){
+  // ref pode ser o id (string) do campo de texto OU o próprio botão (ex: this) — resolve pro input .br-date dentro do mesmo .date-wrap
+  let t = typeof ref==='string' ? document.getElementById(ref)
+        : (ref&&ref.closest&&ref.closest('.date-wrap') ? ref.closest('.date-wrap').querySelector('input.br-date') : ref);
+  if(!t)return;
   let c=document.getElementById('_calpick');
   if(!c){c=document.createElement('input');c.type='date';c.id='_calpick';document.body.appendChild(c);}
   c.style.cssText='position:fixed!important;width:1px!important;height:1px!important;min-width:0!important;max-width:1px!important;opacity:0!important;border:0!important;padding:0!important;margin:0!important;background:transparent!important;pointer-events:none;z-index:-1';
@@ -5899,7 +5902,7 @@ function casaRowHTML(c){
       </div>
       <div class="casa-data">
         <span class="casa-mini-l">Data da venda</span>
-        <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="casa-dt br-date" value="${esc(isoToBR(c.dataVenda||''))}" oninput="maskBRDate(this)">
+        <div class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="casa-dt br-date" value="${esc(isoToBR(c.dataVenda||''))}" oninput="maskBRDate(this)"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></div>
       </div>
       <div class="cf-full casa-adto">
         <span class="casa-mini-l" style="display:inline-flex;align-items:center;gap:4px">${ic('dollar',12)} Adiantamento já recebido (R$)</span>
@@ -6263,8 +6266,8 @@ function gerarRelatorio(tipo){
     const hoje=td();const mesInicio=hoje.slice(0,7)+'-01';
     html=rptHeader('Extrato de Lançamentos','Detalhamento por período');
     html+=`<div class="rpt-filters">
-      <label>De: <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="rpt-de" value="${isoToBR(mesInicio)}" oninput="maskBRDate(this)" onchange="atualizarExtrato()"></label>
-      <label>Até: <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="rpt-ate" value="${isoToBR(hoje)}" oninput="maskBRDate(this)" onchange="atualizarExtrato()"></label>
+      <label>De: <span class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="rpt-de" value="${isoToBR(mesInicio)}" oninput="maskBRDate(this)" onchange="atualizarExtrato()"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('rpt-de')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></span></label>
+      <label>Até: <span class="date-wrap"><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="rpt-ate" value="${isoToBR(hoje)}" oninput="maskBRDate(this)" onchange="atualizarExtrato()"><button type="button" class="cal-btn" tabindex="-1" aria-label="Abrir calendário" onclick="calPick('rpt-ate')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button></span></label>
       <label>Categoria: <select id="rpt-cat" onchange="atualizarExtrato()"><option value="">Todas</option>${Object.entries(CL).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label>
       <label>Pagamento: <select id="rpt-pag" onchange="atualizarExtrato()"><option value="">Todos</option><option value="pago">Pago</option><option value="a_pagar">A Pagar</option></select></label>
     </div>
