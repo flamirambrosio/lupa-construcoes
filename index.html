@@ -364,7 +364,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .fil-badge{background:var(--brand2);color:#fff;border-radius:99px;font-size:10px;font-weight:700;padding:1px 6px;min-width:16px;text-align:center}
 .filtros-panel{display:none;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)}
 .filtros-panel.aberto{display:flex}
-.filtros-panel select,.filtros-panel input[type=date]{width:100%;padding:7px 10px;font-size:13px;height:36px}
+.filtros-panel select,.filtros-panel input[type=date],.filtros-panel .br-date{width:100%;padding:7px 10px;font-size:13px;height:36px}
 .fil-datas{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fil-date-grp{display:flex;flex-direction:column;gap:3px}
 .fil-date-lbl{font-size:11px;color:var(--text3);font-weight:600;padding-left:2px;letter-spacing:.3px}
@@ -713,7 +713,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .doc-grid-new{grid-template-columns:1fr!important}
   .doc-grid{grid-template-columns:1fr}
   .tbl-filters input[type=text]{font-size:14px}
-  .filtros-panel select,.filtros-panel input[type=date]{font-size:14px}
+  .filtros-panel select,.filtros-panel input[type=date],.filtros-panel .br-date{font-size:14px}
   .cat-picker{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
   .cat-tile{padding:10px 4px 8px!important}
   .cat-tile-ico{font-size:20px!important}
@@ -758,7 +758,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .obra-banner{padding:8px 10px;gap:8px;font-size:11px}
   .obra-banner .obra-banner-nome{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
   /* Data — remover estilo nativo e igualar visualmente aos outros inputs */
-  input[type="date"]{-webkit-appearance:none!important;appearance:none!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;height:44px!important;min-height:0!important;padding:8px 11px!important;background:var(--bg3)!important;border:1px solid var(--border2)!important;border-radius:7px!important;color:var(--text)!important;font-size:16px!important;font-family:'DM Sans',sans-serif!important}
+  input[type="date"],.br-date{-webkit-appearance:none!important;appearance:none!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;height:44px!important;min-height:0!important;padding:8px 11px!important;background:var(--bg3)!important;border:1px solid var(--border2)!important;border-radius:7px!important;color:var(--text)!important;font-size:16px!important;font-family:'DM Sans',sans-serif!important}
   /* iOS Safari: força alinhamento à esquerda no valor exibido do date input */
   input[type="date"]::-webkit-date-and-time-value{text-align:left!important;font-size:14px;padding:0;margin:0;min-height:1.4em}
   /* NF form mobile */
@@ -1481,7 +1481,7 @@ input,select,textarea{min-height:44px}
   <div class="modal-hdr"><div class="modal-title">🧾 Inserção por Nota Fiscal</div><button class="modal-close" onclick="closeNF()" aria-label="Fechar">✕</button></div>
   <div class="fg" style="margin-bottom:12px">
     <div class="fgg"><label class="fl">Nº da Nota Fiscal</label><input type="text" id="nf-num" placeholder="Ex: NF-001234" aria-label="Número da nota fiscal"></div>
-    <div class="fgg"><label class="fl">Data da NF</label><input type="date" id="nf-data" aria-label="Data da nota fiscal"></div>
+    <div class="fgg"><label class="fl">Data da NF</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="nf-data" oninput="maskBRDate(this)" aria-label="Data da nota fiscal"></div>
     <div class="fgg"><label class="fl">Fornecedor</label><input type="text" id="nf-forn" placeholder="Ex: Materiais Macaé Ltda" aria-label="Fornecedor"></div>
     <div class="fgg"><label class="fl">Qtd de Itens <span class="req">*</span></label>
       <div style="display:flex;gap:7px;align-items:center">
@@ -1510,7 +1510,7 @@ input,select,textarea{min-height:44px}
   <div class="modal-hdr"><div class="modal-title" style="display:inline-flex;align-items:center;gap:8px"><span id="edit-lanc-ico"></span>Editar Lançamento</div><button class="modal-close" onclick="closeEditLanc()">✕</button></div>
   <div class="fg">
     <div class="fgg"><label class="fl">Descrição</label><input type="text" id="el-desc" aria-label="Descrição"></div>
-    <div class="fgg"><label class="fl">Data</label><input type="date" id="el-data" aria-label="Data"></div>
+    <div class="fgg"><label class="fl">Data</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="el-data" oninput="maskBRDate(this)" aria-label="Data"></div>
   </div>
   <div class="fg">
     <div class="fgg"><label class="fl">Valor (R$)</label><input type="text" id="el-valor" class="fin-val" inputmode="decimal" placeholder="Ex: 1.5k" aria-label="Valor"></div>
@@ -1552,7 +1552,7 @@ input,select,textarea{min-height:44px}
     </div>
   </div>
   <div class="fg">
-    <div class="fgg"><label class="fl">Prazo</label><input type="date" id="ep-prazo" aria-label="Prazo"></div>
+    <div class="fgg"><label class="fl">Prazo</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="ep-prazo" oninput="maskBRDate(this)" aria-label="Prazo"></div>
     <div class="fgg"><label class="fl">Responsável</label><input type="text" id="ep-resp" aria-label="Responsável"></div>
     <div class="fgg"><label class="fl">Prioridade</label>
       <select id="ep-prio" aria-label="Prioridade">
@@ -2020,7 +2020,7 @@ input,select,textarea{min-height:44px}
       <div class="rapido-two-col">
         <div>
           <div class="rapido-val-lbl">Data</div>
-          <input type="date" id="rl-data" class="rapido-inline-input">
+          <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" id="rl-data" class="rapido-inline-input br-date" oninput="maskBRDate(this)">
         </div>
         <div>
           <div class="rapido-val-lbl">NF (opcional)</div>
@@ -2074,7 +2074,7 @@ input,select,textarea{min-height:44px}
             </div>
           </div>
           <div class="fgg"><label class="fl" for="nfm-cnpj">CNPJ / CPF <span style="font-size:10px;color:var(--text3);font-weight:400">(auto)</span></label><input type="text" id="nfm-cnpj" placeholder="Preenchido pelo OCR" autocomplete="off"></div>
-          <div class="fgg"><label class="fl" for="nf-data-f">Data <span class="req">*</span></label><input type="date" id="nf-data-f" placeholder="dd/mm/aaaa"></div>
+          <div class="fgg"><label class="fl" for="nf-data-f">Data <span class="req">*</span></label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="nf-data-f" oninput="maskBRDate(this)"></div>
         </div>
         <div>
           <label class="fl" style="margin-bottom:6px">Pagamento</label>
@@ -2220,11 +2220,11 @@ input,select,textarea{min-height:44px}
         <div class="fil-datas">
           <div class="fil-date-grp">
             <label class="fil-date-lbl" for="fil-de">De</label>
-            <input type="date" id="fil-de" onchange="renderT();updFilBadge()" title="De">
+            <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="fil-de" oninput="maskBRDate(this)" onchange="renderT();updFilBadge()" title="De">
           </div>
           <div class="fil-date-grp">
             <label class="fil-date-lbl" for="fil-ate">Até</label>
-            <input type="date" id="fil-ate" onchange="renderT();updFilBadge()" title="Até">
+            <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="fil-ate" oninput="maskBRDate(this)" onchange="renderT();updFilBadge()" title="Até">
           </div>
         </div>
         <!-- Chips de pagamento -->
@@ -2394,7 +2394,7 @@ input,select,textarea{min-height:44px}
         <datalist id="doc-tipos"></datalist>
 
         <div class="fg" style="margin-top:12px;margin-bottom:0">
-          <div class="fgg"><label class="fl" for="d-data">Data de emissão</label><input type="date" id="d-data" placeholder="dd/mm/aaaa"></div>
+          <div class="fgg"><label class="fl" for="d-data">Data de emissão</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="d-data" oninput="maskBRDate(this)"></div>
           <div class="fgg" style="margin-bottom:0"><label class="fl" for="d-desc">Descrição / Nº processo</label><input type="text" id="d-desc" placeholder="Breve descrição..."></div>
         </div>
 
@@ -2405,7 +2405,7 @@ input,select,textarea{min-height:44px}
             <span class="doc-val-ttl">Validade / Vencimento</span>
             <span class="doc-val-hint">deixe vazio se não vence</span>
           </div>
-          <input type="date" id="d-validade" oninput="onDocValidade()" title="Deixe em branco se não vencer">
+          <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="d-validade" oninput="maskBRDate(this);onDocValidade()" title="Deixe em branco se não vencer">
           <div class="doc-val-fb" id="doc-val-fb"></div>
         </div>
 
@@ -2454,10 +2454,10 @@ input,select,textarea{min-height:44px}
       <div class="fgg"><label class="fl" for="cfg-end">Endereço Completo <span class="req">*</span></label><input type="text" id="cfg-end" placeholder="Rua, nº, bairro — Macaé/RJ" aria-required="true"></div>
     </div>
     <div class="fg">
-      <div class="fgg"><label class="fl" for="cfg-ini">Data de Início <span class="req">*</span></label><input type="date" id="cfg-ini" placeholder="dd/mm/aaaa" aria-required="true"></div>
+      <div class="fgg"><label class="fl" for="cfg-ini">Data de Início <span class="req">*</span></label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="cfg-ini" oninput="maskBRDate(this)" aria-required="true"></div>
       <div class="fgg"><label class="fl" for="cfg-orc">Orçamento Máximo (R$) <span class="req">*</span></label><input type="text" id="cfg-orc" class="fin-val" inputmode="decimal" placeholder="Ex: 500k ou 1.2m" aria-required="true"></div>
       <div class="fgg"><label class="fl" for="cfg-area">Área por casa (m²)</label><input type="number" id="cfg-area" min="0" step="0.1" placeholder="Ex: 120"></div>
-      <div class="fgg"><label class="fl" for="cfg-concl">Previsão de Conclusão</label><input type="date" id="cfg-concl" placeholder="dd/mm/aaaa"></div>
+      <div class="fgg"><label class="fl" for="cfg-concl">Previsão de Conclusão</label><input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="cfg-concl" oninput="maskBRDate(this)"></div>
     </div>
     <div class="fg">
       <div class="fgg"><label class="fl" for="cfg-st">Situação da construção</label><select id="cfg-st" aria-label="Situação da construção"><option value="andamento">Em Andamento</option><option value="concluida">Concluída</option></select></div>
@@ -3310,6 +3310,14 @@ function fmtHtml(v){const n=Number(v||0).toLocaleString('pt-BR',{minimumFraction
 const fmtS=n=>n>=1e6?'R$'+(n/1e6).toFixed(1)+'M':n>=1e3?'R$'+(n/1e3).toFixed(0)+'k':fmt(n);
 const fD=s=>{if(!s)return'—';const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;};
 const td=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+/* ── Datas no PADRÃO BRASILEIRO (dd/mm/aaaa) ──
+   Campos de data usam input de texto com máscara; internamente guardamos ISO (aaaa-mm-dd).
+   isoToBR: ISO→exibição BR | brToISO: BR→ISO (valida calendário) | gD/sD: ler/gravar por id. */
+const isoToBR=iso=>{const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}/${m[2]}/${m[1]}`:'';};
+const brToISO=br=>{const m=String(br||'').trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(!m)return'';const d=+m[1],mo=+m[2],y=+m[3];const dt=new Date(y,mo-1,d);if(dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==d)return'';return `${m[3]}-${m[2]}-${m[1]}`;};
+function maskBRDate(el){let v=el.value.replace(/\D/g,'').slice(0,8);if(v.length>4)v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);else if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);el.value=v;}
+const gD=id=>{const el=document.getElementById(id);return el?brToISO(el.value):'';};
+const sD=(id,iso)=>{const el=document.getElementById(id);if(el)el.value=isoToBR(iso);};
 const uid=()=>Math.random().toString(36).slice(2,10);
 const addD=(b,n)=>{const d=new Date(b+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
 const dif=(a,b)=>Math.floor((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
@@ -3504,7 +3512,7 @@ function setLancMode(mode){
     renderRecentesRapido();
     lancRefreshDataLists();
     /* Data hoje se vazio */
-    const rlData=document.getElementById('rl-data'); if(rlData&&!rlData.value) rlData.value=td();
+    const rlData=document.getElementById('rl-data'); if(rlData&&!brToISO(rlData.value)) rlData.value=isoToBR(td());
     if(window.innerWidth>900) setTimeout(()=>{var v=document.getElementById('rl-val');if(v)v.focus();},80);
   }
 }
@@ -3781,7 +3789,7 @@ async function salvarRapido(){
   const statusPag=document.querySelector('input[name="rl-pag"]:checked')?.value||'pago';
   /* ★ Novos campos do form Split v2 (fornecedor, data, NF opcional) */
   const forn=(document.getElementById('rl-forn')?.value||'').trim();
-  const dataInput=document.getElementById('rl-data')?.value;
+  const dataInput=gD('rl-data');
   const dataLanc=dataInput||td();
   const nfNum=(document.getElementById('rl-nf')?.value||'').trim();
   let cloudUrl='';
@@ -3814,7 +3822,7 @@ function lancLimparRapido(){
   document.getElementById('rl-desc').value='';
   const rlForn=document.getElementById('rl-forn'); if(rlForn) rlForn.value='';
   const rlNF=document.getElementById('rl-nf'); if(rlNF) rlNF.value='';
-  const rlData=document.getElementById('rl-data'); if(rlData) rlData.value=td();
+  const rlData=document.getElementById('rl-data'); if(rlData) rlData.value=isoToBR(td());
   const rlCompEl=document.getElementById('rl-comp'); if(rlCompEl) rlCompEl.value='';
   const rlCompNm=document.getElementById('rl-comp-nm'); if(rlCompNm) rlCompNm.textContent='';
   rlFile=null; rlFileB64=null;
@@ -4781,7 +4789,7 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
   // Preenche campos com efeito de digitação (fornecedor), CNPJ/CPF e data direto
   await typeIntoField('nfm-forn', norm(parsed.fornecedor||''), 30);
   if(parsed.cnpj){const ec=document.getElementById('nfm-cnpj');if(ec)ec.value=parsed.cnpj;}
-  if(dataEff){const el=document.getElementById('nf-data-f');if(el)el.value=dataEff;}
+  if(dataEff)sD('nf-data-f',dataEff);
 
   // Guarda itens e já insere na categoria Materiais — traz quantidade + valor sem clique extra
   window._ocrItens=parsed.itens;
@@ -5069,7 +5077,7 @@ async function salvarNFMulti(){
   if(!cFile){toast('📎 Anexe o comprovante da NF (obrigatório).','error');lancDzMissingFlash();return;}
   const nfForn=norm(document.getElementById('nfm-forn').value||'');
   const nfCnpj=(document.getElementById('nfm-cnpj')?.value||'').trim();
-  const data=document.getElementById('nf-data-f').value||td();
+  const data=gD('nf-data-f')||td();
   const statusPag=document.querySelector('input[name="nf-pag"]:checked')?.value||'pago';
   // Upload comprovante para Cloudinary
   let cloudinaryUrl='';
@@ -5145,7 +5153,7 @@ function limparL(){
   // Limpar OCR e restaurar botões
   window._ocrItens=null;
   const op=document.getElementById('ocr-preview');if(op){op.classList.remove('open');op.innerHTML='';}
-  const oi=document.getElementById('nf-data-f');if(oi)oi.value=td();
+  const oi=document.getElementById('nf-data-f');if(oi)oi.value=isoToBR(td());
   const lbl=document.getElementById('lbl-nf-comp');if(lbl)lbl.style.display='';
   const ocrLbl=document.querySelector('label[for="ocr-input"]');if(ocrLbl)ocrLbl.style.display='';
   const unSel=document.getElementById('nf-mat-un');if(unSel)unSel.value='un';
@@ -5161,8 +5169,8 @@ function togFiltros(){
 function updFilBadge(){
   let n=0;
   if(document.getElementById('fil-cat')?.value)n++;
-  if(document.getElementById('fil-de')?.value)n++;
-  if(document.getElementById('fil-ate')?.value)n++;
+  if(gD('fil-de'))n++;
+  if(gD('fil-ate'))n++;
   if(document.getElementById('fil-pag')?.value)n++;
   if(document.getElementById('fil-todas-obras')?.checked)n++;
   const badge=document.getElementById('fil-badge');
@@ -5193,8 +5201,8 @@ function renderT(keepPage=false){
   const ob=getOA();
   const cat=document.getElementById('fil-cat').value;
   const q=(document.getElementById('tbl-search').value||'').toLowerCase();
-  const de=document.getElementById('fil-de').value;
-  const ate=document.getElementById('fil-ate').value;
+  const de=gD('fil-de');
+  const ate=gD('fil-ate');
   const filPag=document.getElementById('fil-pag')?.value||'';
   const todasObras=document.getElementById('fil-todas-obras')?.checked;
   let items=(ob&&!todasObras)?ST.lancamentos.filter(l=>l.obraId===ob.id):ST.lancamentos;
@@ -5345,7 +5353,7 @@ function openEditLanc(id){
   const l=ST.lancamentos.find(x=>x.id===id);if(!l)return;
   document.getElementById('el-id').value=id;
   document.getElementById('el-desc').value=l.desc||'';
-  document.getElementById('el-data').value=l.data||'';
+  sD('el-data',l.data||'');
   setFinVal(document.getElementById('el-valor'),l.valor||0);
   document.getElementById('el-cat').value=l.cat||'material';
   document.getElementById('el-obs').value=l.obs||'';
@@ -5363,7 +5371,7 @@ function salvarEditLanc(){
   const v=parseFinVal(document.getElementById('el-valor'));
   if(!v||v<=0){_savingEL=false;toast('O valor deve ser maior que zero.','error');return;}
   l.desc=document.getElementById('el-desc').value;
-  l.data=document.getElementById('el-data').value;
+  l.data=gD('el-data');
   l.valor=v;l.cat=document.getElementById('el-cat').value;
   l.obs=document.getElementById('el-obs').value;
   l.fornecedor=document.getElementById('el-forn').value.trim();
@@ -5382,7 +5390,7 @@ function exportCSV(){
 }
 
 /* ══ NF MODAL ══ */
-function openNF(){const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}document.getElementById('nf-data').value=td();document.getElementById('nf-modal').classList.add('open');}
+function openNF(){const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}sD('nf-data',td());document.getElementById('nf-modal').classList.add('open');}
 function closeNF(){document.getElementById('nf-modal').classList.remove('open');document.getElementById('nf-cont').innerHTML='';document.getElementById('nf-up-wrap').style.display='none';nfF=null;nfFB64=null;nfCount=0;['nf-num','nf-forn'].forEach(id=>document.getElementById(id).value='');document.getElementById('nf-fn').textContent='';}
 function gerarNF(){
   const n=parseInt(document.getElementById('nf-qtd-itens').value)||0;
@@ -5420,7 +5428,7 @@ function salvarNF(){
   // Check duplicate NF
   const dupNF=ST.lancamentos.find(l=>l.nfNum===nfNum&&l.obraId===ob.id);
   if(dupNF){if(!confirm(`NF ${nfNum} já foi inserida nesta obra. Continuar mesmo assim?`))return;}
-  const nfData=document.getElementById('nf-data').value||td();
+  const nfData=gD('nf-data')||td();
   const nfForn=document.getElementById('nf-forn').value||'—';
   if(!nfCount){toast('Gere os campos primeiro.','error');return;}
   let s=0;
@@ -5542,7 +5550,7 @@ function openEditPend(id){
   document.getElementById('ep-id').value=id;
   document.getElementById('ep-titulo').value=p.titulo||'';
   document.getElementById('ep-tipo').value=p.tipo||'outro';
-  document.getElementById('ep-prazo').value=p.prazo||'';
+  sD('ep-prazo',p.prazo||'');
   document.getElementById('ep-resp').value=p.resp||'';
   document.getElementById('ep-prio').value=p.prio||'media';
   document.getElementById('ep-desc').value=p.desc||'';
@@ -5555,7 +5563,7 @@ function salvarEditPend(){
   const p=ST.pendencias.find(x=>x.id===id);if(!p)return;
   const titulo=document.getElementById('ep-titulo').value.trim();
   if(!titulo){toast('Informe o título.','error');return;}
-  p.titulo=titulo;p.tipo=document.getElementById('ep-tipo').value;p.prazo=document.getElementById('ep-prazo').value;
+  p.titulo=titulo;p.tipo=document.getElementById('ep-tipo').value;p.prazo=gD('ep-prazo');
   p.resp=document.getElementById('ep-resp').value;p.prio=document.getElementById('ep-prio').value;p.desc=document.getElementById('ep-desc').value;
   addAudit('Pendência editada',p.titulo);
   save();toast('Pendência atualizada!');closeEditPend();renderLP();renderCal();renderDash();
@@ -5628,7 +5636,7 @@ function docResetFile(){docF=null;docFB64=null;docFileMeta=null;const i=document
 function docDzMissingFlash(){const dz=document.getElementById('doc-dz');if(!dz)return;dz.classList.add('missing');dz.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>dz.classList.remove('missing'),1500);}
 function onDocValidade(){
   const el=document.getElementById('d-validade');if(!el)return;
-  const v=el.value;
+  const v=brToISO(el.value);
   const box=document.getElementById('doc-val-box'),ico=document.getElementById('doc-val-ico'),fb=document.getElementById('doc-val-fb');
   if(!v){box.classList.remove('has');ico.innerHTML=ic('calendar',16);fb.textContent='';return;}
   const s=DOC_STATUS(v);box.classList.add('has');ico.innerHTML=ic(s.ico,16,s.color);
@@ -5690,7 +5698,7 @@ async function salvarDoc(){
   toast('Enviando documento...','info');
   const result=await uploadToCloudinary(docF,ob.id,'documento');
   if(result)cloudinaryUrl=result.url;
-  ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:document.getElementById('d-data').value,validade:document.getElementById('d-validade').value||'',fileName:docF.name,fileB64:docFB64||'',cloudinaryUrl,ts:Date.now()});
+  ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:gD('d-data'),validade:gD('d-validade')||'',fileName:docF.name,fileB64:docFB64||'',cloudinaryUrl,ts:Date.now()});
   addAudit('Documento salvo',tipo);
   toast(cloudinaryUrl?'Documento salvo! ☁️ Arquivado na nuvem.':'Documento salvo!','success');
   save();
@@ -5786,7 +5794,7 @@ function casaRowHTML(c){
       </div>
       <div class="casa-data">
         <span class="casa-mini-l">Data da venda</span>
-        <input type="date" class="casa-dt" value="${esc(c.dataVenda||'')}">
+        <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="casa-dt br-date" value="${esc(isoToBR(c.dataVenda||''))}" oninput="maskBRDate(this)">
       </div>
       <div class="cf-full casa-adto">
         <span class="casa-mini-l" style="display:inline-flex;align-items:center;gap:4px">${ic('dollar',12)} Adiantamento já recebido (R$)</span>
@@ -5832,7 +5840,7 @@ function readCasasForm(baseId){
       situacao:sit,
       valorVenda:parseFinVal(r.querySelector('.casa-venda')),
       adiantamento:sit==='vendida_planta'?parseFinVal(r.querySelector('.casa-adt')):0,
-      dataVenda:sit==='disponivel'?'':(r.querySelector('.casa-dt').value||'')
+      dataVenda:sit==='disponivel'?'':(brToISO(r.querySelector('.casa-dt').value)||'')
     };
   });
 }
@@ -5859,8 +5867,8 @@ function editO(id){
   const ob=ST.obras.find(o=>o.id===id);if(!ob)return;normCasas(ob);
   document.getElementById('cfg-id').value=id;
   document.getElementById('cfg-nm').value=ob.nome||'';document.getElementById('cfg-end').value=ob.endereco||'';
-  document.getElementById('cfg-ini').value=ob.inicio||'';setFinVal(document.getElementById('cfg-orc'),ob.orcamento||0);
-  document.getElementById('cfg-area').value=ob.area||'';document.getElementById('cfg-concl').value=ob.previsao||ob.conclusao||'';
+  sD('cfg-ini',ob.inicio||'');setFinVal(document.getElementById('cfg-orc'),ob.orcamento||0);
+  document.getElementById('cfg-area').value=ob.area||'';sD('cfg-concl',ob.previsao||ob.conclusao||'');
   document.getElementById('cfg-soc').value=ob.socio||'';document.getElementById('cfg-st').value=(ob.status==='concluida'?'concluida':'andamento');
   document.getElementById('cfg-tipo').value=ob.tipo==='interna'?'interna':'empreendimento';
   onTipoObra();
@@ -5879,7 +5887,7 @@ function salvarO(){
   const casas=readCasasForm(id);
   if(!casas.length){_savingO=false;toast('Adicione pelo menos 1 casa.','error');return;}
   const tipo=document.getElementById('cfg-tipo').value==='interna'?'interna':'empreendimento';
-  const ob={id,nome:nm,endereco:end,inicio:document.getElementById('cfg-ini').value,orcamento:parseFinVal(document.getElementById('cfg-orc')),area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:document.getElementById('cfg-concl').value,socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,tipo,casas};
+  const ob={id,nome:nm,endereco:end,inicio:gD('cfg-ini'),orcamento:parseFinVal(document.getElementById('cfg-orc')),area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:gD('cfg-concl'),socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,tipo,casas};
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
   // ── Limpar corretagens de casas deletadas ──
@@ -6150,8 +6158,8 @@ function gerarRelatorio(tipo){
     const hoje=td();const mesInicio=hoje.slice(0,7)+'-01';
     html=rptHeader('Extrato de Lançamentos','Detalhamento por período');
     html+=`<div class="rpt-filters">
-      <label>De: <input type="date" id="rpt-de" value="${mesInicio}" onchange="atualizarExtrato()"></label>
-      <label>Até: <input type="date" id="rpt-ate" value="${hoje}" onchange="atualizarExtrato()"></label>
+      <label>De: <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="rpt-de" value="${isoToBR(mesInicio)}" oninput="maskBRDate(this)" onchange="atualizarExtrato()"></label>
+      <label>Até: <input type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" class="br-date" id="rpt-ate" value="${isoToBR(hoje)}" oninput="maskBRDate(this)" onchange="atualizarExtrato()"></label>
       <label>Categoria: <select id="rpt-cat" onchange="atualizarExtrato()"><option value="">Todas</option>${Object.entries(CL).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label>
       <label>Pagamento: <select id="rpt-pag" onchange="atualizarExtrato()"><option value="">Todos</option><option value="pago">Pago</option><option value="a_pagar">A Pagar</option></select></label>
     </div>
@@ -6273,8 +6281,8 @@ function gerarRelatorio(tipo){
 function atualizarExtrato(){
   const ob=getOA();
   const ls=ob?ST.lancamentos.filter(l=>l.obraId===ob.id):ST.lancamentos;
-  const de=document.getElementById('rpt-de')?.value||'';
-  const ate=document.getElementById('rpt-ate')?.value||'';
+  const de=gD('rpt-de')||'';
+  const ate=gD('rpt-ate')||'';
   const cat=document.getElementById('rpt-cat')?.value||'';
   const pag=document.getElementById('rpt-pag')?.value||'';
   let items=[...ls];
@@ -6338,9 +6346,9 @@ function initApp(){
   if(!ST.obras.length)inserirDados();
   const lw=document.getElementById('logo-img-wrap');
   if(lw&&!lw.hasChildNodes()){const img=document.createElement('img');img.src=LOGO_B64;img.alt='LUPA Facilities';lw.appendChild(img);}
-  const dd=document.getElementById('d-data');if(dd)dd.value=td();
+  const dd=document.getElementById('d-data');if(dd)dd.value=isoToBR(td());
   // Inicializar NF form
-  const nfd=document.getElementById('nf-data-f');if(nfd&&!nfd.value)nfd.value=td();
+  const nfd=document.getElementById('nf-data-f');if(nfd&&!brToISO(nfd.value))nfd.value=isoToBR(td());
   setNFPag('pago');
   // Selecionar primeira categoria de doc por padrão
   const firstDocTile=document.querySelector('.doc-cat-tile[data-cat="terreno"]');
@@ -6354,7 +6362,7 @@ function initApp(){
   initLancDropZone();  /* ★ Split desktop: drag/paste/drop + atalhos */
   initDocDropZone();   /* ★ Documentos Split: drag/paste/drop + atalhos */
   lancRefreshDataLists();  /* ★ Split desktop: datalists de fornecedor/descrição recentes */
-  const rlDataInit=document.getElementById('rl-data'); if(rlDataInit&&!rlDataInit.value) rlDataInit.value=td();
+  const rlDataInit=document.getElementById('rl-data'); if(rlDataInit&&!brToISO(rlDataInit.value)) rlDataInit.value=isoToBR(td());
   // Firebase — banco de dados em tempo real (substitui Google Sheets)
   initFirebase();
   // Google Auth opcional — apenas para OCR de notas fiscais
