@@ -4779,28 +4779,49 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
   }
 
   // Monta painel de preview
-  // Painel = PLACAR de leitura (sem duplicar valores; eles vivem nos campos abaixo).
-  // Cada campo vira um check colorido: verde=lido e confiável · amarelo=confira · vermelho=não lido.
-  const stForn = !parsed.fornecedor ? {s:'bad',t:'Não consegui ler o fornecedor — preencha no campo abaixo.'}
-    : parsed.confianca.fornecedor==='ok' ? {s:'ok',t:'Fornecedor lido e confirmado.'}
-    : {s:'warn',t:'Fornecedor lido com baixa confiança — confira abaixo.'};
-  const stCnpj = !parsed.cnpj ? {s:'bad',t:'CNPJ/CPF não encontrado na nota.'}
-    : parsed.confianca.cnpj==='ok' ? {s:'ok',t:'CNPJ/CPF lido e validado.'}
-    : {s:'warn',t:'CNPJ/CPF lido, mas confira o formato.'};
-  const stData = !dataEff ? {s:'bad',t:'Não consegui ler a data — preencha no campo abaixo.'}
-    : dataDoArquivo ? {s:'warn',t:'Data veio do nome do arquivo — confira.'}
-    : parsed.confianca.data==='ok' ? {s:'ok',t:'Data lida e confirmada.'}
-    : {s:'warn',t:'Data lida com baixa confiança — confira.'};
+  // Painel = PLACAR de leitura. A cor reflete se o VALOR lido é válido (não o método de extração):
+  //   verde = lido e válido · amarelo = atenção/confira · vermelho = não lido.
+  const _onlyD=s=>String(s||'').replace(/\D/g,'');
+  const _validCPF=d=>{ if(d.length!==11||/^(\d)\1{10}$/.test(d))return false;
+    let s=0; for(let i=0;i<9;i++)s+=+d[i]*(10-i); let r=(s*10)%11; if(r===10)r=0; if(r!==+d[9])return false;
+    s=0; for(let i=0;i<10;i++)s+=+d[i]*(11-i); r=(s*10)%11; if(r===10)r=0; return r===+d[10]; };
+  const _validCNPJ=d=>{ if(d.length!==14||/^(\d)\1{13}$/.test(d))return false;
+    const calc=len=>{ let s=0,p=len-7; for(let i=0;i<len;i++){ s+=+d[i]*p; p=(--p<2?9:p); } const r=s%11; return r<2?0:11-r; };
+    return calc(12)===+d[12]&&calc(13)===+d[13]; };
+
+  // Fornecedor: lido e com cara de texto
+  const _fornLetras=(parsed.fornecedor||'').replace(/[^A-Za-zÀ-ÿ]/g,'').length;
+  const stForn = !parsed.fornecedor ? {s:'bad',t:'Não li o fornecedor — preencha no campo abaixo.'}
+    : _fornLetras>=3 ? {s:'ok',t:'Fornecedor lido.'}
+    : {s:'warn',t:'Li algo no fornecedor, mas parece incompleto — confira abaixo.'};
+
+  // CNPJ / CPF: valida os dígitos verificadores (pega troca de número do OCR)
+  const _doc=_onlyD(parsed.cnpj);
+  let stCnpj;
+  if(!parsed.cnpj) stCnpj={s:'bad',t:'CNPJ/CPF não encontrado na nota.'};
+  else if(_doc.length===11) stCnpj=_validCPF(_doc)?{s:'ok',t:'CPF lido e validado (dígitos conferem).'}:{s:'warn',t:'Li um CPF, mas os dígitos não fecham — o OCR pode ter trocado um número. Confira.'};
+  else if(_doc.length===14) stCnpj=_validCNPJ(_doc)?{s:'ok',t:'CNPJ lido e validado (dígitos conferem).'}:{s:'warn',t:'Li um CNPJ, mas os dígitos não fecham — o OCR pode ter trocado um número. Confira.'};
+  else stCnpj={s:'warn',t:'Li um documento com quantidade de dígitos fora do padrão — confira.'};
+
+  // Data (dataEff em ISO; o parser já rejeita dia/mês impossível). Verde se plausível.
+  const _dyr=+String(dataEff||'').slice(0,4), _nowYr=new Date().getFullYear();
+  const stData = !dataEff ? {s:'bad',t:'Não li a data — preencha no campo abaixo.'}
+    : dataDoArquivo ? {s:'warn',t:'Data veio do nome do arquivo (o OCR não leu na nota) — confira.'}
+    : (_dyr>=2015 && _dyr<=_nowYr+1) ? {s:'ok',t:'Data lida.'}
+    : {s:'warn',t:'Data lida, mas fora do intervalo esperado — confira.'};
+
+  // Total: cruza o impresso com a soma dos itens (o valor salvo é sempre a soma dos itens).
+  // Tolerância relativa (1%, mín. R$0,50) absorve ruído de OCR no total impresso sem esconder item faltando.
   const _itemSum=(parsed.itens||[]).reduce((a,x)=>a+(+x.valor||0),0);
+  const _tol=Math.max(0.5,_itemSum*0.01);
   let stTotal;
   if(parsed.itens.length){
-    if(!parsed.total) stTotal={s:'warn',t:'Não li o total impresso; o valor salvo é a soma dos itens ('+fmt(_itemSum)+').'};
-    else if(Math.abs(parsed.total-_itemSum)<0.5) stTotal={s:'ok',t:'Total impresso confere com a soma dos itens.'};
-    else stTotal={s:'warn',t:'Total impresso ('+fmt(parsed.total)+') diverge da soma dos itens ('+fmt(_itemSum)+'). Será salvo o valor dos itens — confira.'};
+    if(!parsed.total) stTotal={s:'ok',t:'Valor salvo = soma dos itens ('+fmt(_itemSum)+').'};
+    else if(Math.abs(parsed.total-_itemSum)<=_tol) stTotal={s:'ok',t:'Total confere com a soma dos itens ('+fmt(_itemSum)+').'};
+    else stTotal={s:'warn',t:'Total impresso ('+fmt(parsed.total)+') diverge da soma dos itens ('+fmt(_itemSum)+'). Será salvo o valor dos itens — pode faltar um item; confira.'};
   } else {
-    stTotal = !parsed.total ? {s:'bad',t:'Total não encontrado.'}
-      : parsed.confianca.total==='ok' ? {s:'ok',t:'Total lido.'}
-      : {s:'warn',t:'Total lido com baixa confiança — confira.'};
+    stTotal = !parsed.total ? {s:'bad',t:'Não li itens nem total.'}
+      : {s:'warn',t:'Li o total ('+fmt(parsed.total)+'), mas nenhum item — adicione os itens abaixo.'};
   }
   const _stIco={
     ok:'<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
