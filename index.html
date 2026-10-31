@@ -120,6 +120,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-conn:hover{background:rgba(255,255,255,.18)}
 .btn-conn.connected{background:rgba(39,174,96,.2);border-color:rgba(39,174,96,.4);color:#7DFFB2}
 .btn-conn svg{width:12px;height:12px}
+.btn-refresh{padding:0;width:34px;height:34px;justify-content:center;flex:0 0 auto}
+.btn-refresh svg{width:17px;height:17px}
+.btn-refresh:active{transform:scale(.9)}
+.btn-refresh.spinning{pointer-events:none;opacity:.8}
+.btn-refresh.spinning svg{animation:lupaSpin .7s linear infinite;transform-origin:50% 50%}
+@keyframes lupaSpin{to{transform:rotate(360deg)}}
 /* ═══ SEARCH BAR ═══ */
 .global-search-wrap{padding:10px 14px;border-bottom:1px solid var(--border);position:relative}
 .global-search{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:7px 10px}
@@ -1811,6 +1817,7 @@ input,select,textarea{min-height:44px}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF
       </button>
     </div>
+    <button class="btn-conn btn-refresh" id="btn-refresh" onclick="atualizarApp(this)" aria-label="Atualizar — buscar versão mais recente" title="Atualizar: busca a versão mais recente do app (mantém você logado)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
   </div>
 </header>
 <div id="fb-loading-bar" aria-hidden="true"></div>
@@ -2755,6 +2762,24 @@ function logout(){
 }
 function closeLogoutModal(){document.getElementById('logout-modal').classList.remove('open');}
 function confirmarLogout(){sessionStorage.removeItem('lupa_user');location.reload();}
+// Atualiza o app buscando a versão mais recente publicada, SEM deslogar (sessionStorage sobrevive ao reload).
+// Limpa o cache do Service Worker + manda o SW checar atualização, depois recarrega.
+async function atualizarApp(btn){
+  if(btn){btn.classList.add('spinning');btn.disabled=true;}
+  try{toast('Buscando versão nova...','info');}catch(e){}
+  try{
+    if('caches' in window){
+      const keys=await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r=>r.update().catch(()=>{})));
+    }
+  }catch(e){console.warn('atualizarApp:',e);}
+  // mantém o login (lupa_user fica no sessionStorage) e recarrega já com a versão fresca
+  setTimeout(()=>location.reload(),300);
+}
 
 /* ══ ALTERAR SENHA ══ */
 function openAlterarSenha(){
