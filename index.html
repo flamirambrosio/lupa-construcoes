@@ -541,6 +541,12 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .nf-add-toggle{display:inline-flex;align-items:center;gap:6px;margin:2px 0 10px;padding:7px 12px;background:transparent;border:1px dashed var(--border2);border-radius:8px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:-.1px}
 .nf-add-toggle:hover{background:var(--bg3);color:var(--text);border-color:var(--brand2)}
 .nf-add-toggle.open{color:var(--text);border-style:solid;background:var(--bg3)}
+.ocr-raw-det{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
+.ocr-raw-det>summary{cursor:pointer;font-size:10.5px;color:var(--text3);user-select:none;list-style:none;display:inline-flex;align-items:center;gap:4px;opacity:.8;transition:opacity .15s,color .15s}
+.ocr-raw-det>summary:hover{opacity:1;color:var(--text2)}
+.ocr-raw-det[open]>summary{color:var(--text2);opacity:1;margin-bottom:4px}
+.ocr-raw-det textarea{width:100%;height:130px;margin-top:6px;font-size:11px;font-family:ui-monospace,Menlo,monospace;line-height:1.45;border:1px solid var(--border);border-radius:8px;padding:8px;background:var(--bg2);color:var(--text);resize:vertical;box-sizing:border-box}
+.ocr-raw-copy{margin-top:6px;font-size:11px;padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg3);color:var(--text);cursor:pointer;font-weight:600}
 .nf-item-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;margin-bottom:6px;animation:slideDown .15s ease}
 .nf-item-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
 .nf-item-desc{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
@@ -2129,6 +2135,7 @@ input,select,textarea{min-height:44px}
             <span class="nf-total-label" id="nf-count-label">0 itens</span>
             <span class="nf-total-val" id="nf-total-val">R$ 0,00</span>
           </div>
+          <div id="ocr-raw-slot"></div>
         </div>
         <div class="form-footer-bar" style="display:flex;align-items:center;gap:8px">
           <button class="btn" onclick="limparL();closeLancSheet()" style="height:34px;padding:0 14px;font-size:12.5px;color:var(--text2);flex-shrink:0">✕</button>
@@ -4780,13 +4787,16 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
     html+=`<div style="margin-top:8px;font-size:11px;color:var(--warn)">⚠️ Não detectei itens. Adicione manualmente.</div>`;
   }
 
-  // Texto cru do OCR — sempre disponível para conferência/ajuste (depuração)
+  // Texto cru do OCR — discreto, no rodapé da seção de itens (conferência/ajuste)
   window._lastOCRText=textoOriginal||'';
-  html+=`<details style="margin-top:10px" data-ocr-raw>
-    <summary style="cursor:pointer;font-size:11px;color:var(--text2);user-select:none;list-style:none">🔍 Ver texto que o OCR leu</summary>
-    <textarea id="ocr-raw-text" readonly style="width:100%;height:130px;margin-top:6px;font-size:11px;font-family:ui-monospace,Menlo,monospace;line-height:1.45;border:1px solid var(--border);border-radius:8px;padding:8px;background:var(--bg2);color:var(--text);resize:vertical;box-sizing:border-box">${esc(window._lastOCRText)}</textarea>
-    <button type="button" onclick="(function(){var t=document.getElementById('ocr-raw-text');if(!t)return;t.focus();t.select();try{document.execCommand('copy');}catch(e){}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value);toast('Texto copiado — cole aqui no chat para eu ajustar a leitura.','success');})()" style="margin-top:6px;font-size:11px;padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg3);color:var(--text);cursor:pointer;font-weight:600">📋 Copiar texto</button>
+  const _rawSlot=document.getElementById('ocr-raw-slot');
+  if(_rawSlot){
+    _rawSlot.innerHTML=`<details class="ocr-raw-det" data-ocr-raw>
+    <summary>🔍 Ver texto que o OCR leu</summary>
+    <textarea id="ocr-raw-text" readonly>${esc(window._lastOCRText)}</textarea>
+    <button type="button" class="ocr-raw-copy" onclick="(function(){var t=document.getElementById('ocr-raw-text');if(!t)return;t.focus();t.select();try{document.execCommand('copy');}catch(e){}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value);toast('Texto copiado — cole aqui no chat para eu ajustar a leitura.','success');})()">📋 Copiar texto</button>
   </details>`;
+  }
 
   if(preview){preview.innerHTML=html;preview.classList.add('open');}
 
@@ -5178,6 +5188,7 @@ function limparL(){
   // Limpar OCR e restaurar botões
   window._ocrItens=null;
   const op=document.getElementById('ocr-preview');if(op){op.classList.remove('open');op.innerHTML='';}
+  const ors=document.getElementById('ocr-raw-slot');if(ors)ors.innerHTML='';
   const oi=document.getElementById('nf-data-f');if(oi)oi.value=isoToBR(td());
   const lbl=document.getElementById('lbl-nf-comp');if(lbl)lbl.style.display='';
   const ocrLbl=document.querySelector('label[for="ocr-input"]');if(ocrLbl)ocrLbl.style.display='';
