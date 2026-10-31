@@ -599,6 +599,16 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .ocr-confidence{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;margin-left:6px}
 .ocr-conf-ok{background:rgba(39,174,96,.15);color:#27AE60}
 .ocr-conf-warn{background:rgba(243,156,18,.15);color:#E67E22}
+.ocr-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ocr-cell{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:9px;border:1px solid var(--border2);background:var(--surface2);min-width:0}
+.ocr-cell svg{width:18px;height:18px;flex-shrink:0}
+.ocr-cell>span{font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ocr-cell-ok{border-color:color-mix(in srgb,var(--green) 34%,transparent);background:color-mix(in srgb,var(--green) 12%,transparent)}
+.ocr-cell-ok svg{color:var(--green)}
+.ocr-cell-warn{border-color:color-mix(in srgb,var(--accent) 42%,transparent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.ocr-cell-warn svg{color:var(--accent)}
+.ocr-cell-bad{border-color:color-mix(in srgb,var(--red) 34%,transparent);background:color-mix(in srgb,var(--red) 11%,transparent)}
+.ocr-cell-bad svg{color:var(--red)}
 .form-reveal{animation:slideDown .2s ease}
 @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 /* ═══ DOC CAT PICKER ═══ */
@@ -4769,18 +4779,36 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
   }
 
   // Monta painel de preview
-  const conf=c=>`<span class="ocr-confidence ${c==='ok'?'ocr-conf-ok':'ocr-conf-warn'}">${c==='ok'?'✓':'~'}</span>`;
-  let html=`<div class="ocr-preview-title">Escaneamento concluído</div>`;
-  if(parsed.fornecedor)html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Fornecedor</span><strong>${esc(parsed.fornecedor)}</strong>${conf(parsed.confianca.fornecedor)}</div>`;
-  if(parsed.cnpj)   html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">CNPJ / CPF</span><span>${esc(parsed.cnpj)}</span>${conf(parsed.confianca.cnpj)}</div>`;
-  if(dataEff){
-    const dataLbl=dataDoArquivo?'Data <small style="opacity:.7">(do nome do arquivo)</small>':'Data';
-    const dataMark=dataDoArquivo
-      ?`<span class="ocr-confidence ocr-conf-warn" title="O OCR não leu a data; peguei do nome do arquivo. Confira!">~</span>`
-      :conf(parsed.confianca.data);
-    html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">${dataLbl}</span><strong>${fD(dataEff)}</strong>${dataMark}</div>`;
+  // Painel = PLACAR de leitura (sem duplicar valores; eles vivem nos campos abaixo).
+  // Cada campo vira um check colorido: verde=lido e confiável · amarelo=confira · vermelho=não lido.
+  const stForn = !parsed.fornecedor ? {s:'bad',t:'Não consegui ler o fornecedor — preencha no campo abaixo.'}
+    : parsed.confianca.fornecedor==='ok' ? {s:'ok',t:'Fornecedor lido e confirmado.'}
+    : {s:'warn',t:'Fornecedor lido com baixa confiança — confira abaixo.'};
+  const stCnpj = !parsed.cnpj ? {s:'bad',t:'CNPJ/CPF não encontrado na nota.'}
+    : parsed.confianca.cnpj==='ok' ? {s:'ok',t:'CNPJ/CPF lido e validado.'}
+    : {s:'warn',t:'CNPJ/CPF lido, mas confira o formato.'};
+  const stData = !dataEff ? {s:'bad',t:'Não consegui ler a data — preencha no campo abaixo.'}
+    : dataDoArquivo ? {s:'warn',t:'Data veio do nome do arquivo — confira.'}
+    : parsed.confianca.data==='ok' ? {s:'ok',t:'Data lida e confirmada.'}
+    : {s:'warn',t:'Data lida com baixa confiança — confira.'};
+  const _itemSum=(parsed.itens||[]).reduce((a,x)=>a+(+x.valor||0),0);
+  let stTotal;
+  if(parsed.itens.length){
+    if(!parsed.total) stTotal={s:'warn',t:'Não li o total impresso; o valor salvo é a soma dos itens ('+fmt(_itemSum)+').'};
+    else if(Math.abs(parsed.total-_itemSum)<0.5) stTotal={s:'ok',t:'Total impresso confere com a soma dos itens.'};
+    else stTotal={s:'warn',t:'Total impresso ('+fmt(parsed.total)+') diverge da soma dos itens ('+fmt(_itemSum)+'). Será salvo o valor dos itens — confira.'};
+  } else {
+    stTotal = !parsed.total ? {s:'bad',t:'Total não encontrado.'}
+      : parsed.confianca.total==='ok' ? {s:'ok',t:'Total lido.'}
+      : {s:'warn',t:'Total lido com baixa confiança — confira.'};
   }
-  if(parsed.total)  html+=`<div class="ocr-field-row"><span class="ocr-field-lbl">Total</span><strong>${fmt(parsed.total)}</strong>${conf(parsed.confianca.total)}</div>`;
+  const _stIco={
+    ok:'<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    warn:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    bad:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
+  };
+  const _cell=(lbl,st)=>`<div class="ocr-cell ocr-cell-${st.s}" title="${esc(st.t)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${_stIco[st.s]}</svg><span>${lbl}</span></div>`;
+  let html=`<div class="ocr-preview-title">Escaneamento concluído</div><div class="ocr-check-grid">${_cell('Fornecedor',stForn)}${_cell('CNPJ / CPF',stCnpj)}${_cell('Data',stData)}${_cell('Total',stTotal)}</div>`;
   if(parsed.itens.length){
     html+=`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:rgba(142,68,173,.07);border-radius:6px;padding:8px 10px">💡 Selecione a categoria abaixo — os itens serão adicionados automaticamente.</div>`;
   } else {
