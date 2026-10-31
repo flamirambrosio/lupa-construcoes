@@ -618,8 +618,25 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 /* Campo de data com botão de calendário (clicar em vez de digitar) */
 .date-wrap{position:relative;display:block}
 .date-wrap>input.br-date{padding-right:42px!important}
-/* input date nativo (invisível) sobreposto ao botão — o calendário ancora aqui, ao lado do campo */
-.date-wrap .calpick-native{position:absolute!important;top:0!important;bottom:0!important;right:0!important;left:auto!important;width:42px!important;min-width:0!important;max-width:42px!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;opacity:0!important;pointer-events:none;-webkit-appearance:none!important;appearance:none!important;box-shadow:none!important}
+/* Calendário customizado (popup DOM, ancorado ao campo — controlável e verificável) */
+#lupa-cal{position:fixed;z-index:9999;display:none;width:280px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;box-shadow:var(--shadow);padding:12px;font-family:'DM Sans',sans-serif;user-select:none}
+#lupa-cal.open{display:block}
+.lc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:6px}
+.lc-nav{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border:none;background:var(--bg3);color:var(--text);border-radius:8px;cursor:pointer;font-size:18px;line-height:1;transition:background .15s,color .15s}
+.lc-nav:hover{background:var(--brand2);color:#fff}
+.lc-title{font-weight:700;font-size:14px;color:var(--text);text-align:center;flex:1}
+.lc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.lc-dow{font-size:10px;font-weight:700;color:var(--text3);text-align:center;padding:4px 0}
+.lc-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text);background:transparent;border:none;border-radius:8px;cursor:pointer;transition:background .12s,color .12s;font-family:inherit}
+.lc-day:hover{background:var(--bg3)}
+.lc-day.other{color:var(--text3);opacity:.45}
+.lc-day.today{box-shadow:inset 0 0 0 1.5px var(--brand2);font-weight:700}
+.lc-day.sel{background:var(--brand2);color:#fff;font-weight:700}
+.lc-day.sel:hover{background:var(--brand2)}
+.lc-foot{display:flex;gap:8px;margin-top:10px}
+.lc-foot button{flex:1;padding:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:background .15s,color .15s;font-family:inherit}
+.lc-foot button:hover{background:var(--bg3);color:var(--text)}
+.lc-foot .lc-today-btn{color:var(--brand2);border-color:var(--brand2)}
 .cal-btn{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;transition:background .15s,color .15s;padding:0}
 .cal-btn:hover{background:var(--bg3);color:var(--brand2)}
 .cal-btn:active{transform:translateY(-50%) scale(.92)}
@@ -3374,25 +3391,61 @@ function maskBRDate(el){let v=el.value.replace(/\D/g,'').slice(0,8);if(v.length>
 const gD=id=>{const el=document.getElementById(id);return el?brToISO(el.value):'';};
 const sD=(id,iso)=>{const el=document.getElementById(id);if(el)el.value=isoToBR(iso);};
 // Abre o calendário nativo e devolve a data escolhida em dd/mm/aaaa no campo de texto (padrão BR intacto).
+/* Calendário customizado (popup DOM próprio) — substitui o input date nativo + showPicker,
+   que abria no canto superior esquerdo e não era verificável em screenshot. Agora é DOM:
+   ancora ao lado do campo, respeita o tema, escreve dd/mm/aaaa de volta, e funciona igual
+   no desktop e no mobile. */
+const LUPA_MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const LUPA_DOW=['D','S','T','Q','Q','S','S'];
+let _calEl=null,_calTarget=null,_calView=null;
+function _calBuild(){
+  if(_calEl)return _calEl;
+  _calEl=document.createElement('div');_calEl.id='lupa-cal';
+  _calEl.setAttribute('role','dialog');_calEl.setAttribute('aria-label','Selecionar data');
+  document.body.appendChild(_calEl);
+  document.addEventListener('mousedown',e=>{ if(_calEl.classList.contains('open') && !_calEl.contains(e.target) && !(e.target.closest&&e.target.closest('.date-wrap'))) _calClose(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&_calEl.classList.contains('open'))_calClose(); });
+  window.addEventListener('resize',()=>{ if(_calEl.classList.contains('open'))_calClose(); });
+  window.addEventListener('scroll',()=>{ if(_calEl.classList.contains('open'))_calClose(); },true);
+  return _calEl;
+}
+function _calClose(){ if(_calEl)_calEl.classList.remove('open'); _calTarget=null; }
+function _calRender(){
+  const sel=brToISO(_calTarget?_calTarget.value:'')||'';
+  const todayIso=td();const y=_calView.y,m=_calView.m;
+  const startDow=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();const prevDays=new Date(y,m,0).getDate();
+  let cells='';
+  for(let i=startDow-1;i>=0;i--)cells+=`<button class="lc-day other" tabindex="-1">${prevDays-i}</button>`;
+  for(let d=1;d<=daysInMonth;d++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;let cls='lc-day';if(iso===todayIso)cls+=' today';if(iso===sel)cls+=' sel';cells+=`<button class="${cls}" data-iso="${iso}">${d}</button>`;}
+  const trail=(7-((startDow+daysInMonth)%7))%7;
+  for(let i=1;i<=trail;i++)cells+=`<button class="lc-day other" tabindex="-1">${i}</button>`;
+  _calEl.innerHTML=`<div class="lc-head"><button class="lc-nav" data-nav="-1" aria-label="Mês anterior">‹</button><div class="lc-title">${LUPA_MONTHS[m]} ${y}</div><button class="lc-nav" data-nav="1" aria-label="Próximo mês">›</button></div><div class="lc-grid">${LUPA_DOW.map(d=>`<div class="lc-dow">${d}</div>`).join('')}${cells}</div><div class="lc-foot"><button class="lc-today-btn" data-act="today">Hoje</button><button data-act="clear">Limpar</button></div>`;
+  _calEl.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{_calView.m+=+b.dataset.nav;if(_calView.m<0){_calView.m=11;_calView.y--;}if(_calView.m>11){_calView.m=0;_calView.y++;}_calRender();});
+  _calEl.querySelectorAll('[data-iso]').forEach(b=>b.onclick=()=>_calPickDay(b.dataset.iso));
+  _calEl.querySelector('[data-act="today"]').onclick=()=>_calPickDay(todayIso);
+  _calEl.querySelector('[data-act="clear"]').onclick=()=>{ if(_calTarget){_calTarget.value='';_calTarget.dispatchEvent(new Event('input',{bubbles:true}));_calTarget.dispatchEvent(new Event('change',{bubbles:true}));} _calClose(); };
+}
+function _calPickDay(iso){ if(_calTarget){_calTarget.value=isoToBR(iso);_calTarget.dispatchEvent(new Event('input',{bubbles:true}));_calTarget.dispatchEvent(new Event('change',{bubbles:true}));} _calClose(); }
+function _calPosition(anchorEl){
+  const r=anchorEl.getBoundingClientRect();const el=_calEl;
+  el.style.visibility='hidden';el.classList.add('open');const w=el.offsetWidth,h=el.offsetHeight;el.classList.remove('open');el.style.visibility='';
+  const vw=document.documentElement.clientWidth,vh=document.documentElement.clientHeight,gap=6;
+  let left=r.right-w;if(left<8)left=r.left;if(left+w>vw-8)left=vw-8-w;if(left<8)left=8;
+  let top=r.bottom+gap;if(top+h>vh-8){const above=r.top-gap-h;top=above>=8?above:Math.max(8,vh-8-h);}
+  el.style.left=Math.round(left)+'px';el.style.top=Math.round(top)+'px';
+}
 function calPick(ref){
   // ref pode ser o id (string) do campo de texto OU o próprio botão (ex: this) — resolve pro input .br-date dentro do mesmo .date-wrap
   let t = typeof ref==='string' ? document.getElementById(ref)
         : (ref&&ref.closest&&ref.closest('.date-wrap') ? ref.closest('.date-wrap').querySelector('input.br-date') : ref);
   if(!t)return;
-  // O input date nativo fica DENTRO do próprio .date-wrap (sobre o botão) para o calendário
-  // ancorar exatamente ali — não mais um input solto no body posicionado por coordenadas.
-  const wrap=t.closest('.date-wrap')||t.parentElement;
-  let c=wrap.querySelector('input.calpick-native');
-  if(!c){
-    c=document.createElement('input');
-    c.type='date'; c.className='calpick-native';
-    c.setAttribute('tabindex','-1'); c.setAttribute('aria-hidden','true');
-    wrap.appendChild(c);
-  }
-  c.value=brToISO(t.value)||new Date().toISOString().slice(0,10);
-  c.oninput=()=>{ if(c.value){ t.value=isoToBR(c.value); t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); } };
-  if(c.showPicker){ try{ c.showPicker(); return; }catch(e){} }
-  c.focus(); c.click();
+  _calBuild();
+  if(_calTarget===t && _calEl.classList.contains('open')){_calClose();return;}
+  _calTarget=t;const iso=brToISO(t.value)||td();const d=new Date(iso+'T12:00:00');_calView={y:d.getFullYear(),m:d.getMonth()};
+  _calRender();
+  const wrap=t.closest('.date-wrap');const anchor=wrap||t;
+  _calPosition(anchor);_calEl.classList.add('open');
 }
 const uid=()=>Math.random().toString(36).slice(2,10);
 const addD=(b,n)=>{const d=new Date(b+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
