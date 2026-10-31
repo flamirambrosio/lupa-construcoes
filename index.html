@@ -617,7 +617,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .ocr-cell-bad svg{color:var(--red)}
 /* Campo de data com botão de calendário (clicar em vez de digitar) */
 .date-wrap{position:relative;display:block}
-.date-wrap>input{padding-right:42px!important}
+.date-wrap>input.br-date{padding-right:42px!important}
+/* input date nativo (invisível) sobreposto ao botão — o calendário ancora aqui, ao lado do campo */
+.date-wrap .calpick-native{position:absolute!important;top:0!important;bottom:0!important;right:0!important;left:auto!important;width:42px!important;min-width:0!important;max-width:42px!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;opacity:0!important;pointer-events:none;-webkit-appearance:none!important;appearance:none!important;box-shadow:none!important}
 .cal-btn{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;transition:background .15s,color .15s;padding:0}
 .cal-btn:hover{background:var(--bg3);color:var(--brand2)}
 .cal-btn:active{transform:translateY(-50%) scale(.92)}
@@ -3377,11 +3379,16 @@ function calPick(ref){
   let t = typeof ref==='string' ? document.getElementById(ref)
         : (ref&&ref.closest&&ref.closest('.date-wrap') ? ref.closest('.date-wrap').querySelector('input.br-date') : ref);
   if(!t)return;
-  let c=document.getElementById('_calpick');
-  if(!c){c=document.createElement('input');c.type='date';c.id='_calpick';document.body.appendChild(c);}
-  c.style.cssText='position:fixed!important;width:1px!important;height:1px!important;min-width:0!important;max-width:1px!important;opacity:0!important;border:0!important;padding:0!important;margin:0!important;background:transparent!important;pointer-events:none;z-index:-1';
-  const r=t.getBoundingClientRect();
-  c.style.left=Math.round(r.left)+'px'; c.style.top=Math.round(r.bottom)+'px';
+  // O input date nativo fica DENTRO do próprio .date-wrap (sobre o botão) para o calendário
+  // ancorar exatamente ali — não mais um input solto no body posicionado por coordenadas.
+  const wrap=t.closest('.date-wrap')||t.parentElement;
+  let c=wrap.querySelector('input.calpick-native');
+  if(!c){
+    c=document.createElement('input');
+    c.type='date'; c.className='calpick-native';
+    c.setAttribute('tabindex','-1'); c.setAttribute('aria-hidden','true');
+    wrap.appendChild(c);
+  }
   c.value=brToISO(t.value)||new Date().toISOString().slice(0,10);
   c.oninput=()=>{ if(c.value){ t.value=isoToBR(c.value); t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); } };
   if(c.showPicker){ try{ c.showPicker(); return; }catch(e){} }
