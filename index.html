@@ -644,7 +644,12 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 #lupa-imgprev .ip-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:200px;min-height:110px;padding:18px 20px;color:var(--text3);font-size:12.5px;line-height:1.45;text-align:center;font-family:'DM Sans',sans-serif}
 #lupa-imgprev .ip-msg small{color:var(--text3);opacity:.8;font-size:11px}
 #lupa-imgprev .ip-pdf{display:block;width:440px;height:560px;max-height:calc(84vh - 14px);border:0;border-radius:7px;background:#fff}
-#lupa-imgprev .ip-pdfpg{display:block;border-radius:7px;background:#fff;max-width:450px;max-height:calc(84vh - 14px)}
+#lupa-imgprev .ip-pdfpg{display:block;border-radius:7px;background:#fff}
+/* Comprovante de banco é uma tira longa: se coubesse inteiro ficaria com 168px
+   de largura, ilegível. Então usa a largura cheia e corta embaixo, avisando. */
+#lupa-imgprev .ip-pdfwrap{position:relative;display:block;overflow:hidden;border-radius:7px;background:#fff;max-height:calc(84vh - 14px)}
+#lupa-imgprev .ip-pdfwrap.cortado::after{content:'';position:absolute;left:0;right:0;bottom:0;height:58px;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,.97));pointer-events:none}
+#lupa-imgprev .ip-maisabaixo{position:absolute;left:0;right:0;bottom:7px;text-align:center;font:600 11px/1 system-ui,-apple-system,sans-serif;color:#5b6472;letter-spacing:.01em}
 /* dica de "passe o mouse" na área do comprovante anexado */
 #lanc-dz-preview,#doc-dz-preview{cursor:zoom-in}
 .cal-btn{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;transition:background .15s,color .15s;padding:0}
@@ -2062,9 +2067,9 @@ input,select,textarea{min-height:44px}
         </label>
         <label for="rl-comp-gal" class="rl-gal-m">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span>Galeria</span>
+          <span>Galeria<br>ou PDF</span>
         </label>
-        <input type="file" id="rl-comp-gal" style="display:none" accept="image/*" onchange="onRLComp(event)">
+        <input type="file" id="rl-comp-gal" style="display:none" accept="image/*,application/pdf" onchange="onRLComp(event)">
       </div>
 
       <!-- MAIS OPÇÕES — desktop: display:contents (fornecedor/data/NF soltos, idêntico); mobile: colapsável -->
@@ -2118,10 +2123,17 @@ input,select,textarea{min-height:44px}
       <div class="fsec" style="margin-top:14px">
         <div class="fsec-title" style="justify-content:space-between">
           <span>Dados da Nota Fiscal</span>
-          <label for="ocr-input" class="btn-ocr" title="Fotografar nota fiscal para preenchimento automático">
-            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </label>
-          <input type="file" id="ocr-input" style="display:none" accept="image/*" capture="environment" onchange="iniciarOCR(event)">
+          <span style="display:inline-flex;gap:6px;align-items:center">
+            <label for="ocr-input" class="btn-ocr" title="Fotografar nota fiscal para preenchimento automático">
+              <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </label>
+            <!-- Sem capture: abre o seletor de arquivos, única forma de escolher um PDF no celular -->
+            <label for="ocr-file" class="btn-ocr" title="Escolher arquivo salvo (imagem ou PDF) para preenchimento automático">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </label>
+          </span>
+          <input type="file" id="ocr-input" style="display:none" accept="image/*,application/pdf" capture="environment" onchange="iniciarOCR(event)">
+          <input type="file" id="ocr-file" style="display:none" accept="image/*,application/pdf" onchange="iniciarOCR(event)">
         </div>
         <!-- Preview do resultado OCR -->
         <div class="ocr-preview" id="ocr-preview"></div>
@@ -3497,25 +3509,64 @@ function _ipEmbedPdf(a,href){
   _ipEl.innerHTML=`<embed class="ip-pdf" src="${esc(/^data:/i.test(href)?_ipBlob(href):href)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" type="application/pdf">`;
   _ipEl.classList.add('open'); _ipPosition(a);
 }
+/* Lembra quais PDFs o pdf.js não conseguiu desenhar: no 2º hover vai direto
+   pro visualizador nativo, sem repetir a espera de 2,2s. */
+const _ipPdfRuim=new Set();
+function _ipPdfKey(h){ return h.length+':'+h.slice(-72); }
 function _ipRenderPdf(a,href){
+  const chave=_ipPdfKey(href);
+  if(_ipPdfRuim.has(chave)){ _ipEmbedPdf(a,href); return; }
   _ipEl.innerHTML=_ipMsg('Abrindo PDF…'); _ipEl.classList.add('open'); _ipPosition(a);
+  let feito=false,tarefa=null;
+  /* Plano B obrigatório: PDF pesado, rede ruim ou aba sem animação podem
+     deixar o desenho no canvas sem terminar. Passou de 2,2s, entrega o
+     visualizador nativo — nunca deixa "Abrindo PDF…" preso na tela. */
+  const planoB=setTimeout(()=>{
+    if(feito)return; feito=true; _ipPdfRuim.add(chave);
+    try{ tarefa&&tarefa.destroy&&tarefa.destroy(); }catch(_){}
+    if(_ipCur===a)_ipEmbedPdf(a,href);
+  },2200);
+  const desiste=()=>{ if(feito)return; feito=true; clearTimeout(planoB); _ipPdfRuim.add(chave); if(_ipCur===a)_ipEmbedPdf(a,href); };
   _ipPdfJs().then(pdfjs=>{
-    if(_ipCur!==a)return;
-    return pdfjs.getDocument({url:/^data:/i.test(href)?_ipBlob(href):href}).promise.then(doc=>doc.getPage(1)).then(page=>{
-      if(_ipCur!==a)return;
+    if(feito||_ipCur!==a)return;
+    tarefa=pdfjs.getDocument({url:/^data:/i.test(href)?_ipBlob(href):href});
+    return tarefa.promise.then(doc=>doc.getPage(1)).then(page=>{
+      if(feito||_ipCur!==a)return;
       const base=page.getViewport({scale:1});
-      const scale=Math.min(440/base.width,(Math.round(innerHeight*.84)-14)/base.height);
-      const vp=page.getViewport({scale:scale*(window.devicePixelRatio||1)});
-      const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
+      /* Largura cheia sempre: é o que mantém o texto legível. Documento mais
+         alto que a janela é cortado embaixo (e avisado) em vez de encolhido —
+         encolher um comprovante de 375x1583 daria 168px de largura, ilegível.
+         NF em A4 cabe inteira mesmo assim, então nada muda pra elas. */
+      const escala=440/base.width;
+      const alvoH=Math.round(innerHeight*.84)-14;
+      const alturaCheia=base.height*escala;
+      const alturaCss=Math.min(alturaCheia,alvoH);
+      const cortado=alturaCheia>alvoH+2;
+      const dpr=window.devicePixelRatio||1;
+      const vp=page.getViewport({scale:escala*dpr});
+      const cv=document.createElement('canvas');
+      cv.width=Math.ceil(vp.width);
+      cv.height=Math.ceil(alturaCss*dpr);   // canvas só da parte visível: o resto nem é pintado
       cv.className='ip-pdfpg';
-      cv.style.width=Math.round(base.width*scale)+'px';cv.style.height=Math.round(base.height*scale)+'px';
+      cv.style.width=Math.round(base.width*escala)+'px';
+      cv.style.height=Math.round(alturaCss)+'px';
       return page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise.then(()=>{
-        if(_ipCur!==a)return;
-        _ipEl.innerHTML=''; _ipEl.appendChild(cv);
+        if(feito||_ipCur!==a)return;
+        feito=true; clearTimeout(planoB);
+        const caixa=document.createElement('div');
+        caixa.className='ip-pdfwrap'+(cortado?' cortado':'');
+        caixa.appendChild(cv);
+        if(cortado){
+          const aviso=document.createElement('span');
+          aviso.className='ip-maisabaixo';
+          aviso.textContent='continua abaixo — abra o arquivo para ver tudo';
+          caixa.appendChild(aviso);
+        }
+        _ipEl.innerHTML=''; _ipEl.appendChild(caixa);
         _ipPosition(a);
       });
     });
-  }).catch(()=>{ if(_ipCur===a)_ipEmbedPdf(a,href); });
+  }).catch(desiste);
 }
 function _ipShow(a){ _ipShowUrl(a,a.getAttribute('href')||''); }
 function _ipShowUrl(a,href){
@@ -3814,9 +3865,10 @@ function onRLComp(e){
   if(rlFile){
     if(nm)nm.textContent='✓ ';
     if(ph)ph.textContent='';
+    const ehPDF=ehPdf(rlFile);
     if(rlFile.size<=2097152)readB64(rlFile,b64=>{rlFileB64=b64;});
-    else toast('Imagem maior que 2MB — salvo apenas o nome.','warn');
-    toast('📷 Foto anexada!','success');
+    else toast('Arquivo maior que 2MB — salvo apenas o nome.','warn');
+    toast(ehPDF?'📄 PDF anexado!':'📷 Foto anexada!','success');
   } else {
     if(nm)nm.textContent='';
     if(ph)ph.textContent='Foto';
@@ -3825,7 +3877,7 @@ function onRLComp(e){
   var camb=document.querySelector('.rl-cam-m');
   var cams=document.getElementById('rl-cam-m-sub');
   if(camb)camb.classList.toggle('has',!!rlFile);
-  if(cams)cams.textContent=rlFile?('✓ '+(rlFile.name||'foto anexada')):'Abre a câmera';
+  if(cams)cams.textContent=rlFile?('✓ '+(rlFile.name||'comprovante anexado')):'Abre a câmera';
 }
 /* ══ Mais opções (colapsável no mobile) ══ */
 function toggleRlMais(btn){
@@ -3877,14 +3929,14 @@ function lancProcessFile(file, source){
     lancRenderFotoPreview();
     toast(`📎 Comprovante anexado (${source||'arquivo'})`,'success');
 
-    /* ★ AUTO-OCR — se for imagem e Google conectado, lê a NF e preenche sozinho */
-    const isImage=(file.type||'').startsWith('image/');
-    if(isImage && gToken){
+    /* ★ AUTO-OCR — imagem ou PDF, com Google conectado: lê e preenche sozinho */
+    const podeOCR=ocrAceita(file);
+    if(podeOCR && gToken){
       /* OCR preenche campos da NF Completa — garante que o modo esteja ativo */
       if(typeof setLancMode==='function') setLancMode('nf');
       /* Pequeno delay pra UI do toast "Comprovante anexado" aparecer antes do overlay OCR */
       setTimeout(()=>runOCRAutoFill(file), 200);
-    } else if(isImage && !gToken){
+    } else if(podeOCR && !gToken){
       setTimeout(()=>toast('💡 Conecte o Google (botão OCR no topo) para autopreencher da próxima vez.','info'), 1200);
     }
   };
@@ -4747,43 +4799,103 @@ let lancMode='nf',nfItems=[],nfCat='';
  * Retorna true em sucesso, false em falha/skip.
  * Usado por iniciarOCR (câmera) e lancProcessFile (drop/paste).
  */
+function ehPdf(file){ return /pdf/i.test(file&&file.type||'') || /\.pdf$/i.test(file&&file.name||''); }
+
+/* PDF → imagem (página 1). Rede de segurança: o OCR do Google já aceita PDF,
+   mas se ele devolver vazio (acontece com PDF que é só imagem comprimida),
+   a gente rasteriza aqui e manda como JPG.
+   Dois detalhes que não são opcionais:
+   - fundo branco: esses comprovantes têm máscara de transparência e, sem o
+     fundo, a área transparente vira preta e o OCR não lê nada;
+   - teto de pixels: comprovante de banco é uma tira longa (375x1583pt).
+     Sem limite, o canvas estoura a memória no celular. */
+async function pdfParaImagem(file){
+  const pdfjs=await _ipPdfJs();
+  const buf=await file.arrayBuffer();
+  const doc=await pdfjs.getDocument({data:new Uint8Array(buf)}).promise;
+  const page=await doc.getPage(1);
+  const base=page.getViewport({scale:1});
+  let escala=Math.max(1.5,Math.min(4,1600/base.width));
+  const MAXPX=1e7;                                  // ~10 MP: seguro em celular
+  const area=base.width*base.height;
+  if(area*escala*escala>MAXPX) escala=Math.max(1,Math.sqrt(MAXPX/area));
+  const vp=page.getViewport({scale:escala});
+  const cv=document.createElement('canvas');
+  cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+  const cx=cv.getContext('2d');
+  cx.imageSmoothingEnabled=true; cx.imageSmoothingQuality='high';
+  cx.fillStyle='#fff'; cx.fillRect(0,0,cv.width,cv.height);
+  await page.render({canvasContext:cx,viewport:vp}).promise;
+  const blob=await new Promise(res=>cv.toBlob(res,'image/jpeg',0.92));
+  try{ doc.destroy(); }catch(_){}
+  if(!blob) throw new Error('falha ao converter a página');
+  return new File([blob],String(file.name||'comprovante').replace(/\.pdf$/i,'')+'.jpg',{type:'image/jpeg'});
+}
+
+/* Sobe o arquivo convertendo para Documento Google — é essa conversão que
+   dispara o OCR (aceita JPG/PNG e PDF) — exporta o texto puro e apaga o
+   Doc temporário. Devolve o texto reconhecido. */
+async function ocrViaDrive(file){
+  const meta={name:'_lupa_ocr_tmp_'+Date.now(),mimeType:'application/vnd.google-apps.document',parents:[DRIVE_FOLDER_ID]};
+  const form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+  form.append('file',file);
+  const upRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&ocr=true&fields=id',{
+    method:'POST',headers:{Authorization:`Bearer ${gToken}`},body:form
+  });
+  if(!upRes.ok){const err=await upRes.text();throw new Error('Upload OCR falhou: '+err);}
+  const {id:docId}=await upRes.json();
+  const txtRes=await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/export?mimeType=text/plain`,{
+    headers:{Authorization:`Bearer ${gToken}`}
+  });
+  const texto=await txtRes.text();
+  // apaga o Doc temporário (não o arquivo original do comprovante)
+  fetch(`https://www.googleapis.com/drive/v3/files/${docId}`,{method:'DELETE',headers:{Authorization:`Bearer ${gToken}`}});
+  return txtRes.ok?texto:'';
+}
+const temTexto=t=>!!(t&&t.replace(/\s/g,'').length>=12);
+function ocrAceita(file){ return !!file && ((file.type||'').startsWith('image/') || ehPdf(file)); }
+
 async function runOCRAutoFill(file){
   if(!file) return false;
   if(!gToken){toast('⚠️ Conecte o Google (botão OCR no topo) para autopreencher.','warn');return false;}
-  if(!file.type.startsWith('image/')){toast('OCR só funciona com imagem (JPG/PNG). PDF segue anexado sem leitura.','info');return false;}
+  if(!ocrAceita(file)){toast('OCR funciona com imagem (JPG/PNG) ou PDF. Esse arquivo segue anexado sem leitura.','info');return false;}
 
   const overlay=document.getElementById('ocr-overlay');
   const msgEl=document.getElementById('ocr-msg');
   if(overlay) overlay.classList.add('open');
-  if(msgEl) msgEl.textContent='Lendo nota fiscal com OCR...';
+  const pdf=ehPdf(file);
+  if(msgEl) msgEl.textContent=pdf?'Lendo o PDF com OCR...':'Lendo o documento com OCR...';
+  // Limite do OCR do Google na conversão: arquivo de até 2 MB
+  if(pdf && file.size>2097152) toast('PDF acima de 2 MB — o OCR do Google pode recusar. Se falhar, mande um print da tela.','info');
 
   try{
-    // 1. Upload temporário com OCR (converte para Google Doc)
-    const meta={name:'_lupa_ocr_tmp_'+Date.now(),mimeType:'application/vnd.google-apps.document',parents:[DRIVE_FOLDER_ID]};
-    const form=new FormData();
-    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
-    form.append('file',file);
-    const upRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&ocr=true&fields=id',{
-      method:'POST',
-      headers:{Authorization:`Bearer ${gToken}`},
-      body:form
-    });
-    if(!upRes.ok){const err=await upRes.text();throw new Error('Upload OCR falhou: '+err);}
-    const {id:docId}=await upRes.json();
+    // 1ª via: manda o arquivo como está — o OCR do Google lê imagem e PDF
+    let texto='',erro1=null;
+    try{ texto=await ocrViaDrive(file); }
+    catch(e){ erro1=e; console.warn('OCR direto falhou:',e); }
 
-    // 2. Exporta texto puro
-    if(msgEl) msgEl.textContent='Extraindo texto...';
-    const txtRes=await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/export?mimeType=text/plain`,{
-      headers:{Authorization:`Bearer ${gToken}`}
-    });
-    const texto=await txtRes.text();
-
-    // 3. Apaga o Doc temporário (não a imagem original)
-    fetch(`https://www.googleapis.com/drive/v3/files/${docId}`,{method:'DELETE',headers:{Authorization:`Bearer ${gToken}`}});
+    // 2ª via (só PDF): rasteriza a página 1 aqui e manda como JPG
+    if(pdf && !temTexto(texto)){
+      if(msgEl) msgEl.textContent='PDF difícil — convertendo em imagem...';
+      try{
+        const img=await pdfParaImagem(file);
+        if(msgEl) msgEl.textContent='Lendo a imagem do PDF com OCR...';
+        texto=await ocrViaDrive(img);
+      }catch(e){ console.warn('PDF→imagem falhou:',e); if(erro1) throw erro1; }
+    }
+    if(erro1 && !temTexto(texto)) throw erro1;
 
     if(overlay) overlay.classList.remove('open');
 
-    // 4. Parseia e preenche
+    // Documento sem nada legível: avisa em vez de abrir um painel vazio
+    if(!temTexto(texto)){
+      toast(pdf?'Não saiu texto desse PDF. Ele segue anexado — preencha à mão ou mande um print da tela.'
+               :'Não saiu texto dessa imagem. Tente uma foto mais nítida e bem iluminada.','warn');
+      return false;
+    }
+
+    // Parseia e preenche
     const parsed=parseNFText(texto);
     fillNFFromOCR(parsed,texto,file&&file.name);
     return true;
@@ -4791,7 +4903,10 @@ async function runOCRAutoFill(file){
   }catch(err){
     if(overlay) overlay.classList.remove('open');
     console.error('OCR error:',err);
-    toast('Erro no OCR: '+err.message,'error');
+    const msg=String(err&&err.message||err);
+    if(pdf && /Upload OCR falhou/.test(msg)){
+      toast('O Google não aceitou esse PDF no OCR. Ele segue anexado — preencha à mão ou mande um print da tela.','warn');
+    } else toast('Erro no OCR: '+msg,'error');
     return false;
   }
 }
@@ -4801,7 +4916,7 @@ async function iniciarOCR(e){
   e.target.value='';
   if(!file)return;
   if(!gToken){toast('⚠️ Conecte o Google para usar o OCR. Clique em "● OCR" no topo.','warn');return;}
-  if(!file.type.startsWith('image/')){toast('Use uma imagem (JPG, PNG, etc.).','error');return;}
+  if(!ocrAceita(file)){toast('Use uma imagem (JPG, PNG) ou um PDF.','error');return;}
 
   // Anexa o arquivo como comprovante (mesmo destino do "Anexar NF")
   cFile=file;
@@ -4816,7 +4931,95 @@ async function iniciarOCR(e){
   await runOCRAutoFill(file);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   COMPROVANTE DE PAGAMENTO (Pix / TED / transferência)
+   Documento de natureza diferente da nota fiscal: aqui quem interessa
+   é o RECEBEDOR. O bloco "Pagador" é a própria empresa — se cair no
+   campo fornecedor, o lançamento fica errado e parece certo.
+   Por isso a leitura é por BLOCO: nada que esteja na seção do pagador
+   pode ser aproveitado.
+   ═══════════════════════════════════════════════════════════════ */
+function looksLikePayment(txt){
+  if(/comprovante\s+de\s+(pix|transfer|ted\b|dep[oó]sito|pagamento)|pix\s+(enviado|recebido|realizado|efetuado)/i.test(txt))return true;
+  // exige os dois blocos: evita confundir com NF que só cita "PIX" na forma de pagamento
+  return /recebedor|destinat[aá]rio|favorecid|benefici[aá]ri/i.test(txt)
+      && /pagador|remetente|quem\s+pagou|debitado/i.test(txt)
+      && /\bpix\b|\bted\b|\bdoc\b|transfer[eê]ncia/i.test(txt);
+}
+function _pgCampo(L,ini,fim,rx){
+  for(let i=ini;i<fim&&i<L.length;i++){
+    const m=L[i].match(rx); if(!m)continue;
+    const resto=L[i].slice(m[0].length).replace(/^[:\-–\s]+/,'').trim();
+    if(resto)return resto;                              // rótulo e valor na mesma linha
+    if(i+1<fim&&i+1<L.length)return L[i+1].trim();      // valor na linha de baixo
+  }
+  return '';
+}
+function parsePixText(txt){
+  const r={tipo:'pagamento',nfNum:'',fornecedor:'',data:'',cnpj:'',itens:[],total:0,descricao:'',pago:false,confianca:{}};
+  const L=txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const RECEB=/^(recebedor|destinat[aá]rio|favorecido|benefici[aá]rio|quem\s+recebeu|para|destino|dados\s+(de\s+quem\s+recebeu|do\s+(recebedor|destinat[aá]rio|favorecido|benefici[aá]rio)))\s*:?$/i;
+  const PAGAD=/^(pagador|remetente|origem|quem\s+pagou|debitado\s+de|dados\s+(de\s+quem\s+pagou|do\s+pagador))\s*:?$/i;
+  const OUTRA=/^(dados\s+da\s+transa|informa[cç][oõ]es|institui[cç][aã]o\s*$|em\s+caso\s+de\s+d[uú]vidas)/i;
+
+  let iR=-1,iP=-1;
+  L.forEach((l,i)=>{ if(iR<0&&RECEB.test(l))iR=i; if(iP<0&&PAGAD.test(l))iP=i; });
+
+  // limites do bloco do recebedor: vai até o pagador ou até a próxima seção
+  let fimR=L.length;
+  if(iR>=0){
+    for(let i=iR+1;i<L.length;i++){ if(PAGAD.test(L[i])||OUTRA.test(L[i])){fimR=i;break;} }
+    if(iP>iR&&iP<fimR)fimR=iP;
+  }
+
+  if(iR>=0){
+    const nome=_pgCampo(L,iR+1,fimR,/^nome(\s+completo)?\s*:?/i);
+    if(nome&&!/^\*+$/.test(nome)){r.fornecedor=nome.replace(/\s{2,}/g,' ').trim();r.confianca.fornecedor='ok';}
+    const doc=_pgCampo(L,iR+1,fimR,/^(cpf\s*\/?\s*cnpj|cnpj\s*\/?\s*cpf|cpf|cnpj)\s*:?/i);
+    if(doc){r.cnpj=doc.trim();r.confianca.cnpj=/\*/.test(doc)?'warn':'ok';}
+  }
+  // sem bloco identificado: melhor deixar vazio do que arriscar preencher com o pagador
+  if(!r.fornecedor)r.confianca.fornecedor='bad';
+
+  // Valor — rótulo próprio; ignora tarifa/saldo
+  let vM=txt.match(/\bvalor(?:\s+(?:do\s+)?(?:pix|transfer[eê]ncia|pagamento))?\s*:?\s*R?\$?\s*(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+  if(!vM){
+    const iv=L.findIndex(l=>/^valor\s*:?$/i.test(l));
+    if(iv>=0&&L[iv+1])vM=L[iv+1].match(/(\d{1,3}(?:\.\d{3})*,\d{2})/);
+  }
+  if(vM){const v=parseBRNum(vM[1]);if(v>0){r.total=v;r.confianca.total='ok';}}
+  if(!(r.total>0)){
+    const toks=txt.match(/\d{1,3}(?:\.\d{3})*,\d{2}/g)||[];
+    let mx=0;for(const t of toks){const v=parseBRNum(t);if(v>mx&&v<500000)mx=v;}
+    if(mx>0){r.total=mx;r.confianca.total='warn';}
+  }
+
+  // Data da transação
+  const dm=txt.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(dm){const d=+dm[1],mo=+dm[2],y=+dm[3];
+    if(d>=1&&d<=31&&mo>=1&&mo<=12&&y>=2000&&y<=2099){r.data=`${dm[3]}-${dm[2]}-${dm[1]}`;r.confianca.data='ok';}}
+
+  // Descrição: o que o usuário escreveu no Pix
+  let desc=_pgCampo(L,0,L.length,/^(coment[aá]rio|descri[cç][aã]o|mensagem|observa[cç][aã]o|finalidade|identifica[cç][aã]o)\s*:?/i);
+  if(desc&&desc.length<120&&!/^r?\$?\s*[\d.,]+$/.test(desc))r.descricao=desc.trim();
+
+  // Situação → já está pago
+  r.pago=/\b(efetivad|conclu[ií]d|aprovad|realizad|pago|sucesso|confirmad)/i.test(txt);
+
+  // ID da transação serve de "número do documento" para auditoria
+  const id=_pgCampo(L,0,L.length,/^(id\s+(da\s+)?transa[cç][aã]o|c[oó]digo\s+(da\s+)?transa[cç][aã]o|e2e|end\s*to\s*end|autentica[cç][aã]o)\s*:?/i);
+  if(id&&/^[A-Za-z0-9]{8,}$/.test(id.replace(/\s/g,''))){r.nfNum=id.replace(/\s/g,'');r.confianca.nfNum='ok';}
+
+  // O pagamento em si é o "item": valor e descrição já conhecidos
+  if(r.total>0){
+    r.itens=[{desc:r.descricao||('Pagamento'+(r.fornecedor?' — '+r.fornecedor:'')),qtd:1,valor:r.total}];
+  }
+  return r;
+}
+
 function parseNFText(txt){
+  // Comprovante de pagamento tem outra estrutura — desvia para o parser próprio
+  if(looksLikePayment(txt)) return parsePixText(txt);
   const r={nfNum:'',fornecedor:'',data:'',cnpj:'',itens:[],total:0,confianca:{}};
   const linhas=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   const isSep=l=>/^[=\-_*.\s]+$/.test(l);
@@ -5039,9 +5242,11 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
     : {s:'warn',t:'Li algo no fornecedor, mas parece incompleto — confira abaixo.'};
 
   // CNPJ / CPF: valida os dígitos verificadores (pega troca de número do OCR)
+  const ehPag = parsed.tipo==='pagamento';
   const _doc=_onlyD(parsed.cnpj);
   let stCnpj;
   if(!parsed.cnpj) stCnpj={s:'bad',t:'CNPJ/CPF não encontrado na nota.'};
+  else if(/\*/.test(parsed.cnpj)) stCnpj={s:'ok',t:'O banco mascara parte do CPF/CNPJ no comprovante — isso é o normal.'};
   else if(_doc.length===11) stCnpj=_validCPF(_doc)?{s:'ok',t:'CPF lido e validado (dígitos conferem).'}:{s:'warn',t:'Li um CPF, mas os dígitos não fecham — o OCR pode ter trocado um número. Confira.'};
   else if(_doc.length===14) stCnpj=_validCNPJ(_doc)?{s:'ok',t:'CNPJ lido e validado (dígitos conferem).'}:{s:'warn',t:'Li um CNPJ, mas os dígitos não fecham — o OCR pode ter trocado um número. Confira.'};
   else stCnpj={s:'warn',t:'Li um documento com quantidade de dígitos fora do padrão — confira.'};
@@ -5072,8 +5277,10 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
     bad:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
   };
   const _cell=(lbl,st)=>`<div class="ocr-cell ocr-cell-${st.s}" title="${esc(st.t)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${_stIco[st.s]}</svg><span>${lbl}</span></div>`;
-  let html=`<div class="ocr-preview-title">Escaneamento concluído</div><div class="ocr-check-grid">${_cell('Fornecedor',stForn)}${_cell('CNPJ / CPF',stCnpj)}${_cell('Data',stData)}${_cell('Total',stTotal)}</div>`;
-  if(parsed.itens.length){
+  let html=`<div class="ocr-preview-title">${ehPag?'Comprovante de pagamento lido':'Escaneamento concluído'}</div><div class="ocr-check-grid">${_cell(ehPag?'Recebedor':'Fornecedor',stForn)}${_cell('CNPJ / CPF',stCnpj)}${_cell('Data',stData)}${_cell(ehPag?'Valor pago':'Total',stTotal)}</div>`;
+  if(ehPag){
+    html+=`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:rgba(142,68,173,.07);border-radius:6px;padding:8px 10px">💡 Li do bloco <strong>Recebedor</strong> — quem recebeu o dinheiro.${parsed.pago?' A situação é <strong>efetivado</strong>, então marquei como <strong>pago</strong>.':''} Confira a categoria.</div>`;
+  } else if(parsed.itens.length){
     html+=`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:rgba(142,68,173,.07);border-radius:6px;padding:8px 10px">💡 Selecione a categoria abaixo — os itens serão adicionados automaticamente.</div>`;
   } else {
     html+=`<div style="margin-top:8px;font-size:11px;color:var(--warn)">⚠️ Não detectei itens. Adicione manualmente.</div>`;
@@ -5099,7 +5306,15 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
 
   // Guarda itens e já insere na categoria Materiais — traz quantidade + valor sem clique extra
   window._ocrItens=parsed.itens;
-  if(parsed.itens.length){
+  if(ehPag){
+    // Pix já efetivado = despesa paga
+    if(parsed.pago && typeof setNFPag==='function') setNFPag('pago');
+    if(parsed.nfNum){const en=document.getElementById('nf-num');if(en&&!en.value)en.value=parsed.nfNum;}
+    // CPF → pagamento a pessoa (funcionário); CNPJ → fornecedor. É palpite: o aviso pede conferência.
+    const cat=(_doc.length===11||/^\*{3}\./.test(parsed.cnpj||''))?'funcionario':'material';
+    if(typeof selectNFCat==='function') selectNFCat(cat,document.querySelector(`[data-nfcat="${cat}"]`));
+    toast('✅ Comprovante lido: '+(parsed.fornecedor||'recebedor')+' · '+fmt(parsed.total)+'. Confira a categoria e salve.','success');
+  } else if(parsed.itens.length){
     const tile=document.querySelector('[data-nfcat="material"]');
     if(typeof selectNFCat==='function') selectNFCat('material',tile);
     toast('✅ NF lida: fornecedor, CNPJ, data, valor e quantidade preenchidos. Confira e salve.','success');
