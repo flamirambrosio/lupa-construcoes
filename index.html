@@ -637,6 +637,12 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .lc-foot button{flex:1;padding:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:background .15s,color .15s;font-family:inherit}
 .lc-foot button:hover{background:var(--bg3);color:var(--text)}
 .lc-foot .lc-today-btn{color:var(--brand2);border-color:var(--brand2)}
+/* Prévia ampliada do comprovante ao passar o mouse (hover) — grande e parada, some ao sair */
+#lupa-imgprev{position:fixed;z-index:10000;display:none;max-width:462px;max-height:84vh;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:var(--shadow);padding:6px;pointer-events:none;overflow:hidden}
+#lupa-imgprev.open{display:block}
+#lupa-imgprev img{display:block;max-width:450px;max-height:calc(84vh - 14px);width:auto;height:auto;border-radius:7px;object-fit:contain}
+#lupa-imgprev .ip-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:200px;min-height:110px;padding:18px 20px;color:var(--text3);font-size:12.5px;line-height:1.45;text-align:center;font-family:'DM Sans',sans-serif}
+#lupa-imgprev .ip-msg small{color:var(--text3);opacity:.8;font-size:11px}
 .cal-btn{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;transition:background .15s,color .15s;padding:0}
 .cal-btn:hover{background:var(--bg3);color:var(--brand2)}
 .cal-btn:active{transform:translateY(-50%) scale(.92)}
@@ -3447,6 +3453,49 @@ function calPick(ref){
   const wrap=t.closest('.date-wrap');const anchor=wrap||t;
   _calPosition(anchor);_calEl.classList.add('open');
 }
+/* Prévia do comprovante ao passar o mouse (hover) — grande e parada, some ao sair.
+   Sem clicar: conferir data/valor/produto direto na lista. Só no desktop (hover:fino);
+   no touch continua o toque pra abrir. Delegação nos links .hist-comp/.lanc-card-comp. */
+let _ipEl=null,_ipCur=null;
+function _ipTouchPrimary(){ return !!(window.matchMedia && window.matchMedia('(hover:none)').matches); }
+function _ipEnsureEl(){ if(_ipEl)return _ipEl; _ipEl=document.createElement('div'); _ipEl.id='lupa-imgprev'; _ipEl.setAttribute('aria-hidden','true'); document.body.appendChild(_ipEl); return _ipEl; }
+function _ipCloudImg(u){ return /res\.cloudinary\.com\/.*\/upload\//.test(u) ? u.replace('/upload/','/upload/w_900,q_auto,f_auto/') : u; }
+function _ipCloudPdf(u){ return u.replace('/upload/','/upload/pg_1,w_900,q_auto,f_jpg/').replace(/\.pdf(\?|$)/i,'.jpg$1'); }
+function _ipMsg(txt,sub){ return `<div class="ip-msg">${ic('note',22)}<span>${txt}${sub?`<br><small>${sub}</small>`:''}</span></div>`; }
+function _ipHide(){ if(_ipEl)_ipEl.classList.remove('open'); _ipCur=null; }
+function _ipShow(a){
+  _ipCur=a; _ipEnsureEl();
+  const href=a.getAttribute('href')||'';
+  if(!href){ _ipHide(); return; }
+  const isPdf=/^data:application\/pdf/i.test(href) || /\.pdf(\?|$)/i.test(href);
+  const isImg=/^data:image\//i.test(href) || /\.(jpe?g|png|gif|webp|bmp|heic|heif|avif|svg)(\?|$)/i.test(href);
+  if(isPdf && /^data:/i.test(href)){ _ipEl.innerHTML=_ipMsg('PDF anexado','clique em “Ver” pra abrir'); _ipEl.classList.add('open'); _ipPosition(a); return; }
+  let src = isPdf ? _ipCloudPdf(href) : _ipCloudImg(href);
+  let triedRaw=false;
+  _ipEl.innerHTML=_ipMsg('Carregando…');
+  _ipEl.classList.add('open'); _ipPosition(a);
+  const img=new Image();
+  img.onload=()=>{ if(_ipCur!==a)return; _ipEl.innerHTML=''; _ipEl.appendChild(img); _ipPosition(a); };
+  img.onerror=()=>{ if(_ipCur!==a)return;
+    if(!triedRaw && src!==href && !isPdf){ triedRaw=true; img.src=href; return; }
+    _ipEl.innerHTML=_ipMsg(isPdf?'PDF anexado':'Prévia indisponível','clique em “Ver” pra abrir'); _ipPosition(a);
+  };
+  img.alt='comprovante'; img.src=src;
+}
+function _ipPosition(anchor){
+  const r=anchor.getBoundingClientRect(), el=_ipEl;
+  el.style.visibility='hidden'; el.classList.add('open'); const w=el.offsetWidth, h=el.offsetHeight; el.style.visibility='';
+  const vw=document.documentElement.clientWidth, vh=document.documentElement.clientHeight, gap=8;
+  let left=r.right-w; if(left<8)left=r.left; if(left+w>vw-8)left=vw-8-w; if(left<8)left=8;
+  let top=r.bottom+gap; if(top+h>vh-8){ top=r.top-gap-h; }
+  if(top+h>vh-8) top=vh-8-h; if(top<8) top=8;
+  el.style.left=Math.round(left)+'px'; el.style.top=Math.round(top)+'px';
+}
+(function _ipInit(){
+  document.addEventListener('mouseover',e=>{ if(_ipTouchPrimary())return; const a=e.target.closest&&e.target.closest('.hist-comp[href],.lanc-card-comp[href]'); if(a&&a!==_ipCur)_ipShow(a); });
+  document.addEventListener('mouseout',e=>{ const a=e.target.closest&&e.target.closest('.hist-comp[href],.lanc-card-comp[href]'); if(a&&_ipCur===a&&(!e.relatedTarget||!a.contains(e.relatedTarget)))_ipHide(); });
+  window.addEventListener('scroll',()=>{ if(_ipCur)_ipHide(); },true);
+})();
 const uid=()=>Math.random().toString(36).slice(2,10);
 const addD=(b,n)=>{const d=new Date(b+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
 const dif=(a,b)=>Math.floor((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
