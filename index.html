@@ -981,6 +981,11 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   transition:all .15s;font-family:'DM Sans',sans-serif;
 }
 .dz-lanc-btn:hover{border-color:var(--brand2);background:var(--surface3)}
+.dz-lanc-acoes{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+/* Capturar tela é o caminho rápido — ganha destaque sobre o "Escolher arquivo". */
+.dz-lanc-btn-cap{border-color:var(--brand2);background:rgba(41,128,185,.12);color:var(--brand3)}
+.dz-lanc-btn-cap:hover{border-color:var(--brand3);background:rgba(41,128,185,.2)}
+.dz-lanc-btn-cap:disabled{opacity:.6;cursor:progress}
 .dz-lanc-req{
   display:inline-block;margin-top:8px;font-size:10px;
   color:var(--red);font-weight:600;letter-spacing:.3px;
@@ -2219,8 +2224,11 @@ input,select,textarea{min-height:44px}
     <div id="lanc-dz-empty">
       <div class="dz-lanc-ico"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
       <div class="dz-lanc-title">Comprovante da despesa</div>
-      <div class="dz-lanc-sub">Arraste o arquivo, cole com <kbd>Cmd+V</kbd> ou clique para escolher</div>
-      <button type="button" class="dz-lanc-btn" onclick="event.stopPropagation();lancPickFoto()" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Escolher arquivo</button>
+      <div class="dz-lanc-sub">Capture a tela, arraste o arquivo ou cole com <kbd>Cmd+V</kbd></div>
+      <div class="dz-lanc-acoes">
+        <button type="button" class="dz-lanc-btn dz-lanc-btn-cap" id="lanc-btn-captura" onclick="event.stopPropagation();capturarTela()" title="Dispensa o Cmd+Shift+4: escolha a janela do recibo e ela vem anexada"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 012-2h3"/><path d="M16 3h3a2 2 0 012 2v3"/><path d="M21 16v3a2 2 0 01-2 2h-3"/><path d="M8 21H5a2 2 0 01-2-2v-3"/><circle cx="12" cy="12" r="2.5"/></svg> Capturar tela</button>
+        <button type="button" class="dz-lanc-btn" onclick="event.stopPropagation();lancPickFoto()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Escolher arquivo</button>
+      </div>
       <div class="dz-lanc-req">* obrigatório (compliance)</div>
     </div>
     <div id="lanc-dz-preview" style="display:none">
@@ -2231,6 +2239,7 @@ input,select,textarea{min-height:44px}
           <div class="dz-meta" id="lanc-dz-meta">245 KB · anexado agora</div>
         </div>
         <div class="dz-actions">
+          <button id="lanc-btn-recapturar" onclick="event.stopPropagation();capturarTela()" title="Capturar a tela de novo"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 012-2h3"/><path d="M16 3h3a2 2 0 012 2v3"/><path d="M21 16v3a2 2 0 01-2 2h-3"/><path d="M8 21H5a2 2 0 01-2-2v-3"/><circle cx="12" cy="12" r="2.5"/></svg></button>
           <button onclick="event.stopPropagation();lancPickFoto()" title="Trocar arquivo"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
           <button class="del" onclick="event.stopPropagation();lancResetFoto()" title="Remover">✕</button>
         </div>
@@ -4074,6 +4083,106 @@ function lancHandleFileInput(e){
   const f = e.target.files && e.target.files[0];
   if(f) lancProcessFile(f, 'seleção');
 }
+/* ═══ CAPTURAR TELA — dispensa o Cmd+Shift+4 ═══════════════════════
+   Página web não aciona o print do sistema operacional: não existe API
+   pra isso, e nem deveria. O que existe é a captura do próprio
+   navegador — um clique, ele pergunta QUAL janela, e a gente puxa um
+   quadro dela. Some o atalho de três teclas, o arquivo largado na Mesa
+   e o arrastar. Daí pra frente é o mesmo caminho do arquivo arrastado:
+   comprime, mostra a miniatura e dispara o OCR sozinho. */
+let lancCapturando = false;
+
+function capturaTelaOk(){
+  return !!(window.isSecureContext && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+}
+
+/* Pega UM quadro e devolve. grabFrame é o caminho direto (resolução
+   nativa); o <video> é a rede de segurança pra quando ele falha. */
+async function lancPegaQuadro(track){
+  try{
+    if(window.ImageCapture) return await new ImageCapture(track).grabFrame();
+  }catch(e){ console.info('grabFrame falhou, usando <video>:', e && e.message); }
+  const v = document.createElement('video');
+  v.muted = true; v.playsInline = true;
+  v.srcObject = new MediaStream([track]);
+  await v.play();
+  /* O primeiro quadro costuma vir vazio — espera um de verdade, com
+     teto de tempo pra não travar se nenhum chegar. */
+  await new Promise(res => {
+    let fim = false;
+    const pronto = () => { if(!fim){ fim = true; res(); } };
+    if(v.requestVideoFrameCallback) v.requestVideoFrameCallback(() => pronto());
+    setTimeout(pronto, 700);
+  });
+  const bmp = await createImageBitmap(v);
+  try{ v.pause(); v.srcObject = null; }catch(_){}
+  return bmp;
+}
+
+async function capturarTela(){
+  if(lancCapturando) return;
+  if(!capturaTelaOk()){
+    toast('Seu navegador não permite capturar a tela. Use "Escolher arquivo" ou cole com Cmd+V.','warn');
+    return;
+  }
+  /* Os dois botões disparam isto (o do estado vazio e o de recapturar),
+     então os dois precisam travar — só um deles tem texto pra trocar. */
+  const btns = ['lanc-btn-captura','lanc-btn-recapturar']
+    .map(id => document.getElementById(id)).filter(Boolean);
+  const btn = document.getElementById('lanc-btn-captura');
+  const rotulo = btn ? btn.innerHTML : '';
+  let stream = null;
+  lancCapturando = true;
+  btns.forEach(b => { b.disabled = true; });
+  if(btn) btn.textContent = 'Capturando…';
+  try{
+    /* ideal alto destrava a resolução cheia: sem isso o navegador pode
+       entregar um quadro reduzido e a letra miúda da nota se perde.
+       selfBrowserSurface exclude tira o LUPA da lista — ele nunca é o
+       que você quer fotografar. */
+    stream = await navigator.mediaDevices.getDisplayMedia({
+      video:{ width:{ideal:3840}, height:{ideal:2160}, frameRate:{ideal:5} },
+      audio:false,
+      selfBrowserSurface:'exclude'
+    });
+    const track = stream.getVideoTracks()[0];
+    if(!track) throw new Error('sem trilha de vídeo');
+    const bmp = await lancPegaQuadro(track);
+    const cv = document.createElement('canvas');
+    cv.width = bmp.width; cv.height = bmp.height;
+    cv.getContext('2d').drawImage(bmp, 0, 0);
+    try{ bmp.close && bmp.close(); }catch(_){}
+    /* 0.95 porque o comprimeImagem reencoda em seguida — começar alto
+       aqui deixa a segunda passada praticamente invisível. */
+    const blob = await new Promise(res => cv.toBlob(res, 'image/jpeg', 0.95));
+    if(!blob) throw new Error('não foi possível gerar a imagem');
+    const nome = 'tela-' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.jpg';
+    await lancProcessFile(new File([blob], nome, {type:'image/jpeg'}), 'captura de tela');
+  }catch(err){
+    const nm = (err && err.name) || '';
+    const msg = String((err && err.message) || err);
+    if(nm === 'NotAllowedError' && /system/i.test(msg)){
+      /* O macOS bloqueia a captura até o navegador receber permissão, e
+         ela só passa a valer depois de reabrir o navegador. Não há o que
+         o app faça aqui além de dizer o caminho. */
+      toast('O macOS não liberou a captura de tela pro navegador. Vá em Ajustes do Sistema → Privacidade e Segurança → Gravação de Tela, marque o navegador e reabra ele.','warn');
+    } else if(nm === 'NotAllowedError' || nm === 'AbortError'){
+      /* Cancelou na janelinha de escolha. Não é erro — não enche o saco. */
+    } else {
+      console.error('captura de tela:', err);
+      /* "Error" puro não diz nada a ninguém — nesse caso vale mais a mensagem. */
+      const detalhe = (nm && nm !== 'Error') ? nm : msg;
+      toast('Não deu pra capturar a tela ('+detalhe+'). Use "Escolher arquivo" ou cole com Cmd+V.','error');
+    }
+  } finally {
+    /* Solta a captura na hora, senão o navegador fica com a barra
+       "está compartilhando sua tela" pendurada por nada. */
+    if(stream){ try{ stream.getTracks().forEach(t => t.stop()); }catch(_){} }
+    lancCapturando = false;
+    btns.forEach(b => { b.disabled = false; });
+    if(btn) btn.innerHTML = rotulo;
+  }
+}
 async function lancProcessFile(file, source){
   if(!file) return;
   const okType = (file.type||'').startsWith('image/') || file.type === 'application/pdf';
@@ -4169,6 +4278,16 @@ function lancDzMissingFlash(){
 function initLancDropZone(){
   if(lancDropInitialized) return;
   lancDropInitialized = true;
+  /* Botão de captura some onde a API não existe — melhor não ter o botão
+     do que ter um que só sabe dar erro. */
+  if(!capturaTelaOk()){
+    ['lanc-btn-captura','lanc-btn-recapturar'].forEach(id => {
+      const b = document.getElementById(id);
+      if(b) b.style.display = 'none';
+    });
+    const sub = document.querySelector('#lanc-dz-empty .dz-lanc-sub');
+    if(sub) sub.innerHTML = 'Arraste o arquivo, cole com <kbd>Cmd+V</kbd> ou clique para escolher';
+  }
   const dz = document.getElementById('lanc-dz');
   const panel = document.querySelector('.lanc-split-right');
   const overlay = document.getElementById('lanc-dz-overlay');
