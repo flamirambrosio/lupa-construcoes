@@ -643,6 +643,10 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 #lupa-imgprev img{display:block;max-width:450px;max-height:calc(84vh - 14px);width:auto;height:auto;border-radius:7px;object-fit:contain}
 #lupa-imgprev .ip-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:200px;min-height:110px;padding:18px 20px;color:var(--text3);font-size:12.5px;line-height:1.45;text-align:center;font-family:'DM Sans',sans-serif}
 #lupa-imgprev .ip-msg small{color:var(--text3);opacity:.8;font-size:11px}
+#lupa-imgprev .ip-pdf{display:block;width:440px;height:560px;max-height:calc(84vh - 14px);border:0;border-radius:7px;background:#fff}
+#lupa-imgprev .ip-pdfpg{display:block;border-radius:7px;background:#fff;max-width:450px;max-height:calc(84vh - 14px)}
+/* dica de "passe o mouse" na área do comprovante anexado */
+#lanc-dz-preview,#doc-dz-preview{cursor:zoom-in}
 .cal-btn{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;transition:background .15s,color .15s;padding:0}
 .cal-btn:hover{background:var(--bg3);color:var(--brand2)}
 .cal-btn:active{transform:translateY(-50%) scale(.92)}
@@ -3463,13 +3467,64 @@ function _ipCloudImg(u){ return /res\.cloudinary\.com\/.*\/upload\//.test(u) ? u
 function _ipCloudPdf(u){ return u.replace('/upload/','/upload/pg_1,w_900,q_auto,f_jpg/').replace(/\.pdf(\?|$)/i,'.jpg$1'); }
 function _ipMsg(txt,sub){ return `<div class="ip-msg">${ic('note',22)}<span>${txt}${sub?`<br><small>${sub}</small>`:''}</span></div>`; }
 function _ipHide(){ if(_ipEl)_ipEl.classList.remove('open'); _ipCur=null; }
-function _ipShow(a){
+/* data: -> blob: (o visualizador de PDF do Chrome não aceita data: dentro de <embed>) */
+let _ipBlobUrl=null,_ipBlobSrc=null;
+function _ipBlob(dataUrl){
+  if(_ipBlobSrc===dataUrl&&_ipBlobUrl)return _ipBlobUrl;
+  try{
+    const i=dataUrl.indexOf(','),meta=dataUrl.slice(5,i),mime=meta.split(';')[0]||'application/pdf';
+    let bytes;
+    if(/;base64/i.test(meta)){ const bin=atob(dataUrl.slice(i+1)); bytes=new Uint8Array(bin.length); for(let k=0;k<bin.length;k++)bytes[k]=bin.charCodeAt(k); }
+    else bytes=new TextEncoder().encode(decodeURIComponent(dataUrl.slice(i+1)));
+    if(_ipBlobUrl)URL.revokeObjectURL(_ipBlobUrl);
+    _ipBlobUrl=URL.createObjectURL(new Blob([bytes],{type:mime})); _ipBlobSrc=dataUrl;
+    return _ipBlobUrl;
+  }catch(_){ return dataUrl; }
+}
+/* pdf.js sob demanda: só baixa na 1ª vez que alguém passa o mouse num PDF.
+   Renderiza a página 1 num canvas (imagem de verdade). Se a lib não vier
+   (offline/PWA), cai pro visualizador nativo <embed>. */
+let _ipPdfLib=null,_ipPdfLoading=null;
+function _ipPdfJs(){
+  if(_ipPdfLib)return Promise.resolve(_ipPdfLib);
+  if(_ipPdfLoading)return _ipPdfLoading;
+  _ipPdfLoading=import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs')
+    .then(m=>{ m.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs'; _ipPdfLib=m; return m; })
+    .catch(e=>{ _ipPdfLoading=null; throw e; });
+  return _ipPdfLoading;
+}
+function _ipEmbedPdf(a,href){
+  _ipEl.innerHTML=`<embed class="ip-pdf" src="${esc(/^data:/i.test(href)?_ipBlob(href):href)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" type="application/pdf">`;
+  _ipEl.classList.add('open'); _ipPosition(a);
+}
+function _ipRenderPdf(a,href){
+  _ipEl.innerHTML=_ipMsg('Abrindo PDF…'); _ipEl.classList.add('open'); _ipPosition(a);
+  _ipPdfJs().then(pdfjs=>{
+    if(_ipCur!==a)return;
+    return pdfjs.getDocument({url:/^data:/i.test(href)?_ipBlob(href):href}).promise.then(doc=>doc.getPage(1)).then(page=>{
+      if(_ipCur!==a)return;
+      const base=page.getViewport({scale:1});
+      const scale=Math.min(440/base.width,(Math.round(innerHeight*.84)-14)/base.height);
+      const vp=page.getViewport({scale:scale*(window.devicePixelRatio||1)});
+      const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
+      cv.className='ip-pdfpg';
+      cv.style.width=Math.round(base.width*scale)+'px';cv.style.height=Math.round(base.height*scale)+'px';
+      return page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise.then(()=>{
+        if(_ipCur!==a)return;
+        _ipEl.innerHTML=''; _ipEl.appendChild(cv);
+        _ipPosition(a);
+      });
+    });
+  }).catch(()=>{ if(_ipCur===a)_ipEmbedPdf(a,href); });
+}
+function _ipShow(a){ _ipShowUrl(a,a.getAttribute('href')||''); }
+function _ipShowUrl(a,href){
   _ipCur=a; _ipEnsureEl();
-  const href=a.getAttribute('href')||'';
   if(!href){ _ipHide(); return; }
   const isPdf=/^data:application\/pdf/i.test(href) || /\.pdf(\?|$)/i.test(href);
   const isImg=/^data:image\//i.test(href) || /\.(jpe?g|png|gif|webp|bmp|heic|heif|avif|svg)(\?|$)/i.test(href);
-  if(isPdf && /^data:/i.test(href)){ _ipEl.innerHTML=_ipMsg('PDF anexado','clique em “Ver” pra abrir'); _ipEl.classList.add('open'); _ipPosition(a); return; }
+  // PDF local (recém-anexado): renderiza o documento de verdade, não um aviso de texto
+  if(isPdf && /^data:/i.test(href)){ _ipRenderPdf(a,href); return; }
   let src = isPdf ? _ipCloudPdf(href) : _ipCloudImg(href);
   let triedRaw=false;
   _ipEl.innerHTML=_ipMsg('Carregando…');
@@ -3477,8 +3532,9 @@ function _ipShow(a){
   const img=new Image();
   img.onload=()=>{ if(_ipCur!==a)return; _ipEl.innerHTML=''; _ipEl.appendChild(img); _ipPosition(a); };
   img.onerror=()=>{ if(_ipCur!==a)return;
-    if(!triedRaw && src!==href && !isPdf){ triedRaw=true; img.src=href; return; }
-    _ipEl.innerHTML=_ipMsg(isPdf?'PDF anexado':'Prévia indisponível','clique em “Ver” pra abrir'); _ipPosition(a);
+    if(isPdf){ _ipRenderPdf(a,href); return; }          // Cloudinary não converteu → renderiza o PDF aqui
+    if(!triedRaw && src!==href){ triedRaw=true; img.src=href; return; }
+    _ipEl.innerHTML=_ipMsg('Prévia indisponível','clique em “Ver” pra abrir'); _ipPosition(a);
   };
   img.alt='comprovante'; img.src=src;
 }
@@ -3491,9 +3547,37 @@ function _ipPosition(anchor){
   if(top+h>vh-8) top=vh-8-h; if(top<8) top=8;
   el.style.left=Math.round(left)+'px'; el.style.top=Math.round(top)+'px';
 }
+/* Onde o mouse pode pedir a ampliação:
+   1) links de comprovante no histórico (lista/cards)
+   2) a ÁREA DO ANEXO nos formulários — mostra o arquivo que acabou de ser anexado */
+function _ipResolve(t){
+  if(!t||!t.closest)return null;
+  const a=t.closest('.hist-comp[href],.lanc-card-comp[href]');
+  if(a)return {el:a,url:a.getAttribute('href')||''};
+  const dz=t.closest('#lanc-dz-preview,#doc-dz-preview');
+  if(dz){
+    let f=null;
+    try{ f=(dz.id==='lanc-dz-preview')?lancFotoFile:docFileMeta; }catch(_){ f=null; }
+    if(f&&f.url)return {el:dz,url:f.url};
+  }
+  return null;
+}
+/* re-sincroniza a ampliação quando o anexo é trocado/removido com o mouse parado em cima */
+function _ipRefresh(){
+  if(!_ipCur||!_ipCur.id)return;
+  if(_ipCur.id!=='lanc-dz-preview'&&_ipCur.id!=='doc-dz-preview')return;
+  const r=_ipResolve(_ipCur);
+  if(r)_ipShowUrl(r.el,r.url); else _ipHide();
+}
 (function _ipInit(){
-  document.addEventListener('mouseover',e=>{ if(_ipTouchPrimary())return; const a=e.target.closest&&e.target.closest('.hist-comp[href],.lanc-card-comp[href]'); if(a&&a!==_ipCur)_ipShow(a); });
-  document.addEventListener('mouseout',e=>{ const a=e.target.closest&&e.target.closest('.hist-comp[href],.lanc-card-comp[href]'); if(a&&_ipCur===a&&(!e.relatedTarget||!a.contains(e.relatedTarget)))_ipHide(); });
+  document.addEventListener('mouseover',e=>{ if(_ipTouchPrimary())return; const r=_ipResolve(e.target); if(r&&r.el!==_ipCur)_ipShowUrl(r.el,r.url); });
+  document.addEventListener('mouseout',e=>{
+    if(!_ipCur)return;
+    const t=e.target;
+    if(t!==_ipCur&&!(_ipCur.contains&&_ipCur.contains(t)))return;
+    if(e.relatedTarget&&_ipCur.contains&&_ipCur.contains(e.relatedTarget))return;
+    _ipHide();
+  });
   window.addEventListener('scroll',()=>{ if(_ipCur)_ipHide(); },true);
 })();
 const uid=()=>Math.random().toString(36).slice(2,10);
@@ -3815,6 +3899,7 @@ function lancRenderFotoPreview(){
     dz.classList.remove('filled','missing');
     empty.style.display = '';
     preview.style.display = 'none';
+    if(typeof _ipRefresh==='function') _ipRefresh();
     return;
   }
   dz.classList.add('filled');
@@ -3830,6 +3915,7 @@ function lancRenderFotoPreview(){
   document.getElementById('lanc-dz-nm').textContent = lancFotoFile.name;
   const kb = (lancFotoFile.size / 1024).toFixed(0);
   document.getElementById('lanc-dz-meta').textContent = `${kb} KB · via ${lancFotoFile.source}`;
+  if(typeof _ipRefresh==='function') _ipRefresh();
 }
 function lancResetFoto(){
   lancFotoFile = null;
@@ -5866,13 +5952,14 @@ function docProcessFile(file,source){
 function docRenderPreview(){
   const dz=document.getElementById('doc-dz'),empty=document.getElementById('doc-dz-empty'),prev=document.getElementById('doc-dz-preview');
   if(!dz||!empty||!prev)return;
-  if(!docFileMeta){dz.classList.remove('filled','missing');empty.style.display='';prev.style.display='none';return;}
+  if(!docFileMeta){dz.classList.remove('filled','missing');empty.style.display='';prev.style.display='none';if(typeof _ipRefresh==='function')_ipRefresh();return;}
   dz.classList.add('filled');dz.classList.remove('missing');
   empty.style.display='none';prev.style.display='';
   const thumb=document.getElementById('doc-dz-thumb');
   thumb.innerHTML=docFileMeta.type.startsWith('image/')?`<img src="${esc(docFileMeta.url)}" alt="preview">`:ic('note',22);
   document.getElementById('doc-dz-nm').textContent=docFileMeta.name;
   document.getElementById('doc-dz-meta').textContent=`${(docFileMeta.size/1024).toFixed(0)} KB · via ${docFileMeta.source}`;
+  if(typeof _ipRefresh==='function')_ipRefresh();
 }
 function docResetFile(){docF=null;docFB64=null;docFileMeta=null;const i=document.getElementById('d-file');if(i)i.value='';docRenderPreview();}
 function docDzMissingFlash(){const dz=document.getElementById('doc-dz');if(!dz)return;dz.classList.add('missing');dz.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>dz.classList.remove('missing'),1500);}
