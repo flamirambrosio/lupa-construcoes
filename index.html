@@ -2920,30 +2920,68 @@ const GOOGLE_CLIENT_ID='629740512690-r6tbeqbsh8bghr80tpgog6dan68m3osr.apps.googl
 const DRIVE_FOLDER_ID='1k4dQGFGA1X2GUySjb7uorxWBxy14OQ64';
 const OCR_SCOPE='https://www.googleapis.com/auth/drive.file';
 let gToken=null,gTokenClient=null;
+let gTokenExpiry=0;        // instante em que o token morre (ms epoch)
 let gRefreshTimer=null;
+let gRefreshPend=null;     // pedido de token em voo, pra não pedir dois ao mesmo tempo
+let gRefreshResolve=null,gRefreshGuard=null;
+let gDriveFolderId=null;   // cache da pasta do Drive; morre junto com o token
 const G_TOKEN_KEY='lupa_g_token_v2';
+const G_TOKEN_SS='lupa_g_token';
 
-function gSaveToken(token){
+/* O access token do Google vive 1 hora. Antes, a validade só era guardada no
+   localStorage e o sessionStorage recebia a string crua — então uma aba aberta
+   por mais de uma hora restaurava um token morto, o botão continuava "OCR ✓"
+   verde e todo upload pro Drive voltava 401 UNAUTHENTICATED. Agora a validade
+   viaja junto com o token nos dois lugares, e quem lê sempre confere. */
+function gSaveToken(token,expiresIn){
+  const segs=Number(expiresIn)>0?Number(expiresIn):3600;
   gToken=token;
-  const expiry=Date.now()+58*60*1000; // 58min (token dura 1h)
-  sessionStorage.setItem('lupa_g_token',token);
-  try{localStorage.setItem(G_TOKEN_KEY,JSON.stringify({token,expiry}));}catch(e){}
+  gTokenExpiry=Date.now()+(segs-120)*1000;   // 2min de folga pro relógio e pra rede
+  const pac=JSON.stringify({token,expiry:gTokenExpiry});
+  try{sessionStorage.setItem(G_TOKEN_SS,pac);}catch(e){}
+  try{localStorage.setItem(G_TOKEN_KEY,pac);}catch(e){}
+  gAgendarRenovacao();
+}
+function gLeGuardado(store,chave){
+  try{
+    const d=JSON.parse(store.getItem(chave)||'null');
+    if(d&&d.token&&d.expiry&&Date.now()<d.expiry)return d;
+  }catch(e){}   // formato antigo (string crua) cai aqui e é tratado como ausente
+  return null;
 }
 function gRestoreToken(){
-  // 1. sessionStorage (tab ativa)
-  const ss=sessionStorage.getItem('lupa_g_token');
-  if(ss){gToken=ss;return true;}
-  // 2. localStorage com validade (persiste entre sessões — essencial no mobile)
-  try{
-    const d=JSON.parse(localStorage.getItem(G_TOKEN_KEY)||'null');
-    if(d&&d.token&&Date.now()<d.expiry){gToken=d.token;sessionStorage.setItem('lupa_g_token',d.token);return true;}
-  }catch(e){}
-  return false;
+  const d=gLeGuardado(sessionStorage,G_TOKEN_SS)||gLeGuardado(localStorage,G_TOKEN_KEY);
+  if(!d)return false;
+  gToken=d.token;gTokenExpiry=d.expiry;
+  try{sessionStorage.setItem(G_TOKEN_SS,JSON.stringify(d));}catch(e){}
+  gAgendarRenovacao();   // sem isso, token vindo do storage nunca era renovado
+  return true;
+}
+function gTokenValido(){return !!gToken&&Date.now()<gTokenExpiry;}
+/* "Já autorizou o Google alguma vez?" — não confundir com "tem token vivo
+   agora". Serve pra decidir se vale tentar o OCR sozinho: token vencido se
+   renova na hora, mas quem nunca conectou só recebe o convite. De propósito
+   sem checar validade; gClearToken apaga o pacote, então depois de um acesso
+   revogado isso volta a ser falso. */
+function gJaAutorizou(){
+  if(gToken)return true;
+  try{const d=JSON.parse(localStorage.getItem(G_TOKEN_KEY)||'null');return !!(d&&d.token);}
+  catch(e){return false;}
 }
 function gClearToken(){
-  gToken=null;gDriveFolderId=null;
-  sessionStorage.removeItem('lupa_g_token');
+  gToken=null;gTokenExpiry=0;gDriveFolderId=null;
+  if(gRefreshTimer){clearTimeout(gRefreshTimer);gRefreshTimer=null;}
+  try{sessionStorage.removeItem(G_TOKEN_SS);}catch(e){}
   try{localStorage.removeItem(G_TOKEN_KEY);}catch(e){}
+}
+/* Renova 3 minutos antes de vencer. Chamado tanto quando chega token novo
+   quanto quando um token é restaurado do storage. */
+function gAgendarRenovacao(){
+  if(gRefreshTimer)clearTimeout(gRefreshTimer);
+  const falta=gTokenExpiry-Date.now()-3*60*1000;
+  /* Se a renovação automática falhar, o botão precisa parar de dizer "OCR ✓" —
+     senão o usuário anexa o comprovante achando que o OCR vai rodar. */
+  gRefreshTimer=setTimeout(()=>{silentRefreshToken().then(ok=>{if(!ok)updGoogleUI();});},Math.max(30000,falta));
 }
 
 function initGoogleAuth(){
@@ -2955,14 +2993,14 @@ function initGoogleAuth(){
       if(resp.error){
         if(resp.error==='interaction_required'||resp.error==='access_denied'||resp.error==='immediate_failed'){
           if(!gToken)updGoogleUI();
+          gResolveRefresh(false);
           return;
         }
-        toast('Erro Google: '+resp.error,'error');updGoogleUI();return;
+        toast('Erro Google: '+resp.error,'error');updGoogleUI();gResolveRefresh(false);return;
       }
-      gSaveToken(resp.access_token);
-      if(gRefreshTimer)clearTimeout(gRefreshTimer);
-      gRefreshTimer=setTimeout(()=>silentRefreshToken(),55*60*1000);
+      gSaveToken(resp.access_token,resp.expires_in);
       updGoogleUI();
+      gResolveRefresh(true);
     }
   });
   gRestoreToken();
@@ -2970,19 +3008,52 @@ function initGoogleAuth(){
   updGoogleUI();
 }
 
+/* O GIS avisa por callback, não por promessa. Esta ponte vira promessa pra quem
+   chama poder ESPERAR o token novo antes de subir o arquivo. O timeout existe
+   porque o GIS às vezes nem chama o callback (cookie de login do Google sumiu);
+   sem ele o OCR ficaria travado pra sempre esperando. */
+function gResolveRefresh(ok){
+  const r=gRefreshResolve;
+  gRefreshResolve=null;gRefreshPend=null;
+  if(gRefreshGuard){clearTimeout(gRefreshGuard);gRefreshGuard=null;}
+  if(r)r(ok);
+}
 function silentRefreshToken(){
-  if(!gTokenClient)return;
-  try{gTokenClient.requestAccessToken({prompt:''});}catch(e){}
+  if(!gTokenClient)return Promise.resolve(false);
+  if(gRefreshPend)return gRefreshPend;        // já tem um pedido em voo
+  let resolver;
+  const p=new Promise(res=>{resolver=res;});
+  gRefreshPend=p;gRefreshResolve=resolver;
+  gRefreshGuard=setTimeout(()=>gResolveRefresh(false),8000);
+  try{gTokenClient.requestAccessToken({prompt:''});}
+  catch(e){gResolveRefresh(false);}
+  return p;
+}
+/* Garante token vivo antes de falar com o Drive. Devolve true/false em vez de
+   lançar — quem chama decide o que dizer pro usuário. */
+async function gGarantirToken(forcar){
+  if(!forcar&&gTokenValido())return true;
+  const antes=gToken;
+  const ok=await silentRefreshToken();
+  /* No forçado não basta estar dentro do prazo: o token pode estar no prazo e o
+     Google recusar de qualquer jeito (acesso revogado, senha trocada, conta
+     errada). Só vale se veio token NOVO — repetir a chamada com o mesmo token
+     recusado é desperdício e esconde do usuário que ele precisa reconectar. */
+  if(forcar&&(!ok||gToken===antes))return false;
+  return gTokenValido();
 }
 
 function toggleGoogleAuth(){
-  if(gToken){
+  if(gTokenValido()){
     gClearToken();
     sessionStorage.removeItem('lupa_drive_folder');
     updGoogleUI();
     toast('Google desconectado','info');
   } else {
     if(!gTokenClient){toast('Google Auth não inicializado ainda. Aguarde.','warn');return;}
+    gClearToken();   // token vencido no caminho só atrapalha o pedido novo
+    /* Síncrono de propósito: a janelinha do Google só abre dentro do clique do
+       usuário — qualquer await aqui faria o navegador bloquear o popup. */
     gTokenClient.requestAccessToken({prompt:''});
   }
 }
@@ -2995,13 +3066,16 @@ function updGoogleUI(){
   const connectLbl=document.getElementById('gm-connect-label');
   const statusDot=document.getElementById('gm-status-dot');
   const statusText=document.getElementById('gm-status-text');
-  const cls=gToken?'btn-conn gsync-btn connected':'btn-conn gsync-btn';
-  const dotTxt=gToken?'●':'○';
+  /* gTokenValido() e não gToken: token vencido mostrava "OCR ✓" verde e o
+     usuário só descobria que caiu quando o upload voltava 401. */
+  const on=gTokenValido();
+  const cls=on?'btn-conn gsync-btn connected':'btn-conn gsync-btn';
+  const dotTxt=on?'●':'○';
   if(btn){btn.className=cls;if(lbl)lbl.textContent=dotTxt;}
-  if(btnDesk){btnDesk.className=cls;if(lblDesk)lblDesk.textContent=gToken?'OCR ✓':'OCR';}
-  if(connectLbl)connectLbl.textContent=gToken?'Desconectar do Google':'Conectar com Google';
-  if(statusDot)statusDot.style.background=gToken?'var(--green)':'var(--text3)';
-  if(statusText)statusText.textContent=gToken?'Conectado — OCR ativo':'Não conectado (OCR indisponível)';
+  if(btnDesk){btnDesk.className=cls;if(lblDesk)lblDesk.textContent=on?'OCR ✓':'OCR';}
+  if(connectLbl)connectLbl.textContent=on?'Desconectar do Google':'Conectar com Google';
+  if(statusDot)statusDot.style.background=on?'var(--green)':'var(--text3)';
+  if(statusText)statusText.textContent=on?'Conectado — OCR ativo':'Não conectado (OCR indisponível)';
 }
 function updGC(){updGoogleUI();}
 function updGoogleBanner(){}
@@ -4035,13 +4109,16 @@ async function lancProcessFile(file, source){
     toast(`📎 Comprovante anexado (${source||'arquivo'})`,'success');
 
     /* ★ AUTO-OCR — imagem ou PDF, com Google conectado: lê e preenche sozinho */
+    /* gJaAutorizou e não gToken: se o token venceu (ou a renovação de abertura
+       da página não chegou ainda) o OCR ainda vai rodar — ele renova sozinho.
+       Antes, nesse caso o app dizia "conecte o Google" pra quem já estava. */
     const podeOCR=ocrAceita(file);
-    if(podeOCR && gToken){
+    if(podeOCR && gJaAutorizou()){
       /* OCR preenche campos da NF Completa — garante que o modo esteja ativo */
       if(typeof setLancMode==='function') setLancMode('nf');
       /* Pequeno delay pra UI do toast "Comprovante anexado" aparecer antes do overlay OCR */
       setTimeout(()=>runOCRAutoFill(file), 200);
-    } else if(podeOCR && !gToken){
+    } else if(podeOCR){
       setTimeout(()=>toast('💡 Conecte o Google (botão OCR no topo) para autopreencher da próxima vez.','info'), 1200);
     }
   };
@@ -4937,25 +5014,47 @@ async function pdfParaImagem(file){
   return new File([blob],String(file.name||'comprovante').replace(/\.pdf$/i,'')+'.jpg',{type:'image/jpeg'});
 }
 
+const G_SESSAO_MORTA='SESSAO_GOOGLE_EXPIRADA';
+const ehNaoAutorizado=st=>st===401||st===403;
+/* Qualquer chamada ao Drive volta 401 se o token morreu no meio do caminho —
+   aba que ficou aberta a noite toda, troca de rede, relógio do celular torto.
+   Aqui o token é renovado e a chamada repetida UMA vez; só se insistir é que
+   desconecta e avisa em português. Antes, o JSON cru do Google ia pra tela.
+   Recebe um FABRICANTE de request, não o request: FormData é consumida no
+   envio, e reaproveitar o mesmo objeto manda corpo vazio na segunda tentativa. */
+async function driveFetch(monta){
+  let res=null;
+  if(await gGarantirToken()){
+    res=await monta();
+    if(ehNaoAutorizado(res.status)&&await gGarantirToken(true))res=await monta();
+  }
+  if(!res||ehNaoAutorizado(res.status)){
+    gClearToken();updGoogleUI();
+    throw new Error(G_SESSAO_MORTA);
+  }
+  return res;
+}
 /* Sobe o arquivo convertendo para Documento Google — é essa conversão que
    dispara o OCR (aceita JPG/PNG e PDF) — exporta o texto puro e apaga o
    Doc temporário. Devolve o texto reconhecido. */
 async function ocrViaDrive(file){
-  const meta={name:'_lupa_ocr_tmp_'+Date.now(),mimeType:'application/vnd.google-apps.document',parents:[DRIVE_FOLDER_ID]};
-  const form=new FormData();
-  form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
-  form.append('file',file);
-  const upRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&ocr=true&fields=id',{
-    method:'POST',headers:{Authorization:`Bearer ${gToken}`},body:form
+  const upRes=await driveFetch(()=>{
+    const meta={name:'_lupa_ocr_tmp_'+Date.now(),mimeType:'application/vnd.google-apps.document',parents:[DRIVE_FOLDER_ID]};
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file',file);
+    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&ocr=true&fields=id',{
+      method:'POST',headers:{Authorization:`Bearer ${gToken}`},body:form
+    });
   });
   if(!upRes.ok){const err=await upRes.text();throw new Error('Upload OCR falhou: '+err);}
   const {id:docId}=await upRes.json();
-  const txtRes=await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/export?mimeType=text/plain`,{
+  const txtRes=await driveFetch(()=>fetch(`https://www.googleapis.com/drive/v3/files/${docId}/export?mimeType=text/plain`,{
     headers:{Authorization:`Bearer ${gToken}`}
-  });
+  }));
   const texto=await txtRes.text();
   // apaga o Doc temporário (não o arquivo original do comprovante)
-  fetch(`https://www.googleapis.com/drive/v3/files/${docId}`,{method:'DELETE',headers:{Authorization:`Bearer ${gToken}`}});
+  fetch(`https://www.googleapis.com/drive/v3/files/${docId}`,{method:'DELETE',headers:{Authorization:`Bearer ${gToken}`}}).catch(()=>{});
   return txtRes.ok?texto:'';
 }
 const temTexto=t=>!!(t&&t.replace(/\s/g,'').length>=12);
@@ -4963,7 +5062,13 @@ function ocrAceita(file){ return !!file && ((file.type||'').startsWith('image/')
 
 async function runOCRAutoFill(file){
   if(!file) return false;
-  if(!gToken){toast('⚠️ Conecte o Google (botão OCR no topo) para autopreencher.','warn');return false;}
+  /* Antes olhava só se EXISTIA um token, mesmo vencido — seguia em frente e
+     estourava 401. Agora tenta renovar em silêncio e só reclama se não deu. */
+  if(!(await gGarantirToken())){
+    updGoogleUI();
+    toast('⚠️ Conecte o Google (botão OCR no topo) para autopreencher.','warn');
+    return false;
+  }
   if(!ocrAceita(file)){toast('OCR funciona com imagem (JPG/PNG) ou PDF. Esse arquivo segue anexado sem leitura.','info');return false;}
 
   const overlay=document.getElementById('ocr-overlay');
@@ -5009,8 +5114,13 @@ async function runOCRAutoFill(file){
     if(overlay) overlay.classList.remove('open');
     console.error('OCR error:',err);
     const msg=String(err&&err.message||err);
-    if(pdf && /Upload OCR falhou/.test(msg)){
-      toast('O Google não aceitou esse PDF no OCR. Ele segue anexado — preencha à mão ou mande um print da tela.','warn');
+    if(msg.indexOf(G_SESSAO_MORTA)>=0){
+      toast('Sua conexão com o Google expirou. Clique em "OCR" no topo para reconectar — o comprovante já está anexado.','warn');
+    } else if(/Upload OCR falhou/.test(msg)){
+      /* O detalhe técnico já foi pro console.error acima — na tela vai o que
+         dá pra fazer a respeito, não o JSON de erro do Google. */
+      toast(pdf?'O Google não aceitou esse PDF no OCR. Ele segue anexado — preencha à mão ou mande um print da tela.'
+               :'O Google não conseguiu ler esse arquivo. Ele segue anexado — preencha à mão.','warn');
     } else toast('Erro no OCR: '+msg,'error');
     return false;
   }
@@ -5020,7 +5130,7 @@ async function iniciarOCR(e){
   let file=e.target.files[0];
   e.target.value='';
   if(!file)return;
-  if(!gToken){toast('⚠️ Conecte o Google para usar o OCR. Clique em "● OCR" no topo.','warn');return;}
+  if(!(await gGarantirToken())){updGoogleUI();toast('⚠️ Conecte o Google para usar o OCR. Clique em "● OCR" no topo.','warn');return;}
   if(!ocrAceita(file)){toast('Use uma imagem (JPG, PNG) ou um PDF.','error');return;}
   if(file.size>ANEXO_MAX){toast('Arquivo maior que 8MB — use um menor.','error');return;}
   /* Comprime antes de subir: o OCR do Google recusa acima de 2 MB, e foto de
