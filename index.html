@@ -1079,6 +1079,40 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   /* Overlay não faz sentido em mobile (bottom sheet) */
   .dz-overlay{display:none!important}
 }
+/* ═══════════════════════════════════════════════════════════════
+   ★ PAINÉIS RETRÁTEIS NO DESKTOP (≥901px)
+   Menu da esquerda e painel de NF da direita podem ser escondidos
+   para ganhar largura. Estado guardado no localStorage.
+   ═══════════════════════════════════════════════════════════════ */
+.panel-tog{
+  display:none;align-items:center;gap:6px;height:34px;padding:0 12px;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
+  color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:600;white-space:nowrap;transition:all .18s;
+}
+.panel-tog:hover{border-color:var(--brand2);color:var(--brand3)}
+.panel-tog svg{width:14px;height:14px;flex-shrink:0;transition:transform .25s}
+.split-collapse-btn{
+  display:none;align-items:center;justify-content:center;align-self:flex-end;
+  width:28px;height:28px;margin-bottom:6px;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:7px;
+  color:var(--text3);cursor:pointer;transition:all .15s;
+}
+.split-collapse-btn:hover{border-color:var(--brand2);color:var(--brand3)}
+.split-collapse-btn svg{width:15px;height:15px}
+@media(min-width:901px){
+  /* O hambúrguer passa a existir no desktop para recolher o menu lateral */
+  .hamburger{display:flex!important}
+  body.sb-off .sidebar{transform:translateX(-253px)}
+  body.sb-off .main-wrap{margin-left:0}
+  /* Painel de NF retrátil */
+  .panel-tog{display:inline-flex}
+  .split-collapse-btn{display:inline-flex}
+  body.nf-off .lanc-split-wrap{grid-template-columns:1fr}
+  body.nf-off .lanc-split-left{padding-right:0}
+  body.nf-off .lanc-split-right{display:none}
+  body.nf-off #btn-tog-nf svg{transform:rotate(180deg)}
+}
 /* ─── Modo Rápido v2 (desktop) — igual mockup Split aprovado ─── */
 .rapido-title-row{display:none}  /* só aparece desktop-split (via media abaixo) */
 .rapido-title-badge{
@@ -1969,13 +2003,17 @@ input,select,textarea{min-height:44px}
 <div id="page-lancamentos" class="page" role="main">
   <div class="page-hdr">
     <div><div class="page-title">Lançamentos</div></div>
-    <button id="btn-novo-lanc" onclick="openLancSheet()" class="btn" style="display:none;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;border:none;font-size:13px;font-weight:600;padding:0 20px;height:40px;border-radius:9px;box-shadow:0 3px 10px rgba(39,174,96,.3)" aria-label="Novo lançamento">+ Lançar</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="btn-tog-nf" class="panel-tog" onclick="toggleNFPanel()" aria-expanded="true" aria-controls="lanc-split-right" title="Esconder ou mostrar o formulário de nota fiscal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 18 19 12 13 6"/><line x1="5" y1="4" x2="5" y2="20"/></svg><span id="btn-tog-nf-lbl">Esconder formulário</span></button>
+      <button id="btn-novo-lanc" onclick="openLancSheet()" class="btn" style="display:none;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;border:none;font-size:13px;font-weight:600;padding:0 20px;height:40px;border-radius:9px;box-shadow:0 3px 10px rgba(39,174,96,.3)" aria-label="Novo lançamento">+ Lançar</button>
+    </div>
   </div>
   <div id="apagar-alert-wrap"></div>
 
   <!-- ★ SPLIT WRAP — grid ativo só desktop (>900px). Mobile mantém layout linear. -->
   <div class="lanc-split-wrap">
-  <div class="lanc-split-right">
+  <div class="lanc-split-right" id="lanc-split-right">
+  <button class="split-collapse-btn" onclick="toggleNFPanel()" title="Esconder o formulário" aria-label="Esconder o formulário de nota fiscal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 18 19 12 13 6"/><polyline points="6 18 12 12 6 6"/></svg></button>
   <div class="dz-overlay" id="lanc-dz-overlay" aria-hidden="true">
     <div class="dz-overlay-ico"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
     <div class="dz-overlay-txt">Solte o comprovante aqui</div>
@@ -3824,6 +3862,12 @@ function setBnActive(el){
   if(svg){svg.style.animation='none';void svg.offsetWidth;svg.style.animation='bnBounce .3s cubic-bezier(.4,0,.2,1)';}
 }
 function toggleSidebar(){
+  // Desktop: recolhe a coluna inteira (ganha largura). Mobile: gaveta com overlay.
+  if(window.matchMedia('(min-width:901px)').matches){
+    const off=document.body.classList.toggle('sb-off');
+    localStorage.setItem('lupa_sb_off',off?'1':'0');
+    return;
+  }
   const sb=document.getElementById('sidebar');
   const ov=document.getElementById('sidebar-ov');
   sb.classList.toggle('open');
@@ -3832,6 +3876,23 @@ function toggleSidebar(){
 function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   const ov=document.getElementById('sidebar-ov');if(ov)ov.classList.remove('open');
+}
+function toggleNFPanel(){
+  const off=document.body.classList.toggle('nf-off');
+  localStorage.setItem('lupa_nf_off',off?'1':'0');
+  syncNFPanelBtn();
+}
+function syncNFPanelBtn(){
+  const off=document.body.classList.contains('nf-off');
+  const lbl=document.getElementById('btn-tog-nf-lbl');
+  if(lbl)lbl.textContent=off?'Mostrar formulário':'Esconder formulário';
+  const btn=document.getElementById('btn-tog-nf');
+  if(btn)btn.setAttribute('aria-expanded',off?'false':'true');
+}
+function restorePanelPrefs(){
+  if(localStorage.getItem('lupa_sb_off')==='1')document.body.classList.add('sb-off');
+  if(localStorage.getItem('lupa_nf_off')==='1')document.body.classList.add('nf-off');
+  syncNFPanelBtn();
 }
 
 /* ══ THEME ══ */
@@ -7148,6 +7209,7 @@ function initApp(){
   const theme=localStorage.getItem('lupa_theme')||'dark';
   document.documentElement.dataset.theme=theme;
   document.getElementById('theme-lbl').textContent=theme==='dark'?'🌙 Modo Escuro':'☀️ Modo Claro';
+  restorePanelPrefs();
   const ll=document.getElementById('login-logo-wrap');
   if(ll){const img=document.createElement('img');img.src=LOGO_B64;img.alt='LUPA Facilities';ll.appendChild(img);}
   const stored=sessionStorage.getItem('lupa_user');
