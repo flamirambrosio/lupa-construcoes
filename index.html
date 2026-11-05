@@ -518,7 +518,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 [data-theme="light"] .sidebar-logo .logo-city{color:rgba(255,255,255,.4)}
 /* ═══ PRINT ═══ */
 @media print{
-  .sidebar,.topbar,.bottom-nav,.toast,.modal-ov,.btn,.btn-conn,.hamburger,.global-search-wrap,.sb-footer,.obra-sel,.nav-sec,.rel-modal-ov:not(.open){display:none!important}
+  .sidebar,.topbar,.bottom-nav,.toast,.modal-ov,.btn,.btn-conn,.hamburger,.sb-edge-tog,.panel-tog,.split-collapse-btn,.global-search-wrap,.sb-footer,.obra-sel,.nav-sec,.rel-modal-ov:not(.open){display:none!important}
   .main-wrap{margin-left:0!important}
   .main-content{padding:0!important}
   body{background:#fff!important;color:#000!important}
@@ -1058,7 +1058,15 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .lanc-split-right .mode-switch{margin-bottom:12px}
   /* Cards mobile do histórico só no mobile */
   .lanc-cards{display:none!important}
-  .lanc-hist-tbl-wrap{display:block}
+  /* Área de rolagem própria: a tabela tem largura mínima maior que a coluna
+     quando o painel de NF está aberto — sem isso ela transborda por cima dele. */
+  .lanc-hist-tbl-wrap{
+    display:block;overflow:auto;
+    max-height:calc(100vh - 420px);
+    border:1px solid var(--border);border-radius:9px;
+  }
+  .lanc-hist-tbl-wrap::-webkit-scrollbar{width:7px;height:7px}
+  .lanc-hist-tbl{min-width:640px}
   /* Botão "+ Lançar" some no desktop (form sempre visível) */
   #btn-novo-lanc{display:none!important}
   /* Drop zone no fluxo natural: logo APÓS Pagamento e ANTES do Salvar (igual mockup aprovado) */
@@ -1100,9 +1108,21 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 }
 .split-collapse-btn:hover{border-color:var(--brand2);color:var(--brand3)}
 .split-collapse-btn svg{width:15px;height:15px}
+/* Seta discreta na borda esquerda do painel principal, centralizada na vertical */
+.sb-edge-tog{
+  display:none;position:fixed;top:50%;left:252px;z-index:201;
+  width:20px;height:52px;margin-top:-26px;
+  align-items:center;justify-content:center;padding:0;
+  background:var(--surface);border:1px solid var(--border2);border-left:none;
+  border-radius:0 8px 8px 0;color:var(--text3);cursor:pointer;opacity:.4;
+  transition:opacity .2s,left .3s,color .2s,border-color .2s;
+}
+.sb-edge-tog:hover{opacity:1;color:var(--brand3);border-color:var(--brand2)}
+.sb-edge-tog svg{width:13px;height:13px;transition:transform .3s}
+body.sb-off .sb-edge-tog{left:0}
+body.sb-off .sb-edge-tog svg{transform:rotate(180deg)}
 @media(min-width:901px){
-  /* O hambúrguer passa a existir no desktop para recolher o menu lateral */
-  .hamburger{display:flex!important}
+  .sb-edge-tog{display:flex}
   body.sb-off .sidebar{transform:translateX(-253px)}
   body.sb-off .main-wrap{margin-left:0}
   /* Painel de NF retrátil */
@@ -1855,6 +1875,7 @@ input,select,textarea{min-height:44px}
 
 <!-- SIDEBAR OVERLAY -->
 <div class="sidebar-ov" id="sidebar-ov" onclick="closeSidebar()"></div>
+<button class="sb-edge-tog" onclick="toggleSidebar()" title="Esconder ou mostrar o menu" aria-label="Esconder ou mostrar o menu lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
 
 <!-- ═══ MAIN ═══ -->
 <div class="main-wrap">
