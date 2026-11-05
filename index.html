@@ -527,6 +527,11 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .page{display:block!important}
   .page:not(.active){display:none!important}
   table{font-size:10px!important}
+  /* No papel não existe rolagem nem seta: a nota sai aberta e inteira */
+  .lanc-hist-tbl-wrap{overflow:visible!important;max-height:none!important;border:none!important}
+  .lanc-hist-tbl tbody tr.nf-child{display:table-row!important}
+  .nf-exp,.nf-card-exp{display:none!important}
+  .nf-card-itens{display:block!important}
   .rel-modal-ov.open{position:fixed!important;inset:0!important;padding:0!important;background:#fff!important;z-index:9999!important}
   .rel-modal{border-radius:0!important;box-shadow:none!important;max-width:100%!important;height:100%!important}
   .rel-modal-toolbar{display:none!important}
@@ -948,6 +953,33 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .lanc-hist-tbl .pag-badge.a_pagar{background:var(--yellow-bg);color:var(--yellow)}
 .lanc-hist-tbl a.hist-comp{color:var(--brand3);text-decoration:none;font-size:11px}
 .lanc-hist-tbl a.hist-comp:hover{text-decoration:underline}
+/* ─── NOTA FISCAL AGRUPADA: uma linha por nota, abre nos itens ─── */
+.lanc-hist-tbl .pag-badge.parcial{background:rgba(230,126,34,.13);color:#E67E22}
+.nf-exp{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;padding:0;margin-right:4px;vertical-align:-5px;
+  background:none;border:none;color:var(--text3);cursor:pointer;
+  border-radius:5px;transition:color .15s,background .15s;
+}
+.nf-exp:hover{color:var(--brand3);background:var(--bg3)}
+.nf-exp svg{transition:transform .22s}
+.nf-parent.open .nf-exp svg{transform:rotate(90deg)}
+.nf-exp-spacer{display:inline-block;width:24px}
+.nf-ttl{font-weight:600}
+.nf-prev{
+  display:block;margin:2px 0 0 24px;max-width:270px;
+  font-size:10.5px;color:var(--text3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lanc-hist-tbl tbody tr.nf-child{display:none}
+.lanc-hist-tbl tbody tr.nf-child.open{display:table-row}
+.lanc-hist-tbl tbody tr.nf-child td{background:var(--bg3);height:32px;padding-top:5px;padding-bottom:5px}
+.lanc-hist-tbl tbody tr.nf-child td.nf-child-desc{padding-left:34px;color:var(--text2);position:relative}
+.lanc-hist-tbl tbody tr.nf-child td.nf-child-desc::before{
+  content:'';position:absolute;left:20px;top:50%;
+  width:7px;height:7px;margin-top:-6px;
+  border-left:1px solid var(--border2);border-bottom:1px solid var(--border2);
+}
 /* ─── DROP ZONE ─── */
 .dz-lanc{
   margin-top:10px;padding:20px 16px;
@@ -1569,6 +1601,25 @@ input,select,textarea{min-height:44px}
 .lanc-card-valor{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap}
 .lanc-card-actions{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
 .lanc-card-comp{font-size:11.5px;color:var(--brand3);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Card de nota agrupada (mobile) */
+.nf-card-exp{
+  display:flex;align-items:center;gap:8px;width:100%;margin-bottom:8px;
+  padding:9px 11px;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:8px;cursor:pointer;text-align:left;
+  font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--text);
+}
+.nf-card-exp svg{color:var(--text3);transition:transform .22s;flex-shrink:0}
+.nf-card.open .nf-card-exp svg{transform:rotate(90deg)}
+.nf-card-itens{display:none;margin-bottom:9px}
+.nf-card-itens.open{display:block}
+.nf-card-item{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--bg3);border-radius:7px;margin-bottom:5px}
+.nf-ci-desc{flex:1;min-width:0;font-size:12.5px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nf-ci-qtd{margin-left:6px;font-size:10.5px;color:var(--text3)}
+.nf-ci-val{font-size:12.5px;font-weight:700;white-space:nowrap}
+.nf-ci-acts{display:flex;gap:2px;flex-shrink:0}
+.nf-ci-acts button{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px 5px;border-radius:5px}
+.nf-ci-acts button:hover{color:var(--brand3);background:var(--surface2)}
+.nf-ci-acts button.del:hover{color:var(--red)}
 .lanc-act-btn{background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 9px;font-size:11.5px;cursor:pointer;color:var(--text2);font-family:'DM Sans',sans-serif}
 .lanc-act-btn.pay{color:var(--green);border-color:rgba(39,174,96,.4)}
 .lanc-act-btn.del{color:var(--red);border-color:rgba(231,76,60,.3)}
@@ -3512,6 +3563,7 @@ const ICN={
   building:'<path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18"/><path d="M6 12H4a2 2 0 00-2 2v8h20v-8a2 2 0 00-2-2h-2"/><path d="M10 6h4M10 10h4M10 14h4"/>',
   mappin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',
   check:'<polyline points="20 6 9 17 4 12"/>',
+  chevron:'<polyline points="9 18 15 12 9 6"/>',
   checkcircle:'<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>',
   hourglass:'<path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 00-.59-1.42L12 12l-4.41 4.41A2 2 0 007 17.83V22M7 2v4.17a2 2 0 00.59 1.42L12 12l4.41-4.41A2 2 0 0017 6.17V2"/>',
@@ -5929,14 +5981,20 @@ async function salvarNFMulti(){
      o mesmo print cinco vezes — foi assim que 1 screenshot virou 3,6 MB.
      A cópia local fica só no primeiro; todos apontam pra mesma URL na nuvem. */
   let b64UmaVez=cFileB64||'';
-  nfItems.forEach(x=>{
+  /* Todos os itens da mesma nota carregam o mesmo nfId: é ele que faz o
+     histórico mostrar UMA linha por nota em vez de uma por item. */
+  const nfId=uid();
+  // unshift item a item invertia a ordem da nota; insere o bloco de uma vez.
+  const novos=nfItems.map(x=>{
     const ex=Object.assign({},x.extra||{});
     if(nfCnpj)ex.cnpj=nfCnpj;
-    ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:nfCat,subcat:'',desc:norm(x.desc),valor:x.valor,
+    const reg={id:uid(),obraId:ob.id,cat:nfCat,subcat:'',desc:norm(x.desc),valor:x.valor,
       data,obs:'',comprovante:cFile?cFile.name:'',fileB64:b64UmaVez,
-      cloudinaryUrl,fornecedor:nfForn,statusPag,nfNum:'',extra:ex,ts:Date.now()});
+      cloudinaryUrl,fornecedor:nfForn,statusPag,nfNum:'',nfId,extra:ex,ts:Date.now()};
     b64UmaVez='';
+    return reg;
   });
+  ST.lancamentos.unshift(...novos);
   addAudit('NF inserida',(nfForn||'Sem fornecedor')+' — '+nfItems.length+' item(s) · '+nfCat);
   if(nfForn)saveFornRecente(nfForn,nfCat);
   const total=nfItems.reduce((a,x)=>a+x.valor,0);
@@ -6046,6 +6104,39 @@ function limparFiltros(){
   renderT();
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   ★ AGRUPAMENTO POR NOTA FISCAL
+   Uma NF de 10 itens grava 10 lançamentos (cada item tem valor e
+   categoria próprios, e precisa continuar assim para os relatórios).
+   No histórico eles aparecem como UMA linha que abre na seta.
+   ═══════════════════════════════════════════════════════════════ */
+const nfOpenKeys=new Set();
+let nfRenderKeys=[];
+/* Lançamentos antigos guardaram o retorno inteiro do Cloudinary ({url,publicId})
+   em vez de só a URL — sem isso o link vira href="[object Object]". */
+function cloudUrl(l){
+  const c=l&&l.cloudinaryUrl;
+  return typeof c==='string'?c:((c&&c.url)||'');
+}
+function lancGroupKey(l){
+  if(l.nfId)return 'nf:'+l.nfId;
+  /* Lançamentos gravados antes do nfId existir: a nota é reconstruída pelo
+     conjunto que o salvamento repetia em todos os itens. Sem comprovante
+     não dá para afirmar que é a mesma nota — então fica sozinho. */
+  const comp=typeof l.comprovante==='string'?l.comprovante:'';
+  if(!comp)return 'solo:'+l.id;
+  return 'old:'+l.obraId+'|'+l.data+'|'+l.cat+'|'+(l.fornecedor||'')+'|'+comp;
+}
+function toggleNFGroup(i){
+  const k=nfRenderKeys[i];if(k===undefined)return;
+  const open=!nfOpenKeys.has(k);
+  if(open)nfOpenKeys.add(k);else nfOpenKeys.delete(k);
+  document.querySelectorAll('#tabela [data-nfg="'+i+'"]').forEach(e=>e.classList.toggle('open',open));
+  document.querySelectorAll('#tabela [data-nfp="'+i+'"]').forEach(e=>{
+    e.classList.toggle('open',open);
+    const b=e.querySelector('[aria-expanded]');if(b)b.setAttribute('aria-expanded',open?'true':'false');
+  });
+}
 function renderT(keepPage=false){
   if(!keepPage)lancPage=0;
   const ob=getOA();
@@ -6070,24 +6161,51 @@ function renderT(keepPage=false){
   if(!items.length){w.innerHTML='<p style="color:var(--text3);text-align:center;padding:24px;font-size:13px">Nenhum lançamento encontrado.</p>';return;}
   const totalFil=items.reduce((a,l)=>a+(+l.valor||0),0);
   const aPagar=items.filter(l=>(l.statusPag||'pago')==='a_pagar').reduce((a,l)=>a+(+l.valor||0),0);
-  const totalPages=Math.ceil(items.length/LANC_PG)||1;
+  // Agrupa os itens em notas; a paginação passa a contar notas, não itens.
+  const gMap=new Map();
+  items.forEach(l=>{
+    const k=lancGroupKey(l);
+    if(!gMap.has(k))gMap.set(k,{key:k,itens:[]});
+    gMap.get(k).itens.push(l);
+  });
+  const groups=[...gMap.values()].map(g=>{
+    const f=g.itens[0];
+    g.data=f.data;g.cat=f.cat;g.fornecedor=f.fornecedor||'';g.nfNum=f.nfNum||'';
+    g.valor=g.itens.reduce((a,x)=>a+(+x.valor||0),0);
+    g.desc=g.itens.length>1?g.itens.map(x=>x.desc||'').filter(Boolean).join(' · '):(f.desc||f.descricao||'—');
+    return g;
+  }).sort((a,b)=>{
+    let va,vb;
+    if(sortCol==='valor'){va=a.valor;vb=b.valor;}
+    else if(sortCol==='data'){va=a.data||'';vb=b.data||'';}
+    else{va=(a.desc||'').toLowerCase();vb=(b.desc||'').toLowerCase();}
+    if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0;
+  });
+  const totalPages=Math.ceil(groups.length/LANC_PG)||1;
   if(lancPage>=totalPages)lancPage=totalPages-1;
-  const pageItems=items.slice(lancPage*LANC_PG,(lancPage+1)*LANC_PG);
+  const pageGroups=groups.slice(lancPage*LANC_PG,(lancPage+1)*LANC_PG);
+  nfRenderKeys=pageGroups.map(g=>g.key);
   const summaryBar=`<div class="lanc-summary-bar">
     <span>${items.length} lançamento${items.length!==1?'s':''}</span>
+    ${groups.length<items.length?`<span style="opacity:.4">·</span><span>em ${groups.length} nota${groups.length!==1?'s':''}</span>`:''}
     <span style="opacity:.4">·</span>
     <strong>${fmt(totalFil)}</strong>
     ${(aPagar>0&&filPag!=='a_pagar')?`<span style="opacity:.4">·</span><span style="color:var(--yellow)">${ic('hourglass',12)} ${fmt(aPagar)} a pagar</span>`:''}
   </div>`;
-  const cards=pageItems.map(l=>{
+  const grpPag=g=>{
+    const pg=g.itens.filter(x=>(x.statusPag||'pago')==='pago').length;
+    return pg===g.itens.length?'pago':(pg===0?'a_pagar':'parcial');
+  };
+  const cardHTML=l=>{
     const isPago=(l.statusPag||'pago')==='pago';
     const catClr=CC[l.cat]||'#888';
     const obraNm=todasObras?ST.obras.find(o=>o.id===l.obraId)?.nome:'';
     const desc=l.desc||l.descricao||'—';
     const obsDisplay=(l.obs&&l.obs!=='Lançamento rápido')?l.obs:'';
     let compBtn='';
-    if(l.cloudinaryUrl)compBtn=`<a href="${l.cloudinaryUrl}" target="_blank" class="lanc-card-comp" title="Ver comprovante">${ic('cloud',13)} Ver comprovante</a>`;
-    else if(l.fileB64)compBtn=`<a href="${l.fileB64}" download="${l.comprovante||'comprovante'}" class="lanc-card-comp">${ic('paperclip',13)} ${esc((l.comprovante||'arquivo').slice(0,28))}</a>`;
+    const cu=cloudUrl(l);
+    if(cu)compBtn=`<a href="${esc(cu)}" target="_blank" class="lanc-card-comp" title="Ver comprovante">${ic('cloud',13)} Ver comprovante</a>`;
+    else if(l.fileB64)compBtn=`<a href="${l.fileB64}" download="${esc(l.comprovante||'comprovante')}" class="lanc-card-comp">${ic('paperclip',13)} ${esc((l.comprovante||'arquivo').slice(0,28))}</a>`;
     else if(l.comprovante)compBtn=`<span class="lanc-card-comp">${ic('paperclip',13)} ${esc(l.comprovante.slice(0,28))}</span>`;
     const metaParts=[`<span>${esc(fD(l.data))}</span>`];
     if(l.fornecedor)metaParts.push(`<span>${ic('building',11)} ${esc(l.fornecedor)}</span>`);
@@ -6114,38 +6232,122 @@ function renderT(keepPage=false){
         </div>
       </div>
     </div>`;
+  };
+  const cards=pageGroups.map((g,gi)=>{
+    if(g.itens.length===1)return cardHTML(g.itens[0]);
+    const f=g.itens[0];
+    const catClr=CC[g.cat]||'#888';
+    const pag=grpPag(g);
+    const open=nfOpenKeys.has(g.key);
+    let compBtn='';
+    const fcu=cloudUrl(f);
+    if(fcu)compBtn=`<a href="${esc(fcu)}" target="_blank" class="lanc-card-comp" title="Ver comprovante">${ic('cloud',13)} Ver comprovante</a>`;
+    else if(f.comprovante)compBtn=`<span class="lanc-card-comp">${ic('paperclip',13)} ${esc(f.comprovante.slice(0,28))}</span>`;
+    const metaParts=[`<span>${esc(fD(g.data))}</span>`];
+    if(g.fornecedor)metaParts.push(`<span>${ic('building',11)} ${esc(g.fornecedor)}</span>`);
+    if(g.nfNum)metaParts.push(`<span>${ic('receipt',11)} ${esc(g.nfNum)}</span>`);
+    const pagLbl=pag==='pago'?ic('check',12)+' Pago':(pag==='a_pagar'?ic('hourglass',12)+' A Pagar':ic('hourglass',12)+' Parcial');
+    return `<div class="lanc-card nf-card${open?' open':''}" data-nfp="${gi}" style="border-left-color:${catClr}">
+      <div class="lanc-card-top">
+        <span class="badge" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${CL[g.cat]||g.cat}</span>
+        <span class="badge ${pag==='pago'?'b-pago':'b-apagar'}">${pagLbl}</span>
+      </div>
+      <button class="nf-card-exp" onclick="toggleNFGroup(${gi})" aria-expanded="${open?'true':'false'}">
+        ${ic('chevron',14)}<span>Nota com ${g.itens.length} itens</span>
+      </button>
+      <div class="nf-card-itens${open?' open':''}" data-nfg="${gi}">
+        ${g.itens.map(x=>`<div class="nf-card-item">
+          <div class="nf-ci-desc">${esc(x.desc||x.descricao||'—')}${x.extra?.qtd?`<span class="nf-ci-qtd">${esc(x.extra.qtd+' '+(x.extra.un||''))}</span>`:''}</div>
+          <div class="nf-ci-val">${fmt(x.valor)}</div>
+          <div class="nf-ci-acts">
+            ${(x.statusPag||'pago')!=='pago'?`<button onclick="marcarPago('${x.id}')" title="Marcar pago">${ic('check',13)}</button>`:''}
+            <button onclick="openEditLanc('${x.id}')" title="Editar">${ic('pencil',13)}</button>
+            <button class="del" onclick="delL('${x.id}')" title="Remover">${ic('trash',13)}</button>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="lanc-card-bottom">
+        <div class="lanc-card-meta">${metaParts.join('')}</div>
+        <div class="lanc-card-valor">${fmt(g.valor)}</div>
+      </div>
+      <div class="lanc-card-actions">
+        ${compBtn||'<span class="lanc-card-comp" style="color:var(--text3)">Sem comprovante</span>'}
+      </div>
+    </div>`;
   }).join('');
   const pgCtrl=totalPages>1?`<div class="lanc-pg-ctrl">
     <button class="btn btn-sm" onclick="lancGoPage(${lancPage-1})" ${lancPage===0?'disabled':''}>← Anterior</button>
-    <span>${lancPage+1}/${totalPages} · ${items.length} item${items.length!==1?'s':''}</span>
+    <span>${lancPage+1}/${totalPages} · ${groups.length} nota${groups.length!==1?'s':''}</span>
     <button class="btn btn-sm" onclick="lancGoPage(${lancPage+1})" ${lancPage>=totalPages-1?'disabled':''}>Próxima →</button>
   </div>`:'';
   /* ★ Tabela HTML densa (desktop) — CSS decide via media query se mostra tabela ou cards */
-  const rows = pageItems.map(l => {
-    const isPago=(l.statusPag||'pago')==='pago';
-    const catClr=CC[l.cat]||'#888';
-    const desc=l.desc||l.descricao||'—';
-    const obraNm=todasObras?(ST.obras.find(o=>o.id===l.obraId)?.nome||''):'';
-    let compCell='<span style="color:var(--text3)">—</span>';
-    if(l.cloudinaryUrl)compCell=`<a href="${esc(l.cloudinaryUrl)}" target="_blank" class="hist-comp" title="Ver comprovante">${ic('cloud',12)} Ver</a>`;
-    else if(l.fileB64)compCell=`<a href="${esc(l.fileB64)}" download="${esc(l.comprovante||'comprovante')}" class="hist-comp">${ic('paperclip',12)} baixar</a>`;
-    else if(l.comprovante)compCell=`<span class="hist-comp" style="color:var(--text3)">${ic('paperclip',12)} ${esc(l.comprovante.slice(0,14))}</span>`;
-    const catName=(CL[l.cat]||l.cat||'').slice(0,4);
-    return `<tr>
-      <td class="data">${esc(fD(l.data))}</td>
-      <td class="cat-cell"><span class="cat-tag" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${esc(catName)}</span></td>
-      <td>${esc(desc)}${obraNm?`<span style="margin-left:6px;font-size:10.5px;color:var(--text3)">${ic('home',11)} ${esc(obraNm)}</span>`:''}</td>
-      <td style="color:var(--text2);font-size:12px">${esc(l.fornecedor||'—')}</td>
-      <td class="valor">${fmt(l.valor)}</td>
-      <td><span class="pag-badge ${isPago?'pago':'a_pagar'}">${isPago?ic('check',11)+' Pago':ic('hourglass',11)+' Pag.'}</span></td>
-      <td style="color:var(--text3);font-size:11px">${esc(l.nfNum||'—')}</td>
-      <td>${compCell}</td>
-      <td class="actions">
-        ${!isPago?`<button onclick="marcarPago('${l.id}')" title="Marcar pago">${ic('check',13)}</button>`:''}
-        <button onclick="openEditLanc('${l.id}')" title="Editar">${ic('pencil',13)}</button>
-        <button class="del" onclick="delL('${l.id}')" title="Remover">${ic('trash',13)}</button>
+  const compCellFor=l=>{
+    const cu=cloudUrl(l);
+    if(cu)return `<a href="${esc(cu)}" target="_blank" class="hist-comp" title="Ver comprovante">${ic('cloud',12)} Ver</a>`;
+    if(l.fileB64)return `<a href="${esc(l.fileB64)}" download="${esc(l.comprovante||'comprovante')}" class="hist-comp">${ic('paperclip',12)} baixar</a>`;
+    if(l.comprovante)return `<span class="hist-comp" style="color:var(--text3)">${ic('paperclip',12)} ${esc(l.comprovante.slice(0,14))}</span>`;
+    return '<span style="color:var(--text3)">—</span>';
+  };
+  const rows = pageGroups.map((g,gi) => {
+    const catClr=CC[g.cat]||'#888';
+    const catName=(CL[g.cat]||g.cat||'').slice(0,4);
+    const catTag=`<span class="cat-tag" style="background:${catClr}22;color:${catClr};border:1px solid ${catClr}44">${esc(catName)}</span>`;
+    if(g.itens.length===1){
+      const l=g.itens[0];
+      const isPago=(l.statusPag||'pago')==='pago';
+      const obraNm=todasObras?(ST.obras.find(o=>o.id===l.obraId)?.nome||''):'';
+      return `<tr>
+        <td class="data">${esc(fD(l.data))}</td>
+        <td class="cat-cell">${catTag}</td>
+        <td><span class="nf-exp-spacer"></span>${esc(l.desc||l.descricao||'—')}${obraNm?`<span style="margin-left:6px;font-size:10.5px;color:var(--text3)">${ic('home',11)} ${esc(obraNm)}</span>`:''}</td>
+        <td style="color:var(--text2);font-size:12px">${esc(l.fornecedor||'—')}</td>
+        <td class="valor">${fmt(l.valor)}</td>
+        <td><span class="pag-badge ${isPago?'pago':'a_pagar'}">${isPago?ic('check',11)+' Pago':ic('hourglass',11)+' Pag.'}</span></td>
+        <td style="color:var(--text3);font-size:11px">${esc(l.nfNum||'—')}</td>
+        <td>${compCellFor(l)}</td>
+        <td class="actions">
+          ${!isPago?`<button onclick="marcarPago('${l.id}')" title="Marcar pago">${ic('check',13)}</button>`:''}
+          <button onclick="openEditLanc('${l.id}')" title="Editar">${ic('pencil',13)}</button>
+          <button class="del" onclick="delL('${l.id}')" title="Remover">${ic('trash',13)}</button>
+        </td>
+      </tr>`;
+    }
+    const open=nfOpenKeys.has(g.key);
+    const pag=grpPag(g);
+    const pagLbl=pag==='pago'?ic('check',11)+' Pago':(pag==='a_pagar'?ic('hourglass',11)+' Pag.':ic('hourglass',11)+' Parcial');
+    const parent=`<tr class="nf-parent${open?' open':''}" data-nfp="${gi}">
+      <td class="data">${esc(fD(g.data))}</td>
+      <td class="cat-cell">${catTag}</td>
+      <td>
+        <button class="nf-exp" onclick="toggleNFGroup(${gi})" aria-expanded="${open?'true':'false'}" title="Ver os itens desta nota">${ic('chevron',13)}</button><span class="nf-ttl">Nota com ${g.itens.length} itens</span>
+        <span class="nf-prev">${esc(g.desc)}</span>
       </td>
+      <td style="color:var(--text2);font-size:12px">${esc(g.fornecedor||'—')}</td>
+      <td class="valor">${fmt(g.valor)}</td>
+      <td><span class="pag-badge ${pag}">${pagLbl}</span></td>
+      <td style="color:var(--text3);font-size:11px">${esc(g.nfNum||'—')}</td>
+      <td>${compCellFor(g.itens[0])}</td>
+      <td class="actions"></td>
     </tr>`;
+    const kids=g.itens.map(x=>{
+      const isPago=(x.statusPag||'pago')==='pago';
+      return `<tr class="nf-child${open?' open':''}" data-nfg="${gi}">
+        <td class="data"></td>
+        <td class="cat-cell"></td>
+        <td class="nf-child-desc">${esc(x.desc||x.descricao||'—')}${x.extra?.qtd?`<span class="nf-ci-qtd">${esc(x.extra.qtd+' '+(x.extra.un||''))}</span>`:''}</td>
+        <td></td>
+        <td class="valor">${fmt(x.valor)}</td>
+        <td><span class="pag-badge ${isPago?'pago':'a_pagar'}">${isPago?ic('check',11)+' Pago':ic('hourglass',11)+' Pag.'}</span></td>
+        <td></td>
+        <td></td>
+        <td class="actions">
+          ${!isPago?`<button onclick="marcarPago('${x.id}')" title="Marcar pago">${ic('check',13)}</button>`:''}
+          <button onclick="openEditLanc('${x.id}')" title="Editar">${ic('pencil',13)}</button>
+          <button class="del" onclick="delL('${x.id}')" title="Remover">${ic('trash',13)}</button>
+        </td>
+      </tr>`;
+    }).join('');
+    return parent+kids;
   }).join('');
   const table = `<div class="lanc-hist-tbl-wrap">
     <table class="lanc-hist-tbl">
