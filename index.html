@@ -5830,6 +5830,15 @@ function toggleNFAdd(force){
   if(!_nfAddOpen){
     document.getElementById('nf-mat-dd')?.classList.remove('open');
     document.getElementById('nf-gen-dd')?.classList.remove('open');
+    /* Recolher = desistir: zera os campos e devolve o botão a "+ Adicionar".
+       Sem isso, uma edição abandonada deixava o botão ainda apontando para o
+       item antigo, e o próximo item lançado tomaria o lugar dele. */
+    ['nf-mat-s','nf-mat-qty','nf-gen-desc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    ['nf-mat-val','nf-gen-val'].forEach(id=>setFinVal(document.getElementById(id),0));
+    ['#nf-row-mat .btn.btn-p','#nf-row-gen .btn.btn-p'].forEach(s=>{
+      const b=document.querySelector(s);
+      if(b){b.textContent='+ Adicionar';b.setAttribute('onclick','addNFItem()');}
+    });
   }
 }
 function selectNFCat(cat,el){
@@ -5958,7 +5967,9 @@ function editNFItem(id){
     const addBtn=document.querySelector('#nf-row-gen .btn.btn-p');
     if(addBtn){addBtn.textContent='✔ Atualizar';addBtn.setAttribute('onclick',`addNFItem('${id}')`);}
   }
-  nfItems=nfItems.filter(x=>x.id!==id);
+  /* O item NÃO sai da lista aqui: quem troca o antigo pelo novo é o "Atualizar"
+     (addNFItem já filtra pelo editId). Tirando-o agora, bastava desistir da
+     edição para o item sumir da nota em silêncio. */
   renderNFItems();
   // Set button AFTER render (render would reset it otherwise)
   if(nfCat==='material'){
