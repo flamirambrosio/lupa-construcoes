@@ -5831,7 +5831,11 @@ function selectNFCat(cat,el){
   document.querySelectorAll('[data-nfcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   if(el){el.classList.add('active');el.setAttribute('aria-pressed','true');}
   // Limpar todos os campos de entrada ao trocar categoria
-  ['nf-mat-s','nf-mat-qty','nf-mat-val','nf-gen-desc','nf-gen-val'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['nf-mat-s','nf-mat-qty','nf-gen-desc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  /* Campo de dinheiro guarda o número em dataset.raw, não no .value: zerar só o
+     .value deixa o campo com cara de vazio AINDA valendo o valor anterior, e o
+     próximo item herda esse preço sem ninguém digitar nada. setFinVal limpa os dois. */
+  ['nf-mat-val','nf-gen-val'].forEach(id=>setFinVal(document.getElementById(id),0));
   const unSel=document.getElementById('nf-mat-un');if(unSel)unSel.value='un';
   document.getElementById('nf-mat-dd')?.classList.remove('open');
   document.getElementById('nf-gen-dd')?.classList.remove('open');
@@ -5905,7 +5909,7 @@ function addNFItem(editId){
     extra={qtd:qty,un,unitPrice};
     // smart unit memory
     try{localStorage.setItem('lupa_un_'+desc.toLowerCase().trim(),un);}catch(e){}
-    document.getElementById('nf-mat-s').value='';document.getElementById('nf-mat-qty').value='';document.getElementById('nf-mat-val').value='';
+    document.getElementById('nf-mat-s').value='';document.getElementById('nf-mat-qty').value='';setFinVal(document.getElementById('nf-mat-val'),0);
     document.getElementById('nf-mat-dd').innerHTML='';
     setTimeout(()=>document.getElementById('nf-mat-s').focus(),50);
   }else{
@@ -5913,7 +5917,7 @@ function addNFItem(editId){
     valor=parseFinVal(document.getElementById('nf-gen-val'));
     if(!desc){toast('Informe a descrição.','error');document.getElementById('nf-gen-desc').focus();return;}
     if(!valor||valor<=0){toast('Informe o valor.','error');document.getElementById('nf-gen-val').focus();return;}
-    document.getElementById('nf-gen-desc').value='';document.getElementById('nf-gen-val').value='';
+    document.getElementById('nf-gen-desc').value='';setFinVal(document.getElementById('nf-gen-val'),0);
     setTimeout(()=>document.getElementById('nf-gen-desc').focus(),50);
   }
   if(editId){nfItems=nfItems.filter(x=>x.id!==editId);}
@@ -5936,13 +5940,15 @@ function editNFItem(id){
     document.getElementById('nf-mat-un').value=item.extra?.un||'un';
     // prefill unit price (stored in extra.unitPrice or fallback to valor)
     const up=item.extra?.unitPrice||item.valor;
-    document.getElementById('nf-mat-val').value=up;
+    /* setFinVal, e não .value: o editor lia dataset.raw (o valor do item anterior)
+       em vez do número que estava na tela, e "Atualizar" gravava o preço errado. */
+    setFinVal(document.getElementById('nf-mat-val'),up);
     const addBtn=document.querySelector('#nf-row-mat .btn.btn-p');
     if(addBtn){addBtn.textContent='✔ Atualizar';addBtn.setAttribute('onclick',`addNFItem('${id}')`);}
     document.getElementById('nf-mat-s').focus();
   }else{
     document.getElementById('nf-gen-desc').value=item.desc||'';
-    document.getElementById('nf-gen-val').value=item.valor||'';
+    setFinVal(document.getElementById('nf-gen-val'),item.valor||0);
     const addBtn=document.querySelector('#nf-row-gen .btn.btn-p');
     if(addBtn){addBtn.textContent='✔ Atualizar';addBtn.setAttribute('onclick',`addNFItem('${id}')`);}
     document.getElementById('nf-gen-desc').focus();
