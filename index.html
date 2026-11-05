@@ -2559,6 +2559,14 @@ input,select,textarea{min-height:44px}
           <div class="obra-banner-warn" id="doc-ob-warn" style="display:flex;align-items:center;gap:5px">Confirme a obra antes de salvar</div>
         </div>
 
+        <!-- Barra de edição: deixa explícito que o Salvar vai SUBSTITUIR um
+             documento já gravado, e não criar outro -->
+        <div id="doc-edit-bar" style="display:none;margin-top:12px;padding:9px 11px;border-radius:9px;background:rgba(41,128,185,.12);border:1px solid rgba(41,128,185,.45);font-size:11.5px;color:var(--text2);align-items:center;gap:8px;flex-wrap:wrap">
+          <strong style="color:var(--brand3)">Editando:</strong>
+          <span id="doc-edit-nm" style="flex:1;min-width:0;word-break:break-word;font-weight:600"></span>
+          <button type="button" class="btn btn-sm btn-s" onclick="docCancelarEdicao()">Cancelar edição</button>
+        </div>
+
         <!-- Categoria do documento -->
         <div class="fsec-title" style="margin-top:14px">Categoria do documento</div>
         <div class="doc-cat-picker" role="radiogroup" aria-label="Categoria do documento">
@@ -2596,14 +2604,14 @@ input,select,textarea{min-height:44px}
         </div>
 
         <!-- Drop zone -->
-        <div class="fsec-title" style="margin-top:14px">Arquivo <span class="req">*</span></div>
+        <div class="fsec-title" style="margin-top:14px">Arquivo <span class="req" id="doc-file-req">*</span></div>
         <div class="dz-doc" id="doc-dz" onclick="docPickFile()">
           <div id="doc-dz-empty">
             <div class="dz-doc-ico" style="display:flex;align-items:center;justify-content:center"></div>
             <div class="dz-doc-title">Documento (PDF ou imagem)</div>
             <div class="dz-doc-sub">Arraste, cole com <kbd>Cmd+V</kbd> ou clique para escolher</div>
             <button type="button" class="dz-doc-btn" id="doc-choose-btn" onclick="event.stopPropagation();docPickFile()" style="display:inline-flex;align-items:center;gap:6px">Escolher arquivo</button>
-            <div class="dz-doc-req">* obrigatório — o arquivo é o documento</div>
+            <div class="dz-doc-req" id="doc-dz-req">* obrigatório — o arquivo é o documento</div>
           </div>
           <div id="doc-dz-preview" style="display:none">
             <div class="dz-preview">
@@ -2621,7 +2629,7 @@ input,select,textarea{min-height:44px}
           <input type="file" id="d-file" accept="image/*,application/pdf" style="display:none" onchange="onDocF(event)">
         </div>
 
-        <button onclick="salvarDoc()" aria-label="Salvar documento" style="width:100%;height:44px;margin-top:14px;border:none;border-radius:10px;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,.35);transition:filter .15s;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:7px"><span id="doc-save-ico" style="display:inline-flex;align-items:center"></span>Salvar Documento <span style="opacity:.7;font-weight:500;font-size:11px">(Cmd+↵)</span></button>
+        <button id="doc-save-btn" onclick="salvarDoc()" aria-label="Salvar documento" style="width:100%;height:44px;margin-top:14px;border:none;border-radius:10px;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,.35);transition:filter .15s;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:7px"><span id="doc-save-ico" style="display:inline-flex;align-items:center"></span><span id="doc-save-lbl">Salvar Documento</span> <span style="opacity:.7;font-weight:500;font-size:11px">(Cmd+↵)</span></button>
       </div>
     </div>
   </div>
@@ -3310,7 +3318,12 @@ function mergeFromFirestore(data){
   });
   ST.documentos=(data.documentos||[]).map(d=>{
     const loc=localD.find(x=>x.id===d.id);
-    if(loc&&loc.fileBase64)d.fileBase64=loc.fileBase64;
+    /* O anexo não sobe mais para a nuvem, então a única cópia dele é a local:
+       sem devolver isso aqui, todo merge apagava o arquivo do documento cujo
+       upload para o Cloudinary tinha falhado. Aceita o nome antigo
+       (fileBase64) porque registros de versões anteriores usavam ele. */
+    const b64=loc&&(loc.fileB64||loc.fileBase64);
+    if(b64)d.fileB64=b64;
     return d;
   });
   cleanOrphans();
@@ -3333,12 +3346,19 @@ async function saveToFirestore(attempt=0){
   if(fbWriting){fbSavePending=true;return;} // já tem escrita em andamento — só marca pra reenviar no final, evita .set() concorrentes fora de ordem
   fbWriting=true;
   try{
+    /* O anexo em base64 NUNCA pode subir: o app inteiro mora num ÚNICO
+       documento do Firestore, com teto de 1 MiB, e uma foto de 1 MB estoura
+       esse teto sozinha — travando a gravação de TUDO (obras, lançamentos,
+       pendências), não só do documento. A linha de documentos removia
+       "fileBase64", mas o campo gravado chama "fileB64": não removia nada.
+       Agora tira os dois nomes nas duas listas, para não depender de qual
+       versão do app criou o registro. */
     const data={
       obras:ST.obras,
-      lancamentos:ST.lancamentos.map(({fileB64,...l})=>l),
+      lancamentos:ST.lancamentos.map(({fileB64,fileBase64,...l})=>l),
       pendencias:ST.pendencias,
       recorrentes:ST.recorrentes,
-      documentos:ST.documentos.map(({fileBase64,...d})=>d),
+      documentos:ST.documentos.map(({fileB64,fileBase64,...d})=>d),
       auditLog:ST.auditLog||[],
       obraAtiva:ST.obraAtiva||null,
       updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
@@ -3371,7 +3391,9 @@ const OBR_H=['id','nome','endereco','status','orcamento','area','inicio','previs
 const LAN_H=['id','obraId','data','cat','desc','valor','fornecedor','statusPag','nfNum','obs','ts'];
 const PEN_H=['id','texto','prazo','status','prioridade','createdAt'];
 const REC_H=['id','texto','valor','dia','cat','ativo','createdAt'];
-const DOC_H=['id','obraId','cat','nome','numero','emissao','validade','orgao','obs','fileName','createdBy','createdAt'];
+/* DOC_H removido: era código morto descrevendo um schema que não existe mais
+   (nome, numero, emissao, orgao). Hoje o documento é tipo, desc, data, validade
+   — quem lesse a constante seria levado ao erro. */
 const AUD_H=['id','ts','data','hora','usuario','acao','detalhe'];
 
 function toRows(headers,arr){
@@ -3907,6 +3929,7 @@ function autoDownload(file,nomeArq){
 const PN={dashboard:'Painel & Gráficos',lancamentos:'Lançamentos',pendencias:'Pendências',documentos:'Documentos',cadastro:'Cadastro de Obra',auditoria:'Auditoria',relatorios:'Relatórios'};
 function showPage(id,el){
   if(id!=='lancamentos'&&!lancPodeSair('Sair desta aba'))return;
+  if(id!=='documentos'&&!docPodeSair('Sair desta aba'))return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
@@ -4018,6 +4041,7 @@ const SIT_LBL={disponivel:'Disponível',vendida_planta:'Vendida na planta',vendi
 function getOA(){return ST.obras.find(o=>o.id===ST.obraAtiva)||ST.obras[0]||null;}
 function setOA(id){
   if(id!==ST.obraAtiva&&!lancPodeSair('Trocar de obra'))return;
+  if(id!==ST.obraAtiva&&!docPodeSair('Trocar de obra'))return;
   ST.obraAtiva=id;save();updSB();updBanners();updKpis();renderDash();
 }
 function updSB(){
@@ -4507,6 +4531,32 @@ function lancPodeSair(motivo){
   lancDescartarTudo();
   return true;
 }
+/* A mesma proteção do formulário de lançamento, que nunca chegou em Documentos:
+   trocar de obra com o documento preenchido deixava o anexo preso na tela e o
+   Salvar gravava na obra ERRADA (o alvará da Obra A virava documento da Obra B),
+   sem nenhuma pergunta. */
+function docTemDados(){
+  if(docF)return true;
+  if(docEditId)return true;
+  const hoje=isoToBR(td());
+  return ['d-tipo','d-desc','d-data','d-validade'].some(id=>{
+    const e=document.getElementById(id);if(!e)return false;
+    const v=e.value.trim();
+    /* d-data vem preenchido com hoje desde o boot — isso não é dado digitado,
+       e tratar como tal faria o aviso aparecer em toda troca de aba. */
+    if(id==='d-data'&&v===hoje)return false;
+    return !!v;
+  });
+}
+function docPodeSair(motivo){
+  if(!docTemDados())return true;
+  if(!confirm('⚠️ Há dados não salvos no formulário de documento.'
+    +(docF?'\n\n📎 Arquivo anexado: '+docF.name:'')
+    +(docEditId?'\n\n✏️ Você está editando um documento já salvo.':'')
+    +'\n\n'+motivo+' vai APAGAR tudo. Você terá que preencher de novo.\n\nContinuar?'))return false;
+  docCancelarEdicao();
+  return true;
+}
 /* ══ CHIPS RECENTES ══ */
 function saveRecentEntry(cat,desc,val){
   try{
@@ -4695,8 +4745,13 @@ function checkDocAlert(){
   });
   if(!expiring.length&&!expired.length){wrap.innerHTML='';return;}
   let html='';
-  if(expired.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon" style="display:flex;align-items:center;color:var(--red)">${ic('alert',20)}</div><div class="doc-alert-text"><strong>${expired.length} documento(s) vencido(s):</strong> ${expired.map(d=>d.tipo).slice(0,3).join(', ')}${expired.length>3?' e mais...':''}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
-  if(expiring.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon" style="display:flex;align-items:center;color:var(--yellow)">${ic('clock',20)}</div><div class="doc-alert-text"><strong>${expiring.length} documento(s) vencem em até 30 dias:</strong> ${expiring.map(d=>d.tipo+' ('+dif(today,d.validade)+'d)').slice(0,3).join(', ')}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
+  /* esc() no nome do documento: sem ele, o texto digitado no campo "Tipo/Nome"
+     era montado como CÓDIGO da página e o navegador obedecia. E o dado não é só
+     meu — o Firestore é compartilhado, então o que for digitado em outro
+     aparelho roda aqui, com esta sessão aberta. O cartão da aba já escapava;
+     faltava só neste alerta. */
+  if(expired.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon" style="display:flex;align-items:center;color:var(--red)">${ic('alert',20)}</div><div class="doc-alert-text"><strong>${expired.length} documento(s) vencido(s):</strong> ${expired.map(d=>esc(d.tipo)).slice(0,3).join(', ')}${expired.length>3?' e mais...':''}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
+  if(expiring.length)html+=`<div class="doc-alert" role="alert"><div class="doc-alert-icon" style="display:flex;align-items:center;color:var(--yellow)">${ic('clock',20)}</div><div class="doc-alert-text"><strong>${expiring.length} documento(s) vencem em até 30 dias:</strong> ${expiring.map(d=>esc(d.tipo)+' ('+dif(today,d.validade)+'d)').slice(0,3).join(', ')}. <a href="#" onclick="showPage('documentos',null)" style="color:var(--brand3)">Ver documentos →</a></div></div>`;
   wrap.innerHTML=html;
 }
 
@@ -6092,8 +6147,9 @@ function setPagOpt(val){
 }
 function selectDocCat(cat,el){
   document.getElementById('d-cat').value=cat;
-  document.querySelectorAll('.doc-cat-tile').forEach(t=>t.classList.remove('active'));
-  if(el)el.classList.add('active');
+  /* O destaque é derivado do #d-cat (fonte única), não do elemento clicado:
+     assim o bloco aceso e o valor que vai ser gravado nunca se separam. */
+  docSyncCat();
 }
 function limparL(){
   // Limpar campos do modo NF
@@ -6713,7 +6769,7 @@ function renderCal(){
 function calPrev(){calM--;if(calM<0){calM=11;calY--;}renderCal();}
 function calNext(){calM++;if(calM>11){calM=0;calY++;}renderCal();}
 /* ══ DOCUMENTOS ══ */
-let docDropInit=false,docFilCat='',docFileMeta=null;
+let docDropInit=false,docFilCat='',docFileMeta=null,docEditId=null,docSalvando=false;
 function DOC_STATUS(validade){
   if(!validade)return{key:'perene',ord:3,ico:'infinity',label:'Sem vencimento',color:'var(--text3)'};
   const dv=dif(td(),validade);
@@ -6727,8 +6783,10 @@ async function docProcessFile(file,source){
   if(!file)return;
   const ok=(file.type||'').startsWith('image/')||file.type==='application/pdf';
   if(!ok){toast('Formato não suportado — envie imagem ou PDF.','error');return;}
-  if(file.size>ANEXO_MAX){toast('Arquivo maior que 8MB — use um menor.','error');return;}
+  /* Comprime ANTES de medir: a checagem vinha primeiro e recusava uma foto de
+     9 MB que a compressão deixaria em 1,2 MB, sem o app nem tentar. */
   file=await comprimeImagem(file);
+  if(file.size>ANEXO_MAX){toast('Arquivo ainda maior que 8MB depois da compressão — use um menor.','error');return;}
   const reader=new FileReader();
   reader.onload=ev=>{
     docF=file;
@@ -6757,13 +6815,36 @@ function onDocValidade(){
   const el=document.getElementById('d-validade');if(!el)return;
   const v=brToISO(el.value);
   const box=document.getElementById('doc-val-box'),ico=document.getElementById('doc-val-ico'),fb=document.getElementById('doc-val-fb');
-  if(!v){box.classList.remove('has');ico.innerHTML=ic('calendar',16);fb.textContent='';return;}
+  if(!v){
+    box.classList.remove('has');ico.innerHTML=ic('calendar',16);
+    /* Data impossível (31/02, 45/13) era descartada em silêncio: o campo ficava
+       com cara de preenchido, o cartão dizia "Sem vencimento" e o alerta de
+       vencimento nunca disparava para aquele documento — o app ficava calado
+       justamente no que ele existe para vigiar. */
+    fb.innerHTML=el.value.length===10
+      ?`<span style="color:var(--red);font-weight:700;display:inline-flex;align-items:center;gap:5px">${ic('alert',13)} Data inválida — confira o dia e o mês.</span>`
+      :'';
+    return;
+  }
   const s=DOC_STATUS(v);box.classList.add('has');ico.innerHTML=ic(s.ico,16,s.color);
   fb.innerHTML=`<span style="color:${s.color};font-weight:700;display:inline-flex;align-items:center;gap:5px">${ic(s.ico,13)} ${s.label}</span>`;
 }
 function docLimparForm(){
-  ['d-tipo','d-desc','d-data','d-validade'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['d-tipo','d-desc','d-validade'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  /* Volta para hoje, igual ao boot: deixar vazio fazia o campo de emissão se
+     comportar de um jeito na primeira vez e de outro depois do primeiro salvo. */
+  const dd=document.getElementById('d-data');if(dd)dd.value=isoToBR(td());
   docResetFile();onDocValidade();
+  /* A categoria NÃO é zerada de propósito: lançar cinco documentos da
+     Prefeitura em sequência sem reescolher a categoria toda vez. docSyncCat
+     garante que o bloco em destaque e o valor gravado nunca se separem. */
+  docSyncCat();
+}
+/* Única fonte da verdade da categoria é o #d-cat; o destaque visual é derivado
+   dele, então os dois não podem divergir. */
+function docSyncCat(){
+  const cat=(document.getElementById('d-cat')||{}).value||'terreno';
+  document.querySelectorAll('#page-documentos .doc-cat-tile').forEach(t=>t.classList.toggle('active',t.getAttribute('data-cat')===cat));
 }
 function pickDocFil(cat){docFilCat=cat;renderDocs();}
 function docRenderChips(base){
@@ -6804,25 +6885,127 @@ function initDocDropZone(){
     if(document.getElementById('login-ov')?.style.display!=='none')return;
     const inField=['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName);const isMeta=e.metaKey||e.ctrlKey;
     if(isMeta&&e.key==='Enter'){e.preventDefault();salvarDoc();return;}
-    if(e.key==='Escape'){docLimparForm();return;}
+    if(e.key==='Escape'){
+      /* Esc é reflexo de "fechar isso aqui". Antes apagava o anexo e os quatro
+         campos na hora, sem perguntar e sem desfazer. */
+      if(!docTemDados()){docCancelarEdicao();return;}
+      if(confirm('Limpar o formulário de documento?'
+        +(docF?'\n\n📎 O arquivo anexado ('+docF.name+') será descartado.':'')
+        +(docEditId?'\n\n✏️ A edição em andamento será abandonada (o documento salvo não muda).':'')))docCancelarEdicao();
+      return;
+    }
     if(/^[1-6]$/.test(e.key)&&!inField&&!isMeta){e.preventDefault();const tiles=document.querySelectorAll('#page-documentos .doc-cat-tile');const t=tiles[+e.key-1];if(t)t.click();}
   });
 }
+function docSaveBusy(b){
+  const btn=document.getElementById('doc-save-btn');if(!btn)return;
+  btn.disabled=b;btn.style.filter=b?'grayscale(.55)':'';btn.style.cursor=b?'progress':'pointer';
+}
+/* Abre um documento já salvo no próprio formulário. O registro NÃO sai da lista
+   aqui: quem troca o antigo pelo novo é o "Atualizar". Tirando agora, bastava
+   desistir da edição para o documento desaparecer em silêncio. */
+function editDoc(id){
+  const d=ST.documentos.find(x=>x.id===id);
+  if(!d){toast('Documento não encontrado.','error');renderDocs();return;}
+  if(docEditId!==id&&docTemDados()&&!confirm('Há dados no formulário de documento.\n\nAbrir "'+(d.tipo||'(sem nome)')+'" para edição vai substituí-los.\n\nContinuar?'))return;
+  docEditId=id;
+  const sel=document.getElementById('d-cat');if(sel)sel.value=d.cat||'terreno';
+  docSyncCat();
+  document.getElementById('d-tipo').value=d.tipo||'';
+  document.getElementById('d-desc').value=d.desc||'';
+  document.getElementById('d-data').value=d.data?isoToBR(d.data):'';
+  document.getElementById('d-validade').value=d.validade?isoToBR(d.validade):'';
+  /* O arquivo já gravado não volta como anexo pendente: docF fica vazio e o
+     registro conserva o arquivo atual. Anexar algo novo é que substitui. */
+  docResetFile();
+  onDocValidade();
+  docEditUI(true,d);
+  document.getElementById('d-tipo').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function docEditUI(on,d){
+  const btn=document.getElementById('doc-save-btn'),lbl=document.getElementById('doc-save-lbl'),bar=document.getElementById('doc-edit-bar'),nm=document.getElementById('doc-edit-nm');
+  if(lbl)lbl.textContent=on?'Atualizar Documento':'Salvar Documento';
+  if(btn)btn.style.background=on?'linear-gradient(135deg,#2980B9,#1B4F72)':'linear-gradient(135deg,#27AE60,#1E8449)';
+  if(bar)bar.style.display=on?'flex':'none';
+  if(on&&nm)nm.textContent=(d&&d.tipo)||'';
+  const req=document.getElementById('doc-dz-req');
+  if(req)req.textContent=on?'opcional na edição — anexe só se quiser TROCAR o arquivo':'* obrigatório — o arquivo é o documento';
+  /* Na edição o arquivo já existe, então o asterisco de obrigatório sai junto
+     para não dizer uma coisa enquanto o aviso logo abaixo diz outra. */
+  const ast=document.getElementById('doc-file-req');
+  if(ast)ast.style.display=on?'none':'';
+}
+function docCancelarEdicao(){
+  docEditId=null;
+  docLimparForm();
+  docEditUI(false);
+}
 async function salvarDoc(){
+  /* O upload tem await no meio e o botão não era desabilitado: dois cliques
+     criavam dois registros e dois arquivos no Cloudinary. */
+  if(docSalvando)return;
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   const tipo=document.getElementById('d-tipo').value.trim();
   if(!tipo){toast('Informe o tipo/nome.','error');document.getElementById('d-tipo').focus();return;}
-  if(!docF){toast('Anexe o arquivo — é obrigatório.','error');docDzMissingFlash();return;}
-  let cloudinaryUrl='';
-  toast('Enviando documento...','info');
-  const result=await uploadToCloudinary(docF,ob.id,'documento');
-  if(result)cloudinaryUrl=result.url;
-  ST.documentos.unshift({id:uid(),obraId:ob.id,cat:document.getElementById('d-cat').value,tipo,desc:document.getElementById('d-desc').value,data:gD('d-data'),validade:gD('d-validade')||'',fileName:docF.name,fileB64:docFB64||'',cloudinaryUrl,ts:Date.now()});
-  addAudit('Documento salvo',tipo);
-  toast(cloudinaryUrl?'Documento salvo! ☁️ Arquivado na nuvem.':'Documento salvo!','success');
-  save();
-  docLimparForm();
-  renderDocs();
+  /* Data impossível era descartada em silêncio: melhor barrar e dizer onde está
+     o erro do que gravar um documento sem validade nenhuma. */
+  const elD=document.getElementById('d-data'),elV=document.getElementById('d-validade');
+  if(elD.value.trim()&&!brToISO(elD.value)){toast('Data de emissão inválida — confira o dia e o mês.','error');elD.focus();return;}
+  if(elV.value.trim()&&!brToISO(elV.value)){toast('Validade inválida — confira o dia e o mês.','error');elV.focus();return;}
+  const edit=docEditId?ST.documentos.find(d=>d.id===docEditId):null;
+  if(docEditId&&!edit){toast('O documento que você estava editando não existe mais.','error');docCancelarEdicao();renderDocs();return;}
+  const jaTemArquivo=!!(edit&&(edit.cloudinaryUrl||edit.fileB64));
+  if(!docF&&!jaTemArquivo){toast('Anexe o arquivo — é obrigatório.','error');docDzMissingFlash();return;}
+
+  docSalvando=true;docSaveBusy(true);
+  try{
+    let cloudinaryUrl=edit?(edit.cloudinaryUrl||''):'';
+    let b64=edit?(edit.fileB64||''):'';
+    let fileName=edit?(edit.fileName||''):'';
+    if(docF){
+      toast('Enviando documento...','info');
+      const result=await uploadToCloudinary(docF,ob.id,'documento');
+      cloudinaryUrl=result?result.url:'';
+      b64=docFB64||'';
+      fileName=docF.name;
+      /* uploadToCloudinary engole qualquer erro e devolve null. Sem URL na nuvem
+         E sem base64 de reserva (arquivo acima de 2 MB não é guardado aqui), o
+         arquivo não ficou em lugar NENHUM — e a versão antiga ainda dizia
+         "Documento salvo!" em verde, deixando um registro oco no lugar da
+         escritura. Agora não grava nada e o formulário continua preenchido. */
+      if(!cloudinaryUrl&&!b64){
+        toast('❌ O envio falhou e o arquivo é grande demais para guardar neste aparelho. NADA foi salvo — confira a internet e clique em salvar de novo.','error');
+        return;
+      }
+    }
+    const reg={
+      id:edit?edit.id:uid(),
+      obraId:edit?edit.obraId:ob.id,
+      cat:document.getElementById('d-cat').value,
+      tipo,
+      desc:document.getElementById('d-desc').value,
+      data:gD('d-data'),
+      validade:gD('d-validade')||'',
+      fileName,fileB64:b64,cloudinaryUrl,
+      ts:edit?(edit.ts||Date.now()):Date.now()
+    };
+    if(edit){
+      /* Troca no LUGAR: o documento não salta para o topo da lista só por ter
+         sido corrigido. */
+      ST.documentos=ST.documentos.map(d=>d.id===edit.id?reg:d);
+      addAudit('Documento editado',tipo+(docF&&edit.cloudinaryUrl&&edit.cloudinaryUrl!==cloudinaryUrl?' · arquivo trocado, o antigo segue na nuvem: '+edit.cloudinaryUrl:''));
+    }else{
+      ST.documentos.unshift(reg);
+      addAudit('Documento salvo',tipo);
+    }
+    if(cloudinaryUrl)toast((edit?'Documento atualizado!':'Documento salvo!')+' ☁️ Arquivado na nuvem.','success');
+    else toast((edit?'Documento atualizado':'Documento salvo')+', mas o envio para a nuvem falhou: o arquivo está SÓ neste aparelho. Edite e salve de novo quando a internet voltar.','warn');
+    save();
+    docCancelarEdicao();
+    renderDocs();
+  }finally{
+    docSalvando=false;docSaveBusy(false);
+  }
 }
 function docStaticIcons(){
   var pg=document.getElementById('page-documentos');if(!pg)return;
@@ -6847,6 +7030,12 @@ function renderDocs(){
   const ob=getOA();
   const q=(document.getElementById('doc-search').value||'').toLowerCase();
   const base=ob?ST.documentos.filter(d=>d.obraId===ob.id):ST.documentos;
+  /* Filtro preso: ao trocar de obra, o chip da categoria desaparecia da tela
+     (só aparece quem tem documento) mas o filtro continuava valendo — o
+     contador no topo dizia "12" e a grade dizia "Nenhum documento encontrado",
+     sem nada visível para desligar. */
+  if(docFilCat&&!base.some(d=>d.cat===docFilCat))docFilCat='';
+  docSyncCat();
   docRenderChips(base);docRenderTipos();
   let items=base.filter(d=>!docFilCat||d.cat===docFilCat);
   if(q)items=items.filter(d=>(d.tipo||'').toLowerCase().includes(q)||(d.desc||'').toLowerCase().includes(q)||(d.fileName||'').toLowerCase().includes(q));
@@ -6864,14 +7053,15 @@ function renderDocs(){
         <span style="line-height:1;flex-shrink:0;color:var(--brand3);display:inline-flex">${docCatIc(d.cat,28)}</span>
         <div style="min-width:0;flex:1">
           <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--text);word-break:break-word">${esc(d.tipo)}</div>
-          <div style="font-size:10.5px;color:var(--text3);margin-top:2px">${DOC_CAT_LABELS[d.cat]||d.cat}${d.data?' · '+fD(d.data):''}</div>
+          <div style="font-size:10.5px;color:var(--text3);margin-top:2px">${DOC_CAT_LABELS[d.cat]||esc(d.cat)}${d.data?' · '+fD(d.data):''}</div>
           ${d.desc?`<div style="font-size:10.5px;color:var(--text2);margin-top:3px">${esc(d.desc)}</div>`:''}
         </div>
       </div>
       ${expBadge?`<div style="margin-top:6px">${expBadge}</div>`:''}
       ${d.fileName?`<div style="font-size:9.5px;color:var(--text3);word-break:break-all;margin-top:2px;display:flex;align-items:center;gap:4px">${ic('paperclip',10)} ${esc(d.fileName)}</div>`:''}
       <div class="doc-card-acts" style="margin-top:8px">
-        ${d.cloudinaryUrl?`<a href="${d.cloudinaryUrl}" target="_blank" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center;display:inline-flex;align-items:center;gap:5px" aria-label="Ver ${esc(d.tipo)}">${ic('cloud',13)} Ver</a>`:d.fileB64?`<a href="${d.fileB64}" download="${esc(d.fileName||d.tipo)}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center;display:inline-flex;align-items:center;gap:5px" aria-label="Baixar ${esc(d.tipo)}">${ic('download',13)} Baixar</a>`:''}
+        ${d.cloudinaryUrl?`<a href="${esc(d.cloudinaryUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center;display:inline-flex;align-items:center;gap:5px" aria-label="Ver ${esc(d.tipo)}">${ic('cloud',13)} Ver</a>`:d.fileB64?`<a href="${esc(d.fileB64)}" download="${esc(d.fileName||d.tipo)}" class="btn btn-sm btn-s" style="text-decoration:none;flex:1;justify-content:center;display:inline-flex;align-items:center;gap:5px" aria-label="Baixar ${esc(d.tipo)}">${ic('download',13)} Baixar</a>`:`<span class="badge b-red" style="flex:1;justify-content:center;display:inline-flex;align-items:center;gap:4px;font-size:9.5px">${ic('alert',11)} Sem arquivo</span>`}
+        <button class="btn btn-sm btn-s" onclick="editDoc('${d.id}')" aria-label="Editar documento ${esc(d.tipo)}" style="display:inline-flex;align-items:center;gap:5px">${ic('pencil',13)} Editar</button>
         <button class="btn btn-sm btn-d" onclick="delDoc('${d.id}')" aria-label="Remover documento ${esc(d.tipo)}" style="display:inline-flex;align-items:center;gap:5px">${ic('trash',13)} Remover</button>
       </div>
     </div>`;
@@ -6879,9 +7069,21 @@ function renderDocs(){
 }
 function delDoc(id){
   const doc=ST.documentos.find(d=>d.id===id);
-  if(!confirm('Remover documento?'))return;
+  if(!doc){toast('Documento não encontrado.','error');renderDocs();return;}
+  /* A pergunta antiga era só "Remover documento?" — com dois cartões parecidos,
+     um clique errado apagava o certo e o usuário não tinha como perceber. */
+  if(!confirm('Remover este documento?\n\n'+(doc.tipo||'(sem nome)')
+    +(doc.desc?'\n'+doc.desc:'')
+    +(doc.validade?'\nValidade: '+fD(doc.validade):'')
+    +(doc.fileName?'\nArquivo: '+doc.fileName:'')
+    +'\n\nNão há como desfazer.'))return;
+  if(docEditId===id)docCancelarEdicao();
   ST.documentos=ST.documentos.filter(d=>d.id!==id);
-  addAudit('Documento removido',doc?doc.tipo:'');
+  /* O arquivo no Cloudinary não pode ser apagado daqui: a exclusão exige a chave
+     secreta da conta, e chave secreta no frontend fica à vista de qualquer um
+     que abra o código da página. Fica registrado na auditoria com a URL, para
+     poder ser limpo pelo painel do Cloudinary sem adivinhação. */
+  addAudit('Documento removido',(doc.tipo||'')+(doc.cloudinaryUrl?' · arquivo segue na nuvem: '+doc.cloudinaryUrl:''));
   save();renderDocs();
 }
 
