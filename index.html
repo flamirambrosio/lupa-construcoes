@@ -3906,11 +3906,7 @@ function autoDownload(file,nomeArq){
 /* ══ NAVIGATION ══ */
 const PN={dashboard:'Painel & Gráficos',lancamentos:'Lançamentos',pendencias:'Pendências',documentos:'Documentos',cadastro:'Cadastro de Obra',auditoria:'Auditoria',relatorios:'Relatórios'};
 function showPage(id,el){
-  // Guard: itens não salvos na NF
-  if(id!=='lancamentos'&&nfItems&&nfItems.length>0){
-    if(!confirm(`⚠️ Você tem ${nfItems.length} item(s) não salvo(s) na NF.\n\nSair mesmo assim? Os dados serão perdidos.`))return;
-    limparL();
-  }
+  if(id!=='lancamentos'&&!lancPodeSair('Sair desta aba'))return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
@@ -4020,7 +4016,10 @@ function empResumo(o){
 }
 const SIT_LBL={disponivel:'Disponível',vendida_planta:'Vendida na planta',vendida:'Vendida'};
 function getOA(){return ST.obras.find(o=>o.id===ST.obraAtiva)||ST.obras[0]||null;}
-function setOA(id){ST.obraAtiva=id;save();updSB();updBanners();updKpis();renderDash();}
+function setOA(id){
+  if(id!==ST.obraAtiva&&!lancPodeSair('Trocar de obra'))return;
+  ST.obraAtiva=id;save();updSB();updBanners();updKpis();renderDash();
+}
 function updSB(){
   const ob=getOA();
   const dd=document.getElementById('obras-dd');
@@ -4452,7 +4451,9 @@ async function salvarRapido(){
 
 /* ★ Helper: limpa form Rápido completo (usado após salvar e no botão Limpar) */
 function lancLimparRapido(){
-  document.getElementById('rl-val').value='';
+  /* dataset.raw é o que parseFinVal lê de verdade: limpar só o .value deixava o
+     campo com cara de vazio mas ainda valendo o valor anterior. */
+  const rlVal=document.getElementById('rl-val'); rlVal.value=''; rlVal.dataset.raw='';
   document.getElementById('rl-desc').value='';
   const rlForn=document.getElementById('rl-forn'); if(rlForn) rlForn.value='';
   const rlNF=document.getElementById('rl-nf'); if(rlNF) rlNF.value='';
@@ -4471,6 +4472,40 @@ function lancLimparRapido(){
   rlCat='';
   document.querySelectorAll('[data-rlcat]').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false');});
   setRLPag('pago');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ TRAVA: o formulário de lançamento não sobrevive a troca de aba
+     nem de obra. Um comprovante esquecido de um gasto anterior,
+     anexado sem querer no próximo, é erro de auditoria — vale mais
+     perder digitação do que arriscar isso.
+   ═══════════════════════════════════════════════════════════════ */
+function lancAnexoPendente(){
+  return (rlFile&&rlFile.name)||(cFile&&cFile.name)||'';
+}
+function lancTemDados(){
+  if(lancAnexoPendente())return true;
+  if(nfItems.length||rlCat||nfCat)return true;
+  const rv=document.getElementById('rl-val');
+  if(rv&&parseFinVal(rv)>0)return true;
+  // Campos de data ficam de fora: já nascem preenchidos com hoje.
+  return ['rl-desc','rl-forn','rl-nf','nfm-forn','nfm-cnpj'].some(id=>{
+    const e=document.getElementById(id);return !!(e&&e.value.trim());
+  });
+}
+function lancDescartarTudo(){
+  lancLimparRapido();
+  limparL();
+  document.querySelectorAll('#page-lancamentos .fin-val').forEach(e=>{e.value='';e.dataset.raw='';});
+}
+function lancPodeSair(motivo){
+  if(!lancTemDados())return true;
+  const anexo=lancAnexoPendente();
+  if(!confirm('⚠️ Há dados não salvos no formulário de lançamento.'
+    +(anexo?'\n\n📎 Comprovante anexado: '+anexo:'')
+    +'\n\n'+motivo+' vai APAGAR tudo. Você terá que preencher de novo.\n\nContinuar?'))return false;
+  lancDescartarTudo();
+  return true;
 }
 /* ══ CHIPS RECENTES ══ */
 function saveRecentEntry(cat,desc,val){
