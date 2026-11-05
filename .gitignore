@@ -19,3 +19,6 @@ node_modules/
 .vscode/
 .idea/
 *.swp
+
+# Ferramenta de teste de layout — roda só no preview local, não faz parte do app
+_harness.js
