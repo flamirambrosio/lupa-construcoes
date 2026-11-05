@@ -5824,7 +5824,13 @@ function toggleNFAdd(force){
     const lbl=tog.querySelector('span');
     if(lbl)lbl.textContent=_nfAddOpen?'Ocultar campos':'Adicionar item manualmente';
   }
-  if(_nfAddOpen)setTimeout(()=>{const f=document.getElementById(isMat?'nf-mat-s':'nf-gen-desc');if(f)f.focus();},60);
+  /* Sem foco automático: focar o campo dispara o onfocus, que abre a lista de
+     materiais por cima do resto da nota. A lista só aparece se o usuário clicar
+     no campo. */
+  if(!_nfAddOpen){
+    document.getElementById('nf-mat-dd')?.classList.remove('open');
+    document.getElementById('nf-gen-dd')?.classList.remove('open');
+  }
 }
 function selectNFCat(cat,el){
   nfCat=cat;
@@ -5911,14 +5917,12 @@ function addNFItem(editId){
     try{localStorage.setItem('lupa_un_'+desc.toLowerCase().trim(),un);}catch(e){}
     document.getElementById('nf-mat-s').value='';document.getElementById('nf-mat-qty').value='';setFinVal(document.getElementById('nf-mat-val'),0);
     document.getElementById('nf-mat-dd').innerHTML='';
-    setTimeout(()=>document.getElementById('nf-mat-s').focus(),50);
   }else{
     desc=(document.getElementById('nf-gen-desc').value||'').trim();
     valor=parseFinVal(document.getElementById('nf-gen-val'));
     if(!desc){toast('Informe a descrição.','error');document.getElementById('nf-gen-desc').focus();return;}
     if(!valor||valor<=0){toast('Informe o valor.','error');document.getElementById('nf-gen-val').focus();return;}
     document.getElementById('nf-gen-desc').value='';setFinVal(document.getElementById('nf-gen-val'),0);
-    setTimeout(()=>document.getElementById('nf-gen-desc').focus(),50);
   }
   if(editId){nfItems=nfItems.filter(x=>x.id!==editId);}
   nfItems.push({id:uid(),desc,valor,extra});
@@ -5927,6 +5931,9 @@ function addNFItem(editId){
   const abGen=document.querySelector('#nf-row-gen .btn.btn-p');
   if(abMat){abMat.textContent='+ Adicionar';abMat.setAttribute('onclick','addNFItem()');}
   if(abGen){abGen.textContent='+ Adicionar';abGen.setAttribute('onclick','addNFItem()');}
+  /* Adicionar faz só isso: adiciona. Os campos se recolhem e só reabrem se o
+     usuário pedir outro item — assim nada fica sobreposto no meio da nota. */
+  toggleNFAdd(false);
   renderNFItems();
 }
 function removeNFItem(id){nfItems=nfItems.filter(x=>x.id!==id);renderNFItems();}
@@ -5945,13 +5952,11 @@ function editNFItem(id){
     setFinVal(document.getElementById('nf-mat-val'),up);
     const addBtn=document.querySelector('#nf-row-mat .btn.btn-p');
     if(addBtn){addBtn.textContent='✔ Atualizar';addBtn.setAttribute('onclick',`addNFItem('${id}')`);}
-    document.getElementById('nf-mat-s').focus();
   }else{
     document.getElementById('nf-gen-desc').value=item.desc||'';
     setFinVal(document.getElementById('nf-gen-val'),item.valor||0);
     const addBtn=document.querySelector('#nf-row-gen .btn.btn-p');
     if(addBtn){addBtn.textContent='✔ Atualizar';addBtn.setAttribute('onclick',`addNFItem('${id}')`);}
-    document.getElementById('nf-gen-desc').focus();
   }
   nfItems=nfItems.filter(x=>x.id!==id);
   renderNFItems();
