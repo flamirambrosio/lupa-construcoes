@@ -4424,16 +4424,18 @@ async function salvarRapido(){
   const dataInput=gD('rl-data');
   const dataLanc=dataInput||td();
   const nfNum=(document.getElementById('rl-nf')?.value||'').trim();
-  let cloudUrl='';
+  let compUrl='';
   if(rlFile){
     try{
       toast('Enviando comprovante...','info');
       const res=await uploadToCloudinary(rlFile,ob.id,'comprovante');
-      if(res)cloudUrl=res;
+      // uploadToCloudinary devolve {url,publicId}; gravar o objeto inteiro fazia
+      // o link do comprovante sair como href="[object Object]".
+      if(res)compUrl=res.url;
     }catch(e){}
   }
   ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:rlCat,subcat:'',desc:norm(desc),valor:val,
-    data:dataLanc,obs:'Lançamento rápido',comprovante:rlFile?rlFile.name:'',fileB64:rlFileB64||'',cloudinaryUrl:cloudUrl,
+    data:dataLanc,obs:'Lançamento rápido',comprovante:rlFile?rlFile.name:'',fileB64:rlFileB64||'',cloudinaryUrl:compUrl,
     fornecedor:norm(forn),statusPag,nfNum,extra:{},ts:Date.now()});
   addAudit('Lançamento rápido',desc+' — '+fmt(val));
   saveRecentEntry(rlCat, desc, val);
@@ -6120,12 +6122,14 @@ function cloudUrl(l){
 }
 function lancGroupKey(l){
   if(l.nfId)return 'nf:'+l.nfId;
-  /* Lançamentos gravados antes do nfId existir: a nota é reconstruída pelo
-     conjunto que o salvamento repetia em todos os itens. Sem comprovante
-     não dá para afirmar que é a mesma nota — então fica sozinho. */
-  const comp=typeof l.comprovante==='string'?l.comprovante:'';
-  if(!comp)return 'solo:'+l.id;
-  return 'old:'+l.obraId+'|'+l.data+'|'+l.cat+'|'+(l.fornecedor||'')+'|'+comp;
+  /* Lançamentos gravados antes do nfId existir: o único vínculo confiável é a
+     URL do Cloudinary, que é o arquivo em si — a NF repetia a mesma em todos os
+     itens, e o Cloudinary gera uma por upload. Agrupar por nome de arquivo
+     juntaria dois lançamentos rápidos distintos (o iPhone chama toda foto de
+     câmera de "image.jpg"). Sem URL, fica sozinho. */
+  const cu=cloudUrl(l);
+  if(!cu)return 'solo:'+l.id;
+  return 'old:'+l.obraId+'|'+cu;
 }
 function toggleNFGroup(i){
   const k=nfRenderKeys[i];if(k===undefined)return;
