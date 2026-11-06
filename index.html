@@ -182,6 +182,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes alertSlide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .budget-alert-icon{font-size:20px}
 .budget-alert-text{flex:1;font-size:12.5px;color:var(--text)}
+/* Valor de dinheiro no meio de uma frase. O nowrap vai SO no valor: pondo
+   no <strong> inteiro o nome da obra tambem ficaria inquebravel e vazaria
+   do aviso em tela estreita. */
+.vl-nbr{white-space:nowrap}
 .budget-alert-text strong{color:var(--red)}
 /* ═══ MAIN CONTENT ═══ */
 .main-content{padding:20px;flex:1}
@@ -279,7 +283,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .oc-kpis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;margin-top:9px}
 .omk{background:var(--bg3);border-radius:7px;padding:7px 9px}
 .omk-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.2px;margin-bottom:2px}
-.omk-v{font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;font-weight:700}
+/* white-space:nowrap nas celulas de dinheiro por DOIS motivos.
+   1) O unico ponto de quebra dentro de "-R$\u00a08.479.514,31" fica logo depois
+      do hifen (o espaco entre R$ e os digitos e inquebravel). Sem nowrap o
+      navegador deixa o sinal de menos SOZINHO no fim da linha e joga o valor
+      para a linha seguinte — medido a 480px no aviso de orcamento. Quem le ve
+      um numero sem sinal, ou seja, le uma divida como se fosse saldo.
+   2) Valor que quebra em duas linhas engana o proprio motor de ajuste: a regua
+      mede o retangulo que envolve as duas linhas, que nunca e mais largo que a
+      caixa, entao a conta da "já cabe" e a fonte nunca encolhe. Com nowrap a
+      medida volta a ser a largura real do texto. */
+.omk-v{font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;font-weight:700;white-space:nowrap}
 .omk-v.da{color:var(--red)}.omk-v.su{color:var(--green)}.omk-v.wa{color:var(--yellow)}.omk-v.ac{color:var(--accent)}
 /* ═══ BADGES ═══ */
 .badge{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:16px}
@@ -330,14 +344,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .caixa-strip{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:11px 15px;margin-bottom:12px}
 .cxs-item{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .cxs-l{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.2px}
-.cxs-v{font-size:16px;font-weight:800}
+.cxs-v{font-size:16px;font-weight:800;white-space:nowrap}
 .cxs-v.g{color:var(--green)}.cxs-v.y{color:var(--yellow)}
 .cxs-sep{width:1px;align-self:stretch;background:var(--border)}
 .oc-casas-line{font-size:10.5px;color:var(--text2);font-weight:600;margin:2px 0 9px;padding:5px 9px;background:var(--bg3);border-radius:7px}
 .caixa-box{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:13px;padding-top:13px;border-top:1px solid var(--border)}
 .cxb-item{background:var(--bg3);border-radius:9px;padding:10px 12px;text-align:center}
 .cxb-l{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.2px;margin-bottom:4px}
-.cxb-v{font-size:15px;font-weight:800}
+.cxb-v{font-size:15px;font-weight:800;white-space:nowrap}
 .cxb-v.g{color:var(--green)}.cxb-v.y{color:var(--yellow)}.cxb-v.r{color:var(--red)}
 .cxb-note{font-size:10.5px;color:var(--text3);margin-top:11px;line-height:1.45;background:var(--bg3);padding:9px 11px;border-radius:8px}
 .casas-result-list{display:flex;flex-direction:column;gap:10px;margin-bottom:13px}
@@ -348,7 +362,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .crc-sep{height:1px;background:var(--border2);margin:2px 0}
 .crc-item{display:flex;flex-direction:column;gap:2px}
 .crc-l{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.3px}
-.crc-v{font-size:15px;font-weight:800;color:var(--text)}
+.crc-v{font-size:15px;font-weight:800;color:var(--text);white-space:nowrap}
 .crc-dest{padding:7px 9px;border-radius:8px}
 .crc-green{background:rgba(39,174,96,.12)}.crc-green .crc-v{color:var(--green)}
 .crc-red{background:rgba(231,76,60,.12)}.crc-red .crc-v{color:var(--red)}
@@ -497,7 +511,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .cbr-lbl{font-size:12px;color:var(--text2);min-width:105px;flex-shrink:0}
 .cbr-trk{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
 .cbr-fill{height:100%;border-radius:3px;transition:width .7s cubic-bezier(.4,0,.2,1)}
-.cbr-val{font-size:12px;font-weight:600;color:var(--text);min-width:80px;text-align:right}
+.cbr-val{font-size:12px;font-weight:600;color:var(--text);min-width:80px;text-align:right;white-space:nowrap}
 .cbr-pct{font-size:10px;color:var(--text3);min-width:28px;text-align:right}
 /* ── Pílula discreta de assinatura pendente ── */
 .sign-pend-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#8B6914;background:rgba(241,196,15,.10);border:1px solid rgba(241,196,15,.28);border-radius:6px;padding:3px 8px;margin-top:6px;letter-spacing:.1px}
@@ -616,7 +630,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .nf-item-desc{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
 .nf-item-name{font-size:12.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nf-item-qty{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nf-item-val{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--green);flex-shrink:0}
+.nf-item-val{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--green);flex-shrink:0;white-space:nowrap}
 .nf-total-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(41,128,185,.07);border:1px solid rgba(41,128,185,.18);border-radius:9px;margin:10px 0}
 .nf-total-label{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.6px;text-transform:uppercase}
 .nf-total-val{display:inline-flex;align-items:baseline;gap:3px}
@@ -624,7 +638,14 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .nf-total-val .tamt{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.5px;font-variant-numeric:tabular-nums}
 /* ═══ CAT PICKER ═══ */
 .cat-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:4px;width:100%;box-sizing:border-box}
-.cat-tile{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px 10px;background:var(--surface2);border:2px solid var(--border2);border-radius:12px;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;user-select:none;-webkit-user-select:none;min-width:0;overflow:hidden}
+/* A transição lista as propriedades uma a uma em vez de "all" DE PROPÓSITO.
+   Com "all", o font-size entra na animação — e ajustaRotulos lê o tamanho base
+   justamente com getComputedStyle, que durante a animação devolve o valor
+   intermediário, não o do CSS. Duas chamadas seguidas durante o arraste da
+   janela leriam uma base já encolhida e encolheriam de novo em cima dela,
+   afundando o texto a cada redimensionamento. Mesmo motivo para o font-weight,
+   que é lido pela régua de medição. */
+.cat-tile{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px 10px;background:var(--surface2);border:2px solid var(--border2);border-radius:12px;cursor:pointer;transition:background-color .18s,border-color .18s,color .18s,transform .18s,box-shadow .18s;font-family:'DM Sans',sans-serif;user-select:none;-webkit-user-select:none;min-width:0;overflow:hidden}
 .cat-tile:hover{background:var(--surface3);border-color:rgba(41,128,185,.5);transform:translateY(-1px)}
 .cat-tile.active{border-color:var(--brand2);background:rgba(41,128,185,.1);box-shadow:0 0 0 3px rgba(41,128,185,.12)}
 .cat-tile-ico{font-size:24px;line-height:1}
@@ -632,7 +653,9 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .cat-tile.active .cat-tile-ico svg{color:var(--brand3)}
 /* "Funcionários" não cabia por 3px e era cortado pelo overflow:hidden do
    botão. anywhere deixa quebrar só quando realmente não couber. */
-.cat-tile-label{font-size:10.5px;color:var(--text2);font-weight:500;text-align:center;line-height:1.2;max-width:100%;overflow-wrap:anywhere}
+/* Sem overflow-wrap:anywhere: "Funcionários" não pode virar "Funcionári / os".
+   A palavra fica inteira e a fonte encolhe o necessário (ver ajustaRotulos). */
+.cat-tile-label{font-size:10.5px;color:var(--text2);font-weight:500;text-align:center;line-height:1.2;max-width:100%}
 .cat-tile.active .cat-tile-label{color:var(--brand3);font-weight:700}
 @media(max-width:600px){.cat-picker{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:360px){.cat-picker{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -725,9 +748,13 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
    vazavam 83px para fora do próprio container e empurravam a página inteira
    52px além da janela. Com minmax(0,…) a coluna pode encolher de verdade. */
 .doc-cat-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:14px}
-/* min-width:0 + overflow-wrap deixam o rótulo ("Obra / Construção") quebrar
-   dentro do botão quando a coluna fica estreita, em vez de transbordar. */
-.doc-cat-tile{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface2);border:2px solid var(--border2);border-radius:9px;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);font-weight:500;user-select:none;-webkit-user-select:none;min-width:0;overflow-wrap:anywhere}
+/* min-width:0 deixa a coluna encolher de verdade quando a tela aperta.
+   AQUI NÃO ENTRA overflow-wrap:anywhere. Essa regra autoriza a quebra em
+   QUALQUER letra, e foi o que partiu "Construção" em "Construç / ão" e
+   "Financeiro" em "Financeir / o". Medido: a caixa de texto do botão tem
+   56px e "Construção" pede 66px. Palavra partida ao meio é erro de leitura,
+   não é layout apertado. Quem cede é o tamanho da fonte — ver ajustaRotulos. */
+.doc-cat-tile{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface2);border:2px solid var(--border2);border-radius:9px;cursor:pointer;transition:background-color .18s,border-color .18s,color .18s;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);font-weight:500;user-select:none;-webkit-user-select:none;min-width:0}
 .doc-cat-tile:hover{background:var(--surface3);border-color:rgba(41,128,185,.5)}
 .doc-cat-tile.active{border-color:var(--brand2);background:rgba(41,128,185,.1);color:var(--brand3);font-weight:700}
 .doc-cat-tile-ico{font-size:16px;flex-shrink:0}
@@ -833,7 +860,7 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 .oac-fin{display:flex;gap:6px;flex-wrap:wrap;align-items:baseline;border-top:1px solid var(--border);padding-top:8px;margin-top:2px}
 .oac-kv{display:flex;flex-direction:column;gap:1px;flex:1;min-width:100px}
 .oac-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px}
-.oac-val{font-size:13px;font-weight:600;color:var(--text)}
+.oac-val{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
 .oac-sep{width:1px;background:var(--border);align-self:stretch}
 @media(max-width:640px){
   .obras-adm-cards{display:flex}
@@ -2333,11 +2360,11 @@ input,select,textarea{min-height:44px}
 
       <div class="fsec-title" id="fsec-cat-title">Categoria desta nota fiscal — escolha uma vez</div>
       <div class="cat-picker" role="radiogroup">
-        <button type="button" class="cat-tile" data-nfcat="material" onclick="selectNFCat('material',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M8 3v6M16 3v6M8 15v6M16 15v6"/></svg></span><span class="cat-tile-label">Materiais</span></button>
-        <button type="button" class="cat-tile" data-nfcat="funcionario" onclick="selectNFCat('funcionario',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18a1 1 0 001 1h18a1 1 0 001-1v-2a1 1 0 00-1-1H3a1 1 0 00-1 1z"/><path d="M10 10V5a1 1 0 011-1h2a1 1 0 011 1v5"/><path d="M4 15v-3a6 6 0 016-6"/><path d="M14 6a6 6 0 016 6v3"/></svg></span><span class="cat-tile-label">Funcionários</span></button>
-        <button type="button" class="cat-tile" data-nfcat="burocracia" onclick="selectNFCat('burocracia',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg></span><span class="cat-tile-label">Burocracia</span></button>
-        <button type="button" class="cat-tile" data-nfcat="terreno" onclick="selectNFCat('terreno',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10v.2A3 3 0 018.9 16H5a3 3 0 01-1-5.8V10a3 3 0 016 0z"/><path d="M7 16v6M13 19v3"/><path d="M12 19h8.3a1 1 0 00.7-1.7L18 14h.3a1 1 0 00.7-1.7L16 9h.2a1 1 0 00.8-1.7L13 3l-1.4 1.5"/></svg></span><span class="cat-tile-label">Terreno</span></button>
-        <button type="button" class="cat-tile" data-nfcat="outro" onclick="selectNFCat('outro',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg></span><span class="cat-tile-label">Outros</span></button>
+        <button type="button" class="cat-tile" data-nfcat="material" onclick="selectNFCat('material',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M8 3v6M16 3v6M8 15v6M16 15v6"/></svg></span><span class="cat-tile-label" data-curto="Mate">Materiais</span></button>
+        <button type="button" class="cat-tile" data-nfcat="funcionario" onclick="selectNFCat('funcionario',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18a1 1 0 001 1h18a1 1 0 001-1v-2a1 1 0 00-1-1H3a1 1 0 00-1 1z"/><path d="M10 10V5a1 1 0 011-1h2a1 1 0 011 1v5"/><path d="M4 15v-3a6 6 0 016-6"/><path d="M14 6a6 6 0 016 6v3"/></svg></span><span class="cat-tile-label" data-curto="Func">Funcionários</span></button>
+        <button type="button" class="cat-tile" data-nfcat="burocracia" onclick="selectNFCat('burocracia',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg></span><span class="cat-tile-label" data-curto="Buro">Burocracia</span></button>
+        <button type="button" class="cat-tile" data-nfcat="terreno" onclick="selectNFCat('terreno',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10v.2A3 3 0 018.9 16H5a3 3 0 01-1-5.8V10a3 3 0 016 0z"/><path d="M7 16v6M13 19v3"/><path d="M12 19h8.3a1 1 0 00.7-1.7L18 14h.3a1 1 0 00.7-1.7L16 9h.2a1 1 0 00.8-1.7L13 3l-1.4 1.5"/></svg></span><span class="cat-tile-label" data-curto="Terr">Terreno</span></button>
+        <button type="button" class="cat-tile" data-nfcat="outro" onclick="selectNFCat('outro',this)"><span class="cat-tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg></span><span class="cat-tile-label" data-curto="Outr">Outros</span></button>
       </div>
 
       <div id="nf-items-wrap" style="display:none" class="form-reveal">
@@ -3773,7 +3800,7 @@ function compactaValor(el){
 }
 function ajustaNumero(el){
   if(!el)return;
-  el.style.fontSize='';
+  tiraFonte(el);                        // relê o tamanho do CSS, sem herdar a redução anterior
   const caixa=el.clientWidth;
   if(!caixa)return;                     // escondido: medir não faz sentido
   const base=parseFloat(getComputedStyle(el).fontSize);
@@ -3783,19 +3810,159 @@ function ajustaNumero(el){
     const larg=medir();
     if(larg<=caixa)return true;                  // já cabe, não mexe
     let nova=Math.max(NUM_FONTE_MIN,Math.floor(base*(caixa/larg)*10)/10);
-    el.style.fontSize=nova+'px';
+    poeFonte(el,nova);
     // a proporção é quase exata, mas arredondamento pode deixar 1-2px sobrando
     for(let i=0;i<5&&nova>NUM_FONTE_MIN&&medir()>caixa;i++){
       nova=Math.max(NUM_FONTE_MIN,Math.round((nova-0.5)*10)/10);
-      el.style.fontSize=nova+'px';
+      poeFonte(el,nova);
     }
     return medir()<=caixa;
   };
   if(encolheAteCaber())return;
   // nem na fonte mínima couber: compacta e recomeça do tamanho cheio
-  if(compactaValor(el)){el.style.fontSize='';encolheAteCaber();}
+  if(compactaValor(el)){tiraFonte(el);encolheAteCaber();}
 }
 const NUM_SELETORES='.kv,.kpi-pv,.cbr-val,.crc-v,.cxs-v,.cxb-v,.lanc-card-valor';
+
+/* ══ RÓTULOS: PALAVRA NUNCA PARTE AO MEIO ══
+   Defeito que eu mesmo criei nesta mesma leva de correções. Para fazer o rótulo
+   caber eu tinha usado overflow-wrap:anywhere, que autoriza a quebra em QUALQUER
+   letra. Na tela isso saiu como "Obra / Construç·ão" e "Financeir·o".
+   Medido no botão de categoria do documento: a caixa de texto tem 56px e a
+   palavra "Construção" pede 66px — faltavam 10px e o navegador partiu a palavra.
+   Número cortado engana quem lê; palavra partida também. A regra saiu do CSS e
+   quem cede agora é o tamanho da fonte, o mesmo tratamento dos números.
+
+   Por que o GRUPO INTEIRO recebe a mesma redução: estes botões formam um
+   conjunto único (6 categorias de documento, 5 de lançamento). Se só o
+   "Obra / Construção" encolhesse, a fileira ficaria com uma letra menor no meio
+   de cinco maiores — parece defeito mesmo quando não é. Mede-se o pior caso do
+   grupo e aplica-se a MESMA proporção em todos; como cada botão parte do seu
+   próprio tamanho de CSS, as diferenças que as media queries definem continuam
+   valendo. */
+const ROT_FONTE_MIN=8;
+let _reguaRot=null;
+function larguraDaPalavra(txt,est,peso){
+  if(!_reguaRot){
+    _reguaRot=document.createElement('span');
+    _reguaRot.setAttribute('aria-hidden','true');
+    _reguaRot.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;white-space:pre;pointer-events:none';
+    document.body.appendChild(_reguaRot);
+  }
+  const r=_reguaRot,s=r.style;
+  s.fontFamily=est.fontFamily;s.fontWeight=peso||est.fontWeight;s.fontStyle=est.fontStyle;
+  s.fontSize=est.fontSize;s.letterSpacing=est.letterSpacing;s.textTransform=est.textTransform;
+  r.textContent=txt;
+  return r.getBoundingClientRect().width;
+}
+/* Mede palavra por palavra em vez de pegar a de mais letras: "WWW" é mais larga
+   que "Illllll" apesar de ter menos caracteres. A barra de "Obra / Construção"
+   é separador, não palavra — pode ficar sozinha no fim da linha.
+
+   A medida é feita SEMPRE no peso negrito, mesmo nos botões que hoje estão em
+   peso normal. Motivo: ao ser escolhido, o botão fica em negrito e o texto
+   ganha alguns pixels. Se o tamanho tivesse sido calculado no peso leve, a
+   palavra voltaria a partir no momento do clique — e teria que haver um
+   reajuste em cada um dos três seletores de categoria, um lugar fácil de
+   esquecer quando surgir o quarto. Medindo no pior caso, o tamanho serve aos
+   dois estados e nenhum clique precisa recalcular nada. */
+const PESO_SELECIONADO=700;
+function pedeMaiorPalavra(txt,est){
+  const peso=String(Math.max(PESO_SELECIONADO,parseInt(est.fontWeight,10)||400));
+  let maior=0;
+  for(const p of String(txt||'').trim().split(/\s+/)){
+    if(!p||p==='/')continue;
+    const w=larguraDaPalavra(p,est,peso);
+    if(w>maior)maior=w;
+  }
+  return maior;
+}
+/* Largura que sobra de fato para o texto: desconta as bordas internas, o ícone
+   (tamanho fixo em px, não encolhe junto com a fonte) e o vão entre os dois. */
+function caixaDeTexto(el,est,icoSel){
+  let larg=el.clientWidth-(parseFloat(est.paddingLeft)||0)-(parseFloat(est.paddingRight)||0);
+  if(icoSel){
+    const ico=el.querySelector(icoSel);
+    if(ico){
+      const w=ico.getBoundingClientRect().width;
+      if(w)larg-=w+((parseFloat(est.columnGap)||parseFloat(est.gap))||0);
+    }
+  }
+  return larg;
+}
+/* O tamanho é escrito com !important, e isso NÃO é exagero: quatro media
+   queries definem font-size dos rótulos com !important (10px, 9,5px, 9px).
+   Um estilo inline comum perde para !important — medido a 320px, o rótulo
+   continuava preso em 9,5px e "Funcionários" era partido ao meio mesmo com o
+   motor rodando e calculando o tamanho certo. O cálculo estava certo; a escrita
+   é que não tinha força para valer. Escrever com a mesma prioridade resolve, e
+   a leitura do tamanho base continua honrando a media query, porque antes de
+   medir o valor inline é REMOVIDO. */
+function poeFonte(el,px){el.style.setProperty('font-size',px+'px','important');}
+function tiraFonte(el){el.style.removeProperty('font-size');}
+function mediaGrupoRotulos(els,icoSel){
+  const dados=[];let fator=1;
+  for(const el of els){
+    const est=getComputedStyle(el);
+    const base=parseFloat(est.fontSize);
+    const caixa=icoSel?caixaDeTexto(el,est,icoSel):el.clientWidth;
+    if(!(base>0)||!(caixa>0))continue;          // escondido: medir não faz sentido
+    const pede=pedeMaiorPalavra(el.textContent,est);
+    if(!(pede>0))continue;
+    dados.push({el,base,caixa,pede});
+    if(pede>caixa+0.5){const f=caixa/pede;if(f<fator)fator=f;}
+  }
+  return {dados,fator};
+}
+/* Alguma palavra continua sem caber mesmo depois de a fonte chegar ao piso? */
+function sobraPalavraGrande(dados,fator){
+  for(const d of dados){
+    const nova=Math.max(ROT_FONTE_MIN,d.base*fator);
+    if(d.pede*(nova/d.base)>d.caixa+0.5)return true;
+  }
+  return false;
+}
+function ajustaGrupoRotulos(els,icoSel){
+  if(!els.length)return;
+  /* Solta tudo primeiro: a janela pode ter AUMENTADO desde a última chamada, e
+     aí tanto a fonte reduzida quanto a forma curta precisam ser desfeitas. */
+  for(const el of els){
+    tiraFonte(el);el.style.overflowWrap='';
+    if(el.dataset.curto!==undefined){
+      if(el.dataset.cheio===undefined)el.dataset.cheio=el.textContent.trim();
+      if(el.textContent!==el.dataset.cheio)el.textContent=el.dataset.cheio;
+    }
+  }
+  let m=mediaGrupoRotulos(els,icoSel);
+  /* ESCALONAMENTO. Se a palavra não cabe nem no piso de 8px, o problema deixou
+     de ser tamanho de letra: a palavra é comprida demais para a coluna.
+     Medido a 320px na tela de NF: "Funcionários" precisa de mais do que os 41px
+     da caixa mesmo a 8px. Sem esta etapa dava o pior dos dois mundos — os CINCO
+     botões eram esmagados a 8px por causa de uma palavra só, e ainda assim ela
+     era partida ("Funcionári·os"). Trocando pela forma curta que o app já mostra
+     no modo rápido, o grupo inteiro volta aos 9,5px do CSS e nenhuma palavra
+     parte. Abreviar é o último recurso, igual ao tratamento dos números: a
+     palavra inteira aparece sempre que couber. */
+  if(sobraPalavraGrande(m.dados,m.fator)&&els.some(el=>el.dataset.curto)){
+    for(const el of els)
+      if(el.dataset.curto&&el.textContent!==el.dataset.curto)el.textContent=el.dataset.curto;
+    m=mediaGrupoRotulos(els,icoSel);
+  }
+  if(m.fator>=1)return;                         // todas as palavras já cabem
+  for(const d of m.dados){
+    const nova=Math.max(ROT_FONTE_MIN,Math.floor(d.base*m.fator*10)/10);
+    poeFonte(d.el,nova);
+    /* Fim da linha: nem no piso, nem na forma curta. Partir é menos ruim do que
+       deixar o texto vazar para fora do botão e sumir cortado. */
+    if(d.pede*(nova/d.base)>d.caixa+0.5)d.el.style.overflowWrap='anywhere';
+  }
+}
+function ajustaRotulos(){
+  for(const g of document.querySelectorAll('.doc-cat-picker'))
+    ajustaGrupoRotulos([...g.querySelectorAll('.doc-cat-tile')],'.doc-cat-tile-ico');
+  for(const g of document.querySelectorAll('.cat-picker'))
+    ajustaGrupoRotulos([...g.querySelectorAll('.cat-tile-label')],null);
+}
 
 /* ══ PÍLULAS DO TOPBAR — esconder a pílula inteira em vez de cortar ══
    No topbar a regra é diferente da dos cartões: encolher a fonte aqui não
@@ -3901,6 +4068,7 @@ function executaAjuste(){
   if(ajusteRAF){cancelAnimationFrame(ajusteRAF);ajusteRAF=0;}
   if(ajusteTMO){clearTimeout(ajusteTMO);ajusteTMO=0;}
   ajustaPilulas();
+  ajustaRotulos();
   document.querySelectorAll(NUM_SELETORES).forEach(ajustaNumero);
 }
 function ajustaNumeros(){
@@ -4923,9 +5091,9 @@ function checkBudgetAlert(){
   const tot=ST.lancamentos.filter(l=>l.obraId===ob.id).reduce((a,l)=>a+l.valor,0);
   const pct=Math.round(tot/ob.orcamento*100);
   if(pct>=90){
-    wrap.innerHTML=`<div class="budget-alert" role="alert"><div class="budget-alert-icon">🚨</div><div class="budget-alert-text"><strong>Atenção: orçamento crítico!</strong> A obra <strong>${esc(ob.nome)}</strong> atingiu <strong>${pct}%</strong> do limite (${fmt(ob.orcamento)}). Saldo restante: <strong style="color:var(--red)">${fmt(ob.orcamento-tot)}</strong>.</div></div>`;
+    wrap.innerHTML=`<div class="budget-alert" role="alert"><div class="budget-alert-icon">🚨</div><div class="budget-alert-text"><strong>Atenção: orçamento crítico!</strong> A obra <strong>${esc(ob.nome)}</strong> atingiu <strong>${pct}%</strong> do limite (<span class="vl-nbr">${fmt(ob.orcamento)}</span>). Saldo restante: <strong style="color:var(--red)" class="vl-nbr">${fmt(ob.orcamento-tot)}</strong>.</div></div>`;
   }else if(pct>=80){
-    wrap.innerHTML=`<div class="budget-alert" style="background:rgba(241,196,15,.08);border-color:rgba(241,196,15,.3)" role="alert"><div class="budget-alert-icon">⚠️</div><div class="budget-alert-text" style="color:var(--text)">Orçamento em <strong style="color:var(--yellow)">${pct}%</strong> utilizado na obra <strong>${esc(ob.nome)}</strong>. Saldo: <strong>${fmt(ob.orcamento-tot)}</strong>.</div></div>`;
+    wrap.innerHTML=`<div class="budget-alert" style="background:rgba(241,196,15,.08);border-color:rgba(241,196,15,.3)" role="alert"><div class="budget-alert-icon">⚠️</div><div class="budget-alert-text" style="color:var(--text)">Orçamento em <strong style="color:var(--yellow)">${pct}%</strong> utilizado na obra <strong>${esc(ob.nome)}</strong>. Saldo: <strong class="vl-nbr">${fmt(ob.orcamento-tot)}</strong>.</div></div>`;
   }else wrap.innerHTML='';
 }
 
@@ -5036,7 +5204,7 @@ function gerarPDF(){
   .sub{font-size:11px;color:#8A96BB;margin-top:2px}
   .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
   .kpi{background:#EEF2F8;border-radius:8px;padding:12px;text-align:center}
-  .kpi-v{font-size:18px;font-weight:700;color:#1A3A5C}
+  .kpi-v{font-size:18px;font-weight:700;color:#1A3A5C;white-space:nowrap}
   .kpi-l{font-size:10px;color:#8A96BB;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
   table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
   th{background:#1A3A5C;color:#fff;padding:8px 10px;text-align:left;font-size:11px;letter-spacing:.5px}
