@@ -3922,11 +3922,27 @@ function sobraPalavraGrande(dados,fator){
   }
   return false;
 }
+/* Botão escondido não se mede: largura zero. Serve de porteiro tanto para soltar
+   quanto para medir, e os dois PRECISAM usar o mesmo critério — ver o defeito
+   descrito em ajustaGrupoRotulos. */
+function rotuloVisivel(el){return el.clientWidth>0;}
 function ajustaGrupoRotulos(els,icoSel){
   if(!els.length)return;
-  /* Solta tudo primeiro: a janela pode ter AUMENTADO desde a última chamada, e
-     aí tanto a fonte reduzida quanto a forma curta precisam ser desfeitas. */
+  /* Solta antes de medir: a janela pode ter AUMENTADO desde a última chamada, e
+     aí tanto a fonte reduzida quanto a forma curta precisam ser desfeitas.
+
+     O "se estiver visível" não é economia de processamento, é correção de um
+     defeito que eu mesmo criei. Antes este laço devolvia a palavra inteira a
+     TODOS os botões do grupo, inclusive aos escondidos — e a medição logo abaixo
+     ignora escondido, porque largura zero não se mede. Resultado: o botão
+     escondido ficava com a palavra cheia e sem ninguém para reabreviá-lo.
+     Caminho medido a 320px: o usuário está em "Rápido" (os botões de NF estão
+     escondidos), toca em "NF Completa" e aparece "Funcionários" inteiro numa
+     caixa de 41px — 16px cortados, mais 7px em "Burocracia". Deixando o
+     escondido como está, ele conserva a forma curta até poder ser medido de
+     verdade, e quem o reavalia é o observador de largura (iniciaAjusteNumeros). */
   for(const el of els){
+    if(!rotuloVisivel(el))continue;
     tiraFonte(el);el.style.overflowWrap='';
     if(el.dataset.curto!==undefined){
       if(el.dataset.cheio===undefined)el.dataset.cheio=el.textContent.trim();
@@ -4094,6 +4110,28 @@ function iniciaAjusteNumeros(){
   });
   ['kpi-obra','kpi-glob'].forEach(id=>{const e=document.getElementById(id);if(e)ro.observe(e);});
   document.querySelectorAll('.tb-right,.main-content').forEach(e=>ro.observe(e));
+  /* ══ ÁREA QUE ESTAVA ESCONDIDA E APARECE ══
+     Os quatro alvos acima só cobrem o que fica permanentemente na tela. Faltava o
+     que nasce escondido: os 7 modais, o formulário deslizante e os seletores de
+     categoria. Enquanto escondido o elemento tem largura zero, então a régua o
+     ignora — corretamente, não há o que medir. O problema é que, ao APARECER,
+     ninguém avisava a régua, e o conteúdo era pintado com o tamanho calculado para
+     outra largura. Medido a 320px: voltando de "Rápido" para "NF Completa",
+     "Funcionários" aparecia inteiro numa caixa de 41px, 16px para fora.
+
+     Por que observar a largura em vez de chamar o ajuste dentro de cada função
+     que abre: hoje seriam dez chamadas (setLancMode, openLancSheet,
+     closeLancSheet e os sete open*). A décima primeira janela que alguém criar
+     amanhã nasceria com o mesmo defeito, e não haveria nada apontando o
+     esquecimento. A largura, ao sair de zero, denuncia a abertura sozinha —
+     qualquer forma nova de mostrar a área já entra coberta.
+
+     Sem risco de laço: a régua mexe em TAMANHO DE FONTE, que altera a altura do
+     texto, não a largura destes recipientes — e o porteiro acima só reage à
+     largura. */
+  document.querySelectorAll('.modal-box,.cat-picker,.doc-cat-picker').forEach(e=>ro.observe(e));
+  const cardLanc=document.getElementById('lanc-form-card');
+  if(cardLanc)ro.observe(cardLanc);
 }
 const fD=s=>{if(!s)return'—';const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;};
 const td=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
