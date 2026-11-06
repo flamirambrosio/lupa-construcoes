@@ -3756,6 +3756,10 @@ function corrDeveFicar(l,casaIds){
 function cleanOrphans(){
   const ids=new Set(ST.obras.map(o=>o.id));
   if(!ids.size)return; // sem obras: não limpar (pode ser carga inicial)
+  /* Esta limpeza roda sozinha a cada abertura do app. Se ela chegar a apagar
+     algum lançamento, o histórico TEM que dizer quanto saiu: do contrário o
+     total da obra muda entre duas aberturas sem nenhum registro para conferir. */
+  const sumidos=ST.lancamentos.filter(l=>!ids.has(l.obraId));
   ST.lancamentos=ST.lancamentos.filter(l=>ids.has(l.obraId));
   ST.pendencias=ST.pendencias.filter(p=>!p.obraId||ids.has(p.obraId));
   ST.recorrentes=ST.recorrentes.filter(r=>!r.obraId||ids.has(r.obraId));
@@ -3764,10 +3768,19 @@ function cleanOrphans(){
   ST.obras.forEach(o=>{
     const casaIds=new Set((o.casas||[]).map(c=>c.id));
     ST.lancamentos=ST.lancamentos.filter(l=>{
-      if(l.obraId===o.id&&l.nfNum&&l.nfNum.startsWith('CORR-'))return corrDeveFicar(l,casaIds);
+      if(l.obraId===o.id&&l.nfNum&&l.nfNum.startsWith('CORR-')){
+        const fica=corrDeveFicar(l,casaIds);
+        if(!fica)sumidos.push(l);
+        return fica;
+      }
       return true;
     });
   });
+  if(sumidos.length){
+    const tot=sumidos.reduce((s,l)=>s+(+l.valor||0),0);
+    addAudit('Limpeza na abertura do app',sumidos.length+' lançamento'+(sumidos.length>1?'s':'')+' de obra/casa que não existe mais · '+fmt(tot)+' · '+sumidos.map(l=>l.desc).join(', ').slice(0,180));
+    gravaLocal(dadosLocais()); // o registro não pode depender do próximo salvamento
+  }
 }
 function migrateSchema(d){
   if(d.lancamentos)d.lancamentos.forEach(l=>{
