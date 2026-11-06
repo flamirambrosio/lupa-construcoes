@@ -3743,6 +3743,16 @@ function load(){
     if(limpaB64Redundante())gravaLocal(dadosLocais());
   }catch(e){console.warn('Load error:',e);}
 }
+/* Uma corretagem JÁ PAGA é dinheiro que saiu da conta: ela não pode desaparecer
+   só porque a casa saiu da lista do formulário, senão o gasto total da obra
+   encolhe sozinho e para de bater com o extrato — e o histórico fica dizendo
+   "Pagamento confirmado — Corretagem — Casa 3" para uma despesa que não existe
+   mais. Regra única, usada nos DOIS lugares que limpam corretagem:
+   cleanOrphans() (roda a cada abertura) e salvarO() (roda a cada salvamento). */
+function corrDeveFicar(l,casaIds){
+  if(l.statusPag==='pago')return true;    // já pago: nunca apagar
+  return casaIds.has(l.nfNum.slice(5));   // pendente: só fica se a casa existe
+}
 function cleanOrphans(){
   const ids=new Set(ST.obras.map(o=>o.id));
   if(!ids.size)return; // sem obras: não limpar (pode ser carga inicial)
@@ -3750,11 +3760,11 @@ function cleanOrphans(){
   ST.pendencias=ST.pendencias.filter(p=>!p.obraId||ids.has(p.obraId));
   ST.recorrentes=ST.recorrentes.filter(r=>!r.obraId||ids.has(r.obraId));
   ST.documentos=ST.documentos.filter(d=>!d.obraId||ids.has(d.obraId));
-  // Remover corretagens de casas que não existem mais
+  // Remover corretagens pendentes de casas que não existem mais
   ST.obras.forEach(o=>{
     const casaIds=new Set((o.casas||[]).map(c=>c.id));
     ST.lancamentos=ST.lancamentos.filter(l=>{
-      if(l.obraId===o.id&&l.nfNum&&l.nfNum.startsWith('CORR-'))return casaIds.has(l.nfNum.slice(5));
+      if(l.obraId===o.id&&l.nfNum&&l.nfNum.startsWith('CORR-'))return corrDeveFicar(l,casaIds);
       return true;
     });
   });
@@ -7156,9 +7166,14 @@ function marcarPago(id){
 }
 function delL(id){
   const l=ST.lancamentos.find(x=>x.id===id);
-  if(!confirm('Remover lançamento?'))return;
+  /* Confirmar mostrando o valor: a pergunta genérica "Remover lançamento?" não
+     dá chance de perceber que o dedo pegou a linha errada. */
+  if(!confirm(l?'Remover este lançamento?\n\n'+l.desc+'\n'+fmt(+l.valor||0)+(l.data?' · '+isoToBR(l.data):'')+'\n\nNão tem como desfazer.':'Remover lançamento?'))return;
   ST.lancamentos=ST.lancamentos.filter(l=>l.id!==id);
-  addAudit('Lançamento removido',l?l.desc:'');
+  /* O histórico tem que guardar QUANTO saiu, não só o nome: sem o valor não há
+     como conferir depois por que o total da obra mudou. */
+  const obraNome=l?(ST.obras.find(o=>o.id===l.obraId)?.nome||''):'';
+  addAudit('Lançamento removido',l?[l.desc,fmt(+l.valor||0),l.data?isoToBR(l.data):'',obraNome].filter(Boolean).join(' · '):'');
   save();renderT();updKpis();renderDash();updAPagar();
 }
 
@@ -7858,7 +7873,24 @@ function addCasaRow(){
 function delCasaRow(btn){
   const list=document.getElementById('casas-list');
   if(list.querySelectorAll('.casa-row').length<=1){toast('Mantenha ao menos 1 casa.','error');return;}
-  btn.closest('.casa-row').remove();
+  const row=btn.closest('.casa-row');
+  /* Este ✕ fica a um toque do campo do nome. Se a casa tem venda ou corretagem,
+     removê-la sem aviso apaga dinheiro do financeiro na hora de salvar — e o
+     histórico só registra "Empreendimento salvo", sem dizer o que saiu. */
+  const cid=row.dataset.id||'';
+  const nome=norm(row.querySelector('.casa-nome').value)||'esta casa';
+  const vendida=row.querySelector('.casa-sit').value!=='disponivel';
+  const corr=cid?ST.lancamentos.find(l=>l.nfNum==='CORR-'+cid):null;
+  if(vendida||corr){
+    let txt='Remover "'+nome+'" da lista?\n\n';
+    if(vendida)txt+='• A venda registrada sai do empreendimento.\n';
+    if(corr)txt+=corr.statusPag==='pago'
+      ? '• A corretagem de '+fmt(+corr.valor||0)+' JÁ FOI PAGA, então ela continua no financeiro como gasto (dinheiro que saiu não se apaga).\n'
+      : '• A corretagem de '+fmt(+corr.valor||0)+' (A Pagar) será APAGADA do financeiro.\n';
+    txt+='\nSó vale depois que você salvar o empreendimento.';
+    if(!confirm(txt))return;
+  }
+  row.remove();
 }
 function onCasaSit(sel){
   const row=sel.closest('.casa-row');
@@ -7872,11 +7904,20 @@ function readCasasForm(baseId){
     return[{id:baseId+'-c1',nome:'Interna',situacao:'disponivel',valorVenda:0,adiantamento:0,dataVenda:''}];
   }
   const rows=[...document.querySelectorAll('#casas-list .casa-row')];
+  /* O ID de uma casa nova NÃO pode vir da posição na lista. Se uma casa do meio
+     foi removida (casas c1,c2,c3 → c1,c3), a próxima casa adicionada cai na
+     posição 3 e ganharia o ID "-c3", que já é da casa vendida que continua ali.
+     Com dois IDs iguais, a corretagem da casa vendida passa a ser tratada como
+     se fosse da casa nova: a venda nova nunca gera corretagem, ou a corretagem
+     antiga é apagada. Por isso o ID novo é o primeiro número AINDA LIVRE. */
+  const idsUsados=new Set(rows.map(r=>r.dataset.id).filter(Boolean));
+  let seqCasa=0;
+  const novoIdCasa=()=>{let cand;do{cand=baseId+'-c'+(++seqCasa);}while(idsUsados.has(cand));idsUsados.add(cand);return cand;};
   return rows.map((r,i)=>{
     const sit=r.querySelector('.casa-sit').value;
     const existingId=r.dataset.id||''; // preservar ID original da casa
     return {
-      id:existingId||(baseId+'-c'+(i+1)),
+      id:existingId||novoIdCasa(),
       nome:norm(r.querySelector('.casa-nome').value)||('Casa '+(i+1)),
       situacao:sit,
       valorVenda:parseFinVal(r.querySelector('.casa-venda')),
@@ -7931,11 +7972,11 @@ function salvarO(){
   const ob={id,nome:nm,endereco:end,inicio:gD('cfg-ini'),orcamento:parseFinVal(document.getElementById('cfg-orc')),area:parseFloat(document.getElementById('cfg-area').value)||0,previsao:gD('cfg-concl'),socio:document.getElementById('cfg-soc').value,status:document.getElementById('cfg-st').value,tipo,casas};
   const idx=ST.obras.findIndex(o=>o.id===id);if(idx>=0)ST.obras[idx]=ob;else ST.obras.push(ob);
   if(!ST.obraAtiva)ST.obraAtiva=id;
-  // ── Limpar corretagens de casas deletadas ──
+  // ── Limpar corretagens pendentes de casas deletadas (as já pagas ficam) ──
   const casaIdsRestantes=new Set(casas.map(c=>c.id));
   ST.lancamentos=ST.lancamentos.filter(l=>{
     if(l.obraId===id&&l.nfNum&&l.nfNum.startsWith('CORR-')){
-      return casaIdsRestantes.has(l.nfNum.slice(5)); // manter só se casa ainda existe
+      return corrDeveFicar(l,casaIdsRestantes);
     }
     return true;
   });
