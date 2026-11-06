@@ -1287,6 +1287,9 @@ input[type=date].rapido-inline-input{color-scheme:dark}
 }
 .split-save-btn:hover{filter:brightness(1.08)}
 .split-save-btn:active{transform:scale(.98)}
+/* Botão de salvar durante o envio do comprovante: o !important é necessário porque
+   os três botões trazem estilo inline, que de outra forma venceria a classe. */
+.btn-enviando{pointer-events:none!important;opacity:.55!important;filter:grayscale(.35);cursor:progress!important}
 .split-quick-actions{display:flex;gap:6px;margin-top:8px}
 .split-quick-actions .btn{flex:1;height:34px;font-size:12px}
 @media(min-width:901px){
@@ -1690,6 +1693,12 @@ input,select,textarea{min-height:44px}
 .lanc-card-valor{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap}
 .lanc-card-actions{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
 .lanc-card-comp{font-size:11.5px;color:var(--brand3);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* O estado "sem arquivo" virou botão, e botão não herda tipografia nem fundo. */
+button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font:inherit;text-align:left;cursor:pointer}
+.comp-faltando{color:var(--red);font-weight:700}
+.comp-faltando:hover{text-decoration:underline}
+/* Nome de arquivo nunca reparte: uma linha só, cortada com "…", nome cheio no title. */
+.comp-nome-arq{margin-top:3px;font-size:11.5px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Card de nota agrupada (mobile) */
 .nf-card-exp{
   display:flex;align-items:center;gap:8px;width:100%;margin-bottom:8px;
@@ -1790,9 +1799,23 @@ input,select,textarea{min-height:44px}
     </div>
   </div>
   <div class="fgg" style="margin-bottom:10px"><label class="fl">Observações</label><textarea id="el-obs" aria-label="Observações"></textarea></div>
+  <!-- ★ Reenvio de comprovante — 05/11/2026.
+       Antes disso, lançamento cujo envio do comprovante falhou não tinha reparo
+       nenhum dentro do app: a única saída era apagar e digitar tudo de novo,
+       perdendo o rastro na auditoria. Também serve para trocar um comprovante
+       errado e para subir à nuvem o que ficou só no aparelho. -->
+  <div class="fgg" style="margin-bottom:10px">
+    <label class="fl">Comprovante</label>
+    <div id="el-comp-estado" style="font-size:12px;line-height:1.5;margin-bottom:7px"></div>
+    <div style="display:flex;gap:7px;align-items:center">
+      <button type="button" class="btn" style="height:32px;font-size:12px;padding:0 12px;flex:0 0 auto;white-space:nowrap" onclick="document.getElementById('el-comp').click()">Escolher arquivo</button>
+      <span id="el-comp-nm" style="font-size:11.5px;color:var(--text3);min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+    </div>
+    <input type="file" id="el-comp" accept="image/*,application/pdf" style="display:none" onchange="onELComp(event)">
+  </div>
   <input type="hidden" id="el-id">
   <div style="display:flex;gap:7px">
-    <button class="btn btn-p" onclick="salvarEditLanc()">✓ Salvar Alterações</button>
+    <button class="btn btn-p" id="el-save-btn" onclick="salvarEditLanc()">✓ Salvar Alterações</button>
     <button class="btn" onclick="closeEditLanc()">Cancelar</button>
   </div>
 </div></div>
@@ -3287,21 +3310,84 @@ function updGoogleUI(){
 function updGC(){updGoogleUI();}
 function updGoogleBanner(){}
 
-/* ══ CLOUDINARY UPLOAD ══ */
-async function uploadToCloudinary(file, obraId, tipo){
+/* ══ CLOUDINARY UPLOAD ══
+   Comprovante que não chega na nuvem não vira lançamento (ver salvarRapido). Para
+   essa regra não virar castigo em rede de obra, o envio insiste sozinho antes de
+   desistir: 3 tentativas com espera crescente. Insiste só no que tem chance de
+   mudar — queda de conexão e erro 5xx. Resposta 4xx é recusa de configuração ou do
+   próprio arquivo, e repetir devolve exatamente o mesmo erro.
+   O motivo da última falha fica guardado porque um "falhou" seco não ajuda: sem
+   internet ele tenta de novo em um minuto, arquivo recusado pede outro arquivo. */
+let ultimoErroUpload='',erroUploadEhRede=true;
+const UPLOAD_ESPERA=[0,1500,4000];
+function semInternet(){return navigator.onLine===false;}
+function motivoUpload(){
+  if(ultimoErroUpload)return ultimoErroUpload;
+  return semInternet()?'o aparelho está sem internet':'o envio não completou';
+}
+/* O conselho final muda com o tipo de falha, senão a mensagem mente: num preset
+   recusado (400) "confira a internet" manda ele mexer no que está funcionando e
+   tentar de novo o que nunca vai dar. */
+function avisoFalhaUpload(oQueFicouIntacto){
+  const conselho=erroUploadEhRede
+    ? 'Confira a internet e toque em salvar de novo.'
+    : 'Tentar de novo vai dar o mesmo erro: troque o arquivo, ou me avise para eu conferir a configuração do envio.';
+  return 'NADA foi salvo: '+motivoUpload()+'. '+(oQueFicouIntacto?oQueFicouIntacto+' ':'')+conselho;
+}
+async function uploadToCloudinary(file, obraId, tipo, onTentativa){
   if(!file)return null;
-  try{
-    const pasta=tipo==='comprovante'?'comprovantes':'documentos';
-    const folder=`lupa-facilities/obras/${obraId||'geral'}/${pasta}`;
-    const fd=new FormData();
-    fd.append('file',file);
-    fd.append('upload_preset',CLOUDINARY_PRESET);
-    fd.append('folder',folder);
-    const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`,{method:'POST',body:fd});
-    if(!r.ok)throw new Error('Upload falhou: '+r.status);
-    const d=await r.json();
-    return{url:d.secure_url,publicId:d.public_id};
-  }catch(e){console.error('uploadToCloudinary:',e);return null;}
+  ultimoErroUpload='';erroUploadEhRede=true;
+  const pasta=tipo==='comprovante'?'comprovantes':'documentos';
+  const folder=`lupa-facilities/obras/${obraId||'geral'}/${pasta}`;
+  const alvo=`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
+  for(let t=0;t<UPLOAD_ESPERA.length;t++){
+    if(UPLOAD_ESPERA[t])await new Promise(r=>setTimeout(r,UPLOAD_ESPERA[t]));
+    if(onTentativa){try{onTentativa(t+1,UPLOAD_ESPERA.length);}catch(e){}}
+    try{
+      /* FormData novo a cada volta: um corpo de requisição já consumido pelo fetch
+         anterior não pode ser reenviado. */
+      const fd=new FormData();
+      fd.append('file',file);
+      fd.append('upload_preset',CLOUDINARY_PRESET);
+      fd.append('folder',folder);
+      const r=await fetch(alvo,{method:'POST',body:fd});
+      if(r.ok){
+        const d=await r.json();
+        if(d&&d.secure_url){ultimoErroUpload='';return{url:d.secure_url,publicId:d.public_id};}
+        ultimoErroUpload='a nuvem respondeu sem o endereço do arquivo';erroUploadEhRede=false;
+        break;   // 200 sem endereço não melhora na segunda tentativa
+      }
+      let det='';
+      try{const j=await r.json();det=(j&&j.error&&j.error.message)||'';}catch(e){}
+      if(r.status>=400&&r.status<500){
+        ultimoErroUpload='a nuvem recusou o arquivo (código '+r.status+(det?': '+det:'')+')';
+        erroUploadEhRede=false;
+        break;
+      }
+      ultimoErroUpload='a nuvem não respondeu direito (código '+r.status+')';
+    }catch(e){
+      console.error('uploadToCloudinary tentativa '+(t+1)+':',e);
+      ultimoErroUpload=semInternet()?'o aparelho está sem internet':'a conexão caiu no meio do envio';
+    }
+  }
+  return null;
+}
+
+/* ══ TRAVA DE ENVIO DO LANÇAMENTO ══
+   O upload tem await no meio e agora pode repetir até 3 vezes — são segundos com o
+   botão ainda clicável, e o Cmd+Enter também responde. Dois toques gravavam DOIS
+   lançamentos do mesmo gasto, cada um com seu upload. Os Documentos já tinham essa
+   trava (docSalvando); os lançamentos, não.
+   A trava usa classe em vez de style inline porque o botão de NF escreve a própria
+   opacidade e o próprio cursor em renderNFItems — mexer nos mesmos campos aqui
+   apagaria o estado "adicione itens para salvar" ao liberar. */
+let enviandoLanc=false;
+const BOTOES_SALVAR_LANC='#btn-salvar-rapido,.split-save-btn,#btn-salvar-nf';
+function travaEnvioLanc(on){
+  enviandoLanc=on;
+  document.querySelectorAll(BOTOES_SALVAR_LANC).forEach(b=>{
+    b.disabled=!!on;b.classList.toggle('btn-enviando',!!on);
+  });
 }
 
 /* ══ FIREBASE FIRESTORE ══ */
@@ -3468,7 +3554,7 @@ async function saveToFirestore(attempt=0){
 
 function requireGoogle(){
   if(gToken)return true;
-  toast('⚠️ Conecte o Google para usar o OCR. Clique em "OCR" no topo.','warn');
+  toast('Conecte o Google para usar o OCR. Clique em "OCR" no topo.','warn');
   openGM();
   return false;
 }
@@ -4742,6 +4828,12 @@ async function lancProcessFile(file, source){
       setTimeout(()=>toast('💡 Conecte o Google (botão OCR no topo) para autopreencher da próxima vez.','info'), 1200);
     }
   };
+  /* Sem isto, uma leitura que falha não anexa nada E não diz nada: o usuário vê a
+     drop zone vazia sem entender, e só descobre ao tentar salvar. */
+  reader.onerror=()=>{
+    console.error('lancProcessFile/FileReader:',reader.error);
+    toast('Não deu para ler este arquivo. Tente outra foto ou tire a foto de novo.','error');
+  };
   reader.readAsDataURL(file);
 }
 function lancRenderFotoPreview(){
@@ -4898,6 +4990,7 @@ function initLancDropZone(){
 }
 
 async function salvarRapido(){
+  if(enviandoLanc){toast('Espere — o comprovante ainda está subindo.','warn');return;}
   const ob=getOA();if(!ob){toast('Selecione uma obra antes de lançar.','error');return;}
   const val=parseFinVal(document.getElementById('rl-val'));
   if(!val||val<=0){toast('Informe o valor.','error');document.getElementById('rl-val').focus();return;}
@@ -4910,15 +5003,34 @@ async function salvarRapido(){
   const dataInput=gD('rl-data');
   const dataLanc=dataInput||td();
   const nfNum=(document.getElementById('rl-nf')?.value||'').trim();
+  /* ══ COMPROVANTE PRIMEIRO, LANÇAMENTO DEPOIS ══
+     Este trecho é o defeito do R$ 50 de 05/11. A versão antiga engolia o erro num
+     catch vazio, não conferia se uploadToCloudinary tinha devolvido null e gravava
+     o lançamento com cloudinaryUrl=''. Quando a cópia local também não existia — e
+     não existe sempre que a foto passa de 2 MB, o que é a regra numa foto de
+     celular, porque HEIC do iPhone nem chega a ser comprimido — sobrava um registro
+     com o NOME do arquivo e nada atrás dele: nome em cinza, sem link, sem clique,
+     sem pré-visualização ao passar o mouse (a pré-visualização exige [href]). E o
+     aviso final ainda dizia "✅ salvo!" em verde.
+     Agora o lançamento só nasce depois que o arquivo está na nuvem. Se não está,
+     nada é gravado, o formulário fica intacto e o aviso diz o motivo real.
+     uploadToCloudinary devolve {url,publicId}; gravar o objeto inteiro fazia o link
+     sair como href="[object Object]" — por isso res.url e não res. */
+  travaEnvioLanc(true);
   let compUrl='';
-  if(rlFile){
-    try{
-      toast('Enviando comprovante...','info');
-      const res=await uploadToCloudinary(rlFile,ob.id,'comprovante');
-      // uploadToCloudinary devolve {url,publicId}; gravar o objeto inteiro fazia
-      // o link do comprovante sair como href="[object Object]".
-      if(res)compUrl=res.url;
-    }catch(e){}
+  try{
+    const res=await uploadToCloudinary(rlFile,ob.id,'comprovante',(n,tot)=>{
+      toast(n>1?`Enviando comprovante… (tentativa ${n} de ${tot})`:'Enviando comprovante…','info');
+    });
+    if(res&&res.url)compUrl=res.url;
+  }catch(e){
+    console.error('salvarRapido/upload:',e);
+  }finally{
+    travaEnvioLanc(false);
+  }
+  if(!compUrl){
+    toast(avisoFalhaUpload('O formulário está do jeito que você deixou.'),'error');
+    return;
   }
   ST.lancamentos.unshift({id:uid(),obraId:ob.id,cat:rlCat,subcat:'',desc:norm(desc),valor:val,
     data:dataLanc,obs:'Lançamento rápido',comprovante:rlFile?rlFile.name:'',fileB64:rlFileB64||'',cloudinaryUrl:compUrl,
@@ -4926,7 +5038,9 @@ async function salvarRapido(){
   addAudit('Lançamento rápido',desc+' — '+fmt(val));
   saveRecentEntry(rlCat, desc, val);
   if(forn)saveFornRecente(forn,rlCat);
-  toast(`✅ ${desc} · ${fmt(val)} salvo!`,'success');
+  /* Sem o ✅ no texto: o próprio toast já põe o ícone do tipo 'success' na frente,
+     e o aviso saía com dois ("✅ ✅ Teste · R$ 50,00 salvo!"). */
+  toast(`${desc} · ${fmt(val)} salvo! ☁️ Comprovante na nuvem.`,'success');
   // Reset
   lancLimparRapido();
   /* Só fecha o bottom sheet no mobile — no desktop-split o form fica aberto */
@@ -5614,7 +5728,14 @@ function bMat(q){const l=document.getElementById('mat-dd');if(!l)return;const h=
 function fMat(){const ms=document.getElementById('mat-s');if(ms)bMat(ms.value);}
 function pickM(n){selMat=n;const ms=document.getElementById('mat-s');if(ms)ms.value=n;const md=document.getElementById('mat-dd');if(md)md.classList.remove('open');const mt=document.getElementById('mat-tag');if(mt)mt.innerHTML=`<div class="mat-tag">${ic('brick',12)} ${esc(n)} <span onclick="clrM()" style="cursor:pointer;margin-left:4px;opacity:.7" aria-label="Remover seleção">✕</span></div>`;}
 function clrM(){selMat=null;const ms=document.getElementById('mat-s');if(ms)ms.value='';const mt=document.getElementById('mat-tag');if(mt)mt.innerHTML='';}
-function readB64(file,cb){const r=new FileReader();r.onload=ev=>cb(ev.target.result);r.readAsDataURL(file);}
+/* onerror existe porque sem ele a leitura falhava calada: o retorno nunca chegava,
+   a variável de base64 ficava nula e ninguém sabia por quê. */
+function readB64(file,cb){
+  const r=new FileReader();
+  r.onload=ev=>cb(ev.target.result);
+  r.onerror=()=>console.warn('readB64 falhou:',file&&file.name,r.error);
+  r.readAsDataURL(file);
+}
 async function onComp(e){
   let f=e.target.files[0];e.target.value='';cFile=null;cFileB64=null;
   if(!f)return;
@@ -5759,7 +5880,7 @@ async function runOCRAutoFill(file){
      estourava 401. Agora tenta renovar em silêncio e só reclama se não deu. */
   if(!(await gGarantirToken())){
     updGoogleUI();
-    toast('⚠️ Conecte o Google (botão OCR no topo) para autopreencher.','warn');
+    toast('Conecte o Google (botão OCR no topo) para autopreencher.','warn');
     return false;
   }
   if(!ocrAceita(file)){toast('OCR funciona com imagem (JPG/PNG) ou PDF. Esse arquivo segue anexado sem leitura.','info');return false;}
@@ -5823,7 +5944,7 @@ async function iniciarOCR(e){
   let file=e.target.files[0];
   e.target.value='';
   if(!file)return;
-  if(!(await gGarantirToken())){updGoogleUI();toast('⚠️ Conecte o Google para usar o OCR. Clique em "● OCR" no topo.','warn');return;}
+  if(!(await gGarantirToken())){updGoogleUI();toast('Conecte o Google para usar o OCR. Clique em "● OCR" no topo.','warn');return;}
   if(!ocrAceita(file)){toast('Use uma imagem (JPG, PNG) ou um PDF.','error');return;}
   if(file.size>ANEXO_MAX){toast('Arquivo maior que 8MB — use um menor.','error');return;}
   /* Comprime antes de subir: o OCR do Google recusa acima de 2 MB, e foto de
@@ -6225,11 +6346,11 @@ async function fillNFFromOCR(parsed, textoOriginal, fileName){
     // CPF → pagamento a pessoa (funcionário); CNPJ → fornecedor. É palpite: o aviso pede conferência.
     const cat=(_doc.length===11||/^\*{3}\./.test(parsed.cnpj||''))?'funcionario':'material';
     if(typeof selectNFCat==='function') selectNFCat(cat,document.querySelector(`[data-nfcat="${cat}"]`));
-    toast('✅ Comprovante lido: '+(parsed.fornecedor||'recebedor')+' · '+fmt(parsed.total)+'. Confira a categoria e salve.','success');
+    toast('Comprovante lido: '+(parsed.fornecedor||'recebedor')+' · '+fmt(parsed.total)+'. Confira a categoria e salve.','success');
   } else if(parsed.itens.length){
     const tile=document.querySelector('[data-nfcat="material"]');
     if(typeof selectNFCat==='function') selectNFCat('material',tile);
-    toast('✅ NF lida: fornecedor, CNPJ, data, valor e quantidade preenchidos. Confira e salve.','success');
+    toast('NF lida: fornecedor, CNPJ, data, valor e quantidade preenchidos. Confira e salve.','success');
   } else {
     toast('NF detectada, mas não identifiquei os itens. Selecione a categoria e lance manualmente.','warn');
   }
@@ -6543,6 +6664,7 @@ async function onNFComp(e){
   }
 }
 async function salvarNFMulti(){
+  if(enviandoLanc){toast('Espere — o comprovante ainda está subindo.','warn');return;}
   const ob=getOA();if(!ob){toast('Selecione uma obra.','error');return;}
   if(!nfCat){toast('Selecione a categoria da NF.','error');return;}
   if(!nfItems.length){toast('Adicione pelo menos um item.','error');return;}
@@ -6551,12 +6673,24 @@ async function salvarNFMulti(){
   const nfCnpj=(document.getElementById('nfm-cnpj')?.value||'').trim();
   const data=gD('nf-data-f')||td();
   const statusPag=document.querySelector('input[name="nf-pag"]:checked')?.value||'pago';
-  // Upload comprovante para Cloudinary
+  /* Mesma regra do Rápido: a nota só entra depois que o comprovante está na nuvem.
+     Aqui o estrago era maior, porque uma NF grava VÁRIOS lançamentos de uma vez —
+     um comprovante perdido deixava a nota inteira sem documento. */
+  travaEnvioLanc(true);
   let cloudinaryUrl='';
-  if(cFile){
-    toast('Enviando comprovante...','info');
-    const result=await uploadToCloudinary(cFile,ob.id,'comprovante');
-    if(result)cloudinaryUrl=result.url;
+  try{
+    const result=await uploadToCloudinary(cFile,ob.id,'comprovante',(n,tot)=>{
+      toast(n>1?`Enviando comprovante… (tentativa ${n} de ${tot})`:'Enviando comprovante…','info');
+    });
+    if(result&&result.url)cloudinaryUrl=result.url;
+  }catch(e){
+    console.error('salvarNFMulti/upload:',e);
+  }finally{
+    travaEnvioLanc(false);
+  }
+  if(!cloudinaryUrl){
+    toast(avisoFalhaUpload('Os itens da nota continuam na lista.'),'error');
+    return;
   }
   /* Uma NF de 5 itens é UM arquivo só. Repetir o base64 em cada item gravava
      o mesmo print cinco vezes — foi assim que 1 screenshot virou 3,6 MB.
@@ -6579,11 +6713,10 @@ async function salvarNFMulti(){
   addAudit('NF inserida',(nfForn||'Sem fornecedor')+' — '+nfItems.length+' item(s) · '+nfCat);
   if(nfForn)saveFornRecente(nfForn,nfCat);
   const total=nfItems.reduce((a,x)=>a+x.valor,0);
-  if(cFile&&cloudinaryUrl){
-    toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! ☁️ Comprovante na nuvem.','success');
-  } else {
-    toast(nfItems.length+' item(s) · '+fmt(total)+' salvos!','success');
-  }
+  /* Sem o "else" de antes: chegar aqui já significa que a URL existe, porque a
+     função sai mais acima quando o envio falha. Um ramo que nunca roda só serve
+     para enganar quem lê o código depois. */
+  toast(nfItems.length+' item(s) · '+fmt(total)+' salvos! ☁️ Comprovante na nuvem.','success');
   nfItems=[];nfCat='';
   lancResetFoto();
   limparL();
@@ -6790,7 +6923,11 @@ function renderT(keepPage=false){
     const cu=cloudUrl(l);
     if(cu)compBtn=`<a href="${esc(cu)}" target="_blank" class="lanc-card-comp" title="Ver comprovante">${ic('cloud',13)} Ver comprovante</a>`;
     else if(l.fileB64)compBtn=`<a href="${l.fileB64}" download="${esc(l.comprovante||'comprovante')}" class="lanc-card-comp">${ic('paperclip',13)} ${esc((l.comprovante||'arquivo').slice(0,28))}</a>`;
-    else if(l.comprovante)compBtn=`<span class="lanc-card-comp">${ic('paperclip',13)} ${esc(l.comprovante.slice(0,28))}</span>`;
+    /* Terceiro estado: tem o NOME do arquivo e não tem o arquivo. Antes isso aparecia
+       como o nome em cinza, sem link e sem explicação — e é exatamente aí que o
+       usuário fica no escuro, achando que o comprovante está lá e só não abre.
+       Agora diz o que houve e leva direto ao reenvio. */
+    else if(l.comprovante)compBtn=`<button type="button" class="lanc-card-comp comp-faltando" onclick="event.stopPropagation();openEditLanc('${l.id}')" title="O arquivo &quot;${esc(l.comprovante)}&quot; não ficou guardado. Toque para reenviar.">${ic('alert',13)} Sem arquivo — reenviar</button>`;
     const metaParts=[`<span>${esc(fD(l.data))}</span>`];
     if(l.fornecedor)metaParts.push(`<span>${ic('building',11)} ${esc(l.fornecedor)}</span>`);
     if(l.nfNum)metaParts.push(`<span>${ic('receipt',11)} ${esc(l.nfNum)}</span>`);
@@ -6826,7 +6963,9 @@ function renderT(keepPage=false){
     let compBtn='';
     const fcu=cloudUrl(f);
     if(fcu)compBtn=`<a href="${esc(fcu)}" target="_blank" class="lanc-card-comp" title="Ver comprovante">${ic('cloud',13)} Ver comprovante</a>`;
-    else if(f.comprovante)compBtn=`<span class="lanc-card-comp">${ic('paperclip',13)} ${esc(f.comprovante.slice(0,28))}</span>`;
+    /* Numa nota de vários itens o reenvio conserta a nota inteira de uma vez
+       (salvarEditLanc aplica a todos os itens que têm o mesmo nfId). */
+    else if(f.comprovante)compBtn=`<button type="button" class="lanc-card-comp comp-faltando" onclick="event.stopPropagation();openEditLanc('${f.id}')" title="O arquivo &quot;${esc(f.comprovante)}&quot; não ficou guardado. Toque para reenviar a nota inteira.">${ic('alert',13)} Sem arquivo — reenviar</button>`;
     const metaParts=[`<span>${esc(fD(g.data))}</span>`];
     if(g.fornecedor)metaParts.push(`<span>${ic('building',11)} ${esc(g.fornecedor)}</span>`);
     if(g.nfNum)metaParts.push(`<span>${ic('receipt',11)} ${esc(g.nfNum)}</span>`);
@@ -6869,7 +7008,7 @@ function renderT(keepPage=false){
     const cu=cloudUrl(l);
     if(cu)return `<a href="${esc(cu)}" target="_blank" class="hist-comp" title="Ver comprovante">${ic('cloud',12)} Ver</a>`;
     if(l.fileB64)return `<a href="${esc(l.fileB64)}" download="${esc(l.comprovante||'comprovante')}" class="hist-comp">${ic('paperclip',12)} baixar</a>`;
-    if(l.comprovante)return `<span class="hist-comp" style="color:var(--text3)">${ic('paperclip',12)} ${esc(l.comprovante.slice(0,14))}</span>`;
+    if(l.comprovante)return `<button type="button" class="hist-comp comp-faltando" onclick="event.stopPropagation();openEditLanc('${l.id}')" title="O arquivo &quot;${esc(l.comprovante)}&quot; não ficou guardado. Clique para reenviar.">${ic('alert',12)} reenviar</button>`;
     return '<span style="color:var(--text3)">—</span>';
   };
   const rows = pageGroups.map((g,gi) => {
@@ -6974,7 +7113,7 @@ function marcarPago(id){
   const l=ST.lancamentos.find(x=>x.id===id);if(!l)return;
   l.statusPag='pago';
   addAudit('Pagamento confirmado',l.desc+' — '+fmt(l.valor));
-  save();renderT();updAPagar();toast('✅ '+l.desc+' marcado como pago!');
+  save();renderT();updAPagar();toast(l.desc+' marcado como pago!');
 }
 function delL(id){
   const l=ST.lancamentos.find(x=>x.id===id);
@@ -6996,24 +7135,98 @@ function openEditLanc(id){
   document.getElementById('el-forn').value=l.fornecedor||'';
   document.getElementById('el-pag').value=l.statusPag||'pago';
   var _eli=document.getElementById('edit-lanc-ico');if(_eli)_eli.innerHTML=ic('pencil',16);
+  pintaEstadoComprovante(l);
   document.getElementById('edit-lanc-modal').classList.add('open');
 }
-function closeEditLanc(){document.getElementById('edit-lanc-modal').classList.remove('open');}
-function salvarEditLanc(){
-  if(_savingEL)return;_savingEL=true;setTimeout(()=>_savingEL=false,1500);
-  // Google não é necessário para editar — apenas para OCR
-  const id=document.getElementById('el-id').value;
-  const l=ST.lancamentos.find(x=>x.id===id);if(!l){_savingEL=false;return;}
-  const v=parseFinVal(document.getElementById('el-valor'));
-  if(!v||v<=0){_savingEL=false;toast('O valor deve ser maior que zero.','error');return;}
-  l.desc=document.getElementById('el-desc').value;
-  l.data=gD('el-data');
-  l.valor=v;l.cat=document.getElementById('el-cat').value;
-  l.obs=document.getElementById('el-obs').value;
-  l.fornecedor=document.getElementById('el-forn').value.trim();
-  l.statusPag=document.getElementById('el-pag').value;
-  addAudit('Lançamento editado',l.desc+' — '+fmt(l.valor));
-  save();toast('Lançamento atualizado!');closeEditLanc();renderT();updKpis();updAPagar();
+/* Mostra, em palavras, ONDE o comprovante está. Os três estados são os mesmos que
+   o cartão do lançamento desenha, só que aqui ditos por extenso — porque é aqui
+   que ele decide se precisa reenviar. */
+let elFile=null;
+function pintaEstadoComprovante(l){
+  elFile=null;
+  const inp=document.getElementById('el-comp');if(inp)inp.value='';
+  const nm=document.getElementById('el-comp-nm');if(nm)nm.textContent='';
+  const est=document.getElementById('el-comp-estado');if(!est)return;
+  const u=cloudUrl(l);
+  /* O nome do arquivo fica em LINHA PRÓPRIA, nunca dentro da frase. Dentro da
+     frase, "nota-fiscal-muito-longa.jpg" quebrava nos hífens e aparecia repartido
+     em duas linhas a 390px. Em linha separada ele é cortado com "…" e o nome
+     inteiro fica no title. */
+  const linhaArq=n=>`<div class="comp-nome-arq" title="${esc(n)}">${esc(n)}</div>`;
+  if(u){
+    est.innerHTML=`<a href="${esc(u)}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600;display:inline-flex;align-items:center;gap:5px">${ic('cloud',13)} Ver comprovante na nuvem</a>`;
+  }else if(l.fileB64){
+    est.innerHTML=`<span style="color:var(--yellow);font-weight:700">Só neste aparelho.</span> Escolha o arquivo de novo para guardar na nuvem.`+linhaArq(l.comprovante||'arquivo');
+  }else if(l.comprovante){
+    est.innerHTML=`<span style="color:var(--red);font-weight:700">Sem arquivo.</span> O envio falhou e nada ficou guardado. Escolha o arquivo e salve.`+linhaArq(l.comprovante);
+  }else{
+    est.innerHTML=`<span style="color:var(--text3)">Nenhum comprovante anexado.</span>`;
+  }
+}
+async function onELComp(e){
+  elFile=e.target.files[0]||null;
+  const nm=document.getElementById('el-comp-nm');
+  if(elFile&&elFile.size>ANEXO_MAX){toast('Arquivo maior que 8MB — use um menor.','error');elFile=null;e.target.value='';}
+  if(elFile)elFile=await comprimeImagem(elFile);
+  if(nm)nm.textContent=elFile?('✓ '+elFile.name):'';
+}
+function closeEditLanc(){document.getElementById('edit-lanc-modal').classList.remove('open');elFile=null;}
+async function salvarEditLanc(){
+  /* O setTimeout de 1,5 s que soltava a trava foi trocado por try/finally: com o
+     envio do comprovante no meio, a trava expirava ANTES do fim e um segundo
+     clique entrava por baixo do primeiro. */
+  if(_savingEL)return;_savingEL=true;
+  const btn=document.getElementById('el-save-btn');
+  if(btn){btn.disabled=true;btn.classList.add('btn-enviando');}
+  try{
+    // Google não é necessário para editar — apenas para OCR
+    const id=document.getElementById('el-id').value;
+    const l=ST.lancamentos.find(x=>x.id===id);if(!l)return;
+    const v=parseFinVal(document.getElementById('el-valor'));
+    if(!v||v<=0){toast('O valor deve ser maior que zero.','error');return;}
+    /* Comprovante primeiro: mesma regra do lançamento novo. Se o envio não
+       completar, NADA da edição é gravado e o modal fica aberto do jeito que
+       está, para tocar em salvar de novo. */
+    let novaUrl='';
+    if(elFile){
+      const res=await uploadToCloudinary(elFile,l.obraId,'comprovante',(n,tot)=>{
+        toast(n>1?`Enviando comprovante… (tentativa ${n} de ${tot})`:'Enviando comprovante…','info');
+      });
+      if(!(res&&res.url)){
+        toast(avisoFalhaUpload('Nenhuma alteração deste lançamento foi gravada.'),'error');
+        return;
+      }
+      novaUrl=res.url;
+    }
+    l.desc=document.getElementById('el-desc').value;
+    l.data=gD('el-data');
+    l.valor=v;l.cat=document.getElementById('el-cat').value;
+    l.obs=document.getElementById('el-obs').value;
+    l.fornecedor=document.getElementById('el-forn').value.trim();
+    l.statusPag=document.getElementById('el-pag').value;
+    if(novaUrl){
+      /* Uma NF de vários itens é UM arquivo só, e todos os itens dela carregam o
+         mesmo nfId. Consertar o comprovante item por item seria trabalho repetido
+         e deixaria a nota meio consertada no caminho. */
+      const alvos=l.nfId?ST.lancamentos.filter(x=>x.nfId===l.nfId):[l];
+      for(const x of alvos){
+        x.cloudinaryUrl=novaUrl;
+        x.comprovante=elFile.name||x.comprovante||'comprovante';
+        delete x.fileB64;delete x.fileBase64;   // a nuvem passa a ser a cópia boa
+      }
+      addAudit('Comprovante reenviado',l.desc+' — '+fmt(l.valor)+(alvos.length>1?' · '+alvos.length+' itens da mesma NF':''));
+    }
+    addAudit('Lançamento editado',l.desc+' — '+fmt(l.valor));
+    save();
+    toast(novaUrl?'Lançamento atualizado! ☁️ Comprovante na nuvem.':'Lançamento atualizado!','success');
+    closeEditLanc();renderT();updKpis();updAPagar();
+  }catch(e){
+    console.error('salvarEditLanc:',e);
+    toast('Não deu para salvar a alteração. Tente de novo.','error');
+  }finally{
+    _savingEL=false;
+    if(btn){btn.disabled=false;btn.classList.remove('btn-enviando');}
+  }
 }
 
 function exportCSV(){
@@ -7430,8 +7643,9 @@ async function salvarDoc(){
     let b64=edit?(edit.fileB64||''):'';
     let fileName=edit?(edit.fileName||''):'';
     if(docF){
-      toast('Enviando documento...','info');
-      const result=await uploadToCloudinary(docF,ob.id,'documento');
+      const result=await uploadToCloudinary(docF,ob.id,'documento',(n,tot)=>{
+        toast(n>1?`Enviando documento… (tentativa ${n} de ${tot})`:'Enviando documento…','info');
+      });
       cloudinaryUrl=result?result.url:'';
       b64=docFB64||'';
       fileName=docF.name;
@@ -7441,7 +7655,7 @@ async function salvarDoc(){
          "Documento salvo!" em verde, deixando um registro oco no lugar da
          escritura. Agora não grava nada e o formulário continua preenchido. */
       if(!cloudinaryUrl&&!b64){
-        toast('❌ O envio falhou e o arquivo é grande demais para guardar neste aparelho. NADA foi salvo — confira a internet e clique em salvar de novo.','error');
+        toast(avisoFalhaUpload('O arquivo também é grande demais para ficar guardado só neste aparelho, então ele não ficou em lugar nenhum. O formulário está do jeito que você deixou.'),'error');
         return;
       }
     }
