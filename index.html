@@ -1782,7 +1782,7 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
   <div id="nf-cont"></div>
   <div id="nf-up-wrap" style="display:none;margin-top:11px">
     <div class="upload" onclick="document.getElementById('nf-file').click()" role="button" aria-label="Anexar nota fiscal">
-      <input type="file" id="nf-file" style="display:none" accept="image/*,application/pdf" onchange="onNFFile(event)">
+      <input type="file" id="nf-file" style="display:none" accept="image/*,application/pdf,.pdf" onchange="onNFFile(event)">
       <div class="up-ico">📎</div><div class="up-txt">Anexar Nota Fiscal (PDF/Imagem)</div>
       <div class="up-fn" id="nf-fn"></div>
     </div>
@@ -1831,7 +1831,7 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
       <button type="button" class="btn" style="height:32px;font-size:12px;padding:0 12px;flex:0 0 auto;white-space:nowrap" onclick="document.getElementById('el-comp').click()">Escolher arquivo</button>
       <span id="el-comp-nm" style="font-size:11.5px;color:var(--text3);min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
     </div>
-    <input type="file" id="el-comp" accept="image/*,application/pdf" style="display:none" onchange="onELComp(event)">
+    <input type="file" id="el-comp" accept="image/*,application/pdf,.pdf" style="display:none" onchange="onELComp(event)">
   </div>
   <input type="hidden" id="el-id">
   <div style="display:flex;gap:7px">
@@ -2314,7 +2314,7 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
           <span>Galeria<br>ou PDF</span>
         </label>
-        <input type="file" id="rl-comp-gal" style="display:none" accept="image/*,application/pdf" onchange="onRLComp(event)">
+        <input type="file" id="rl-comp-gal" style="display:none" accept="image/*,application/pdf,.pdf" onchange="onRLComp(event)">
       </div>
 
       <!-- MAIS OPÇÕES — desktop: display:contents (fornecedor/data/NF soltos, idêntico); mobile: colapsável -->
@@ -2377,8 +2377,8 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
               <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </label>
           </span>
-          <input type="file" id="ocr-input" style="display:none" accept="image/*,application/pdf" capture="environment" onchange="iniciarOCR(event)">
-          <input type="file" id="ocr-file" style="display:none" accept="image/*,application/pdf" onchange="iniciarOCR(event)">
+          <input type="file" id="ocr-input" style="display:none" accept="image/*,application/pdf,.pdf" capture="environment" onchange="iniciarOCR(event)">
+          <input type="file" id="ocr-file" style="display:none" accept="image/*,application/pdf,.pdf" onchange="iniciarOCR(event)">
         </div>
         <!-- Preview do resultado OCR -->
         <div class="ocr-preview" id="ocr-preview"></div>
@@ -2451,7 +2451,7 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
           <button class="btn" onclick="limparL();closeLancSheet()" style="height:34px;padding:0 14px;font-size:12.5px;color:var(--text2);flex-shrink:0">✕</button>
           <!-- Anexar manual — some quando OCR foi usado -->
           <label for="nf-comp" id="lbl-nf-comp" class="btn btn-sm" style="cursor:pointer;gap:5px;height:34px;padding:0 12px;flex-shrink:0;display:inline-flex;align-items:center" title="Anexar comprovante (obrigatório)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> <span style="color:var(--red);font-size:13px;line-height:1" id="nf-comp-star">*</span></label>
-          <input type="file" id="nf-comp" style="display:none" accept="image/*,application/pdf" onchange="onNFComp(event)">
+          <input type="file" id="nf-comp" style="display:none" accept="image/*,application/pdf,.pdf" onchange="onNFComp(event)">
           <span id="nf-comp-nm" style="font-size:11px;color:var(--text2);flex:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px"></span>
           <button id="btn-salvar-nf" onclick="salvarNFMulti()" style="flex:1;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#27AE60,#1E8449);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .18s;box-shadow:0 3px 12px rgba(39,174,96,.35);font-family:'DM Sans',sans-serif"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione itens para salvar</button>
         </div>
@@ -2481,7 +2481,7 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
         </div>
       </div>
     </div>
-    <input type="file" id="lanc-dz-input" accept="image/*,application/pdf" style="display:none" onchange="lancHandleFileInput(event)">
+    <input type="file" id="lanc-dz-input" accept="image/*,application/pdf,.pdf" style="display:none" onchange="lancHandleFileInput(event)">
   </div>
   <!-- ★ Bloco Salvar (Split desktop) — só aparece desktop-split (>900px) -->
   <div class="split-save-area">
@@ -2761,7 +2761,7 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
               </div>
             </div>
           </div>
-          <input type="file" id="d-file" accept="image/*,application/pdf" style="display:none" onchange="onDocF(event)">
+          <input type="file" id="d-file" accept="image/*,application/pdf,.pdf" style="display:none" onchange="onDocF(event)">
         </div>
 
         <button id="doc-save-btn" onclick="salvarDoc()" aria-label="Salvar documento" style="width:100%;height:44px;margin-top:14px;border:none;border-radius:10px;background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,.35);transition:filter .15s;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:7px"><span id="doc-save-ico" style="display:inline-flex;align-items:center"></span><span id="doc-save-lbl">Salvar Documento</span> <span style="opacity:.7;font-weight:500;font-size:11px">(Cmd+↵)</span></button>
@@ -4844,8 +4844,13 @@ function lancHandleFileInput(e){
 }
 async function lancProcessFile(file, source){
   if(!file) return;
-  const okType = (file.type||'').startsWith('image/') || file.type === 'application/pdf';
-  if(!okType){ toast('Formato não suportado — envie imagem ou PDF.','error'); return; }
+  /* ehPdf em vez de comparar o MIME: vários provedores de arquivo do Android
+     (WhatsApp, Downloads, gerenciadores de arquivo) entregam o PDF como
+     application/octet-stream ou sem tipo nenhum. Comparando só o MIME, o app
+     recusava um PDF de verdade dizendo "Formato não suportado" — ehPdf também
+     olha a extensão .pdf, que é o que resolve esse caso. */
+  const okType = (file.type||'').startsWith('image/') || ehPdf(file);
+  if(!okType){ toast('Formato não suportado — envie imagem (JPG, PNG, HEIC) ou PDF.','error'); return; }
   if(file.size > ANEXO_MAX){ toast('Arquivo maior que 8MB — use um menor.','error'); return; }
   /* É aqui que entra o print arrastado. Converter antes de ler é o que impede
      um PNG de 500 KB de virar 1,3 MB de armazenamento — e o que segura o
@@ -7528,8 +7533,10 @@ function docPickFile(){const i=document.getElementById('d-file');if(i)i.click();
 function onDocF(e){const f=e.target.files&&e.target.files[0];if(f)docProcessFile(f,'seleção');}
 async function docProcessFile(file,source){
   if(!file)return;
-  const ok=(file.type||'').startsWith('image/')||file.type==='application/pdf';
-  if(!ok){toast('Formato não suportado — envie imagem ou PDF.','error');return;}
+  /* Mesmo caso do comprovante: alvará e contrato quase sempre chegam em PDF, e
+     o celular às vezes não informa o MIME. ehPdf cobre pela extensão. */
+  const ok=(file.type||'').startsWith('image/')||ehPdf(file);
+  if(!ok){toast('Formato não suportado — envie imagem (JPG, PNG, HEIC) ou PDF.','error');return;}
   /* Comprime ANTES de medir: a checagem vinha primeiro e recusava uma foto de
      9 MB que a compressão deixaria em 1,2 MB, sem o app nem tentar. */
   file=await comprimeImagem(file);
