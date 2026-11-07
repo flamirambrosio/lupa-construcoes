@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0D13">
+<title>LUPA · 3 ideias para Lançamentos no celular</title>
+<!-- MAQ-LANC-20261107a · maquete de estudo: não faz parte do app, não grava nada -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   MOCKUP — 3 direções para a tela de Lançamento no celular.
+   Cores e fontes copiadas do LUPA real para a comparação ser justa.
+   Esta página NÃO mexe em nada do app. É só uma maquete.
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --bg:#0B0D13;--bg2:#111520;--bg3:#171B2A;--bg4:#1E2235;
+  --surface:#1A1E30;--surface2:#222845;--surface3:#2B3058;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --text:#EDF0FF;--text2:#9BA4C8;--text3:#8A95BB;
+  --brand:#1A3A5C;--brand2:#2980B9;--brand3:#5DADE2;
+  --accent:#E67E22;--accent2:#F39C12;
+  --green:#27AE60;--green-bg:rgba(39,174,96,.12);
+  --red:#E74C3C;--yellow:#F1C40F;--yellow-bg:rgba(241,196,15,.12);
+  --blue:#2980B9;--blue-bg:rgba(41,128,185,.12);
+  --topbar:linear-gradient(135deg,#0B1828 0%,#1A3A5C 50%,#2980B9 100%);
+  --jak:'Plus Jakarta Sans',sans-serif;
+  --dm:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:var(--dm);background:#06080D;color:var(--text);overflow-x:hidden}
+button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font-family:inherit}
+:focus-visible{outline:2px solid var(--brand3);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ═══ CASCA ═══ */
+.shell{min-height:100%;display:flex;flex-direction:column;align-items:center}
+
+/* Seletor de direção — fica no topo, sempre alcançável */
+.picker{position:sticky;top:0;z-index:50;width:100%;background:rgba(6,8,13,.94);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:9px 10px 10px}
+.picker-in{max-width:430px;margin:0 auto}
+.picker-ttl{font-family:var(--jak);font-size:10.5px;font-weight:700;letter-spacing:1.6px;
+  color:var(--text3);text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.picker-ttl::after{content:'';flex:1;height:1px;background:var(--border)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tab{height:50px;border-radius:11px;background:var(--surface);border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:.16s}
+.tab b{font-family:var(--jak);font-size:12.5px;font-weight:700;color:var(--text2)}
+.tab span{font-size:9.5px;color:var(--text3);letter-spacing:.2px}
+.tab[aria-selected="true"]{background:linear-gradient(135deg,rgba(41,128,185,.26),rgba(41,128,185,.1));
+  border-color:rgba(93,173,226,.5);box-shadow:0 0 0 1px rgba(93,173,226,.18),0 4px 18px rgba(41,128,185,.2)}
+.tab[aria-selected="true"] b{color:#fff}
+.tab[aria-selected="true"] span{color:var(--brand3)}
+
+/* Régua: mede o próprio conteúdo e diz a verdade */
+.ruler{max-width:430px;margin:11px auto 0;padding:0 10px;width:100%}
+.ruler-in{border-radius:11px;border:1px solid var(--border);background:var(--bg2);padding:10px 12px}
+.ruler-h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.ruler-n{font-family:var(--jak);font-size:21px;font-weight:800;color:var(--text);
+  font-variant-numeric:tabular-nums;line-height:1}
+.ruler-u{font-size:11px;color:var(--text3)}
+.ruler-bar{height:7px;border-radius:4px;background:var(--bg4);overflow:hidden;position:relative;margin-bottom:7px}
+.ruler-fill{height:100%;border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.ruler-lim{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--yellow);border-radius:2px}
+.ruler-txt{font-size:11px;line-height:1.5;color:var(--text2)}
+.ruler-txt b{color:var(--text)}
+.ok{color:var(--green)}.bad{color:var(--red)}
+
+/* Palco — moldura de celular no computador, tela cheia no celular */
+.stage{width:100%;display:flex;justify-content:center;padding:12px 10px 34px}
+.phone{width:390px;height:844px;max-width:100%;position:relative;border-radius:30px;overflow:hidden;
+  background:var(--bg);border:1px solid var(--border2);box-shadow:0 26px 70px rgba(0,0,0,.6)}
+@media (max-width:430px){
+  /* No celular a maquete tem que ocupar a tela quase inteira, senão você não
+     sente o tamanho real — que é exatamente o que está em discussão. */
+  .stage{padding:0}
+  .phone{width:100vw;height:calc(100dvh - 54px);min-height:520px;border-radius:0;border:0;box-shadow:none}
+  .picker{padding:6px 8px 7px}
+  .picker-ttl{display:none}
+  .tabs{gap:5px}
+  .tab{height:41px;flex-direction:row;gap:6px}
+  .tab b{font-size:12px}
+  .tab span{font-size:10px}
+  .stage{order:1}
+  .ruler{order:2;margin-top:0;padding-top:14px}
+  .note{order:3}
+}
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.on{display:flex}
+
+/* Barra de topo do app (igual à do LUPA) */
+.appbar{height:52px;flex:0 0 52px;background:var(--topbar);display:flex;align-items:center;
+  gap:10px;padding:0 13px;color:#fff}
+.appbar .ab-t{font-family:var(--jak);font-size:15px;font-weight:700;line-height:1.15}
+.appbar .ab-s{font-size:10px;opacity:.78;display:flex;align-items:center;gap:4px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--accent2);display:inline-block}
+.ab-x{margin-left:auto;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:19px;color:rgba(255,255,255,.9)}
+.ab-x:active{background:rgba(255,255,255,.12)}
+
+.lbl{font-family:var(--jak);font-size:10px;font-weight:700;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--text3)}
+
+/* ════════════════════════════════════════════════════════
+   A — CALCULADORA. O valor manda. O teclado é do app.
+   ════════════════════════════════════════════════════════ */
+.A{background:var(--bg)}
+.A-val{flex:0 0 auto;padding:30px 20px 18px;text-align:center;position:relative}
+.A-num{font-family:var(--jak);font-weight:800;color:var(--text);line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:-1.5px;
+  display:flex;align-items:baseline;justify-content:center;gap:3px}
+.A-cur{font-size:19px;font-weight:700;color:var(--text3);letter-spacing:0;transform:translateY(-10px)}
+.A-int{font-size:52px}
+.A-cents{font-size:30px;color:var(--text2)}
+.A-num.zero .A-int,.A-num.zero .A-cents{color:#39405E}
+.A-desc{margin-top:15px;width:100%;height:46px;border-radius:12px;background:var(--surface);
+  border:1px solid var(--border);display:flex;align-items:center;gap:9px;padding:0 13px;
+  font-size:13.5px;color:var(--text3);text-align:left}
+.A-desc.filled{color:var(--text);border-color:rgba(93,173,226,.3);background:var(--bg3)}
+.A-desc svg{flex:0 0 15px;opacity:.65}
+.A-desc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* trilho de categorias — nome inteiro, nada de "Mate" */
+.A-cats{flex:0 0 auto;display:flex;gap:7px;overflow-x:auto;padding:4px 14px 12px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.A-cats::-webkit-scrollbar{display:none}
+/* 44px é o mínimo para o dedo acertar sem erro. Hoje o app tem cinco controles
+   abaixo disso: o ✕ (30), as duas abas (30) e Pago/A pagar (40). */
+.chip{flex:0 0 auto;height:44px;padding:0 15px;border-radius:22px;background:var(--surface);
+  border:1px solid var(--border);display:inline-flex;align-items:center;gap:7px;
+  font-size:12.5px;font-weight:500;color:var(--text2);transition:.14s;white-space:nowrap}
+.chip svg{width:14px;height:14px;opacity:.75}
+.chip[aria-pressed="true"]{background:linear-gradient(135deg,rgba(41,128,185,.3),rgba(41,128,185,.12));
+  border-color:rgba(93,173,226,.55);color:#fff}
+.chip[aria-pressed="true"] svg{opacity:1;color:var(--brand3)}
+
+.A-row2{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 14px 12px}
+.A-act{height:52px;border-radius:13px;background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;
+  font-weight:500;color:var(--text2);transition:.14s}
+.A-act svg{width:17px;height:17px}
+/* O comprovante anexado usa AZUL, não verde: verde já é "Pago" e já é "Salvar".
+   Três verdes na mesma tela fazem o olho parar de distinguir o que importa. */
+.A-act.got{background:var(--blue-bg);border-color:rgba(93,173,226,.45);color:var(--brand3)}
+.A-act.pago{background:var(--green-bg);border-color:rgba(39,174,96,.4);color:#7EE2A8}
+.A-act.pend{background:var(--yellow-bg);border-color:rgba(241,196,15,.35);color:#F3D96B}
+/* linha de escape: data, fornecedor e NF continuam alcançáveis em um toque */
+.A-extra{flex:0 0 auto;margin:0 14px 10px;height:44px;border-radius:11px;
+  border:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;
+  justify-content:center;gap:8px;font-size:11.5px;color:var(--text3)}
+.A-extra b{color:var(--text2);font-weight:600}
+
+/* teclado próprio: nunca cobre nada, porque faz parte da tela */
+.A-pad{flex:1 1 auto;display:grid;grid-template-columns:repeat(3,1fr) 92px;
+  grid-template-rows:repeat(4,1fr);gap:7px;padding:4px 12px 14px;min-height:276px}
+.key{min-height:58px;border-radius:14px;background:var(--bg3);border:1px solid var(--border);
+  font-family:var(--jak);font-size:24px;font-weight:600;color:var(--text);
+  display:flex;align-items:center;justify-content:center;transition:.1s}
+.key:active{background:var(--surface3);transform:scale(.96)}
+.key.sm{font-size:19px;color:var(--text2)}
+.A-save{grid-column:4;grid-row:1/5;border-radius:15px;
+  background:linear-gradient(160deg,#2ECC71,#1E8449);color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  font-family:var(--jak);font-size:12.5px;font-weight:700;
+  box-shadow:0 5px 20px rgba(39,174,96,.35)}
+.A-save:active{filter:brightness(.92)}
+.A-save svg{width:23px;height:23px}
+.A-save:disabled{background:var(--bg3);color:var(--text3);box-shadow:none}
+
+/* estado "digitando a descrição" */
+.A-sugg{flex:1 1 auto;display:none;flex-direction:column;padding:2px 14px 14px;gap:7px;overflow-y:auto}
+.A.typing .A-pad{display:none}
+.A.typing .A-sugg{display:flex}
+.A-sugg-h{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);
+  font-family:var(--jak);font-weight:700;margin-bottom:1px}
+.sugg{height:46px;border-radius:11px;background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;padding:0 13px;font-size:13.5px;color:var(--text);text-align:left}
+.sugg small{margin-left:auto;font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
+.A-kbnote{margin-top:auto;padding:9px 11px;border-radius:10px;background:rgba(41,128,185,.09);
+  border:1px dashed rgba(93,173,226,.28);font-size:10.5px;color:var(--text2);line-height:1.45;text-align:center}
+
+/* ════════════════════════════════════════════════════════
+   B — RECIBO COMPACTO. Mesmo fluxo de hoje, densidade refeita.
+   ════════════════════════════════════════════════════════ */
+.B{background:var(--bg)}
+.B-body{flex:1 1 auto;overflow-y:auto;padding:11px 13px 0;display:flex;flex-direction:column;gap:8px}
+/* Sem isto, numa tela curta o flex encolhe os campos sozinho e os alvos de toque
+   caem abaixo dos 44px — o defeito que estamos consertando voltaria pela porta
+   dos fundos. Só a lista de recentes pode ceder espaço. */
+.B-body>*{flex:0 0 auto}
+.B-body>.B-recentes{flex:1 1 auto}
+.B-rec,.B-rec-h{flex:0 0 auto}
+.fld{height:56px;border-radius:13px;background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:11px;transition:.15s}
+.fld:focus-within{border-color:rgba(93,173,226,.5);background:var(--bg3)}
+.fld-pre{font-family:var(--jak);font-size:15px;font-weight:700;color:var(--text3);
+  padding-right:11px;border-right:1px solid var(--border2);align-self:stretch;
+  display:flex;align-items:center}
+.fld input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);
+  font-family:var(--jak);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.fld input::placeholder{color:#39405E;font-weight:600}
+.fld.desc{height:48px}
+.fld.desc input{font-family:var(--dm);font-size:14.5px;font-weight:400}
+.fld.desc input::placeholder{color:var(--text3);font-weight:400;font-size:13.5px}
+.fld svg{flex:0 0 17px;color:var(--text3)}
+
+.B-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:1px;margin:0 -13px;padding-left:13px;padding-right:13px}
+.B-cats::-webkit-scrollbar{display:none}
+.B-cats .chip{height:44px}
+
+.B-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.B-half{height:52px;border-radius:12px;background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;color:var(--text2);transition:.14s}
+.B-half svg{width:16px;height:16px}
+.B-half.got{background:var(--blue-bg);border-color:rgba(93,173,226,.45);color:var(--brand3)}
+/* O espaço que sobra num celular alto vira contexto, não vazio: os últimos
+   lançamentos desta obra. Quando o teclado abre, ele some sozinho — por isso
+   não entra na conta dos 474px. */
+.B-recentes{flex:1 1 auto;min-height:0;overflow-y:auto;margin-top:3px;
+  display:flex;flex-direction:column;gap:6px;scrollbar-width:none}
+.B-recentes::-webkit-scrollbar{display:none}
+.B-rec-h{font-family:var(--jak);font-size:9.5px;font-weight:700;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:7px;padding:4px 2px 1px}
+.B-rec-h::after{content:'';flex:1;height:1px;background:var(--border)}
+.B-rec{display:flex;align-items:center;gap:10px;height:44px;padding:0 11px;border-radius:10px;
+  background:rgba(26,30,48,.5);border:1px solid var(--border)}
+.B-rec-d{flex:1;min-width:0;font-size:12.5px;color:var(--text2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.B-rec-v{font-family:var(--jak);font-size:12.5px;font-weight:700;color:var(--text);
+  font-variant-numeric:tabular-nums}
+/* Sem a moldura em volta: o fundo + 4px de respiro de cada lado custavam 8px de
+   altura e não diziam nada que as duas pastilhas já não digam sozinhas. */
+.B-seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.B-seg button{height:46px;border-radius:12px;font-size:12.5px;font-weight:500;color:var(--text2);
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:.14s}
+.B-seg button svg{width:15px;height:15px}
+.B-seg button[aria-pressed="true"]{background:var(--green-bg);color:#7EE2A8;border-color:rgba(39,174,96,.4)}
+.B-seg button.ap[aria-pressed="true"]{background:var(--yellow-bg);color:#F3D96B;border-color:rgba(241,196,15,.38)}
+.B-more{height:44px;border-radius:11px;border:1px dashed var(--border2);display:flex;
+  align-items:center;justify-content:center;gap:8px;font-size:11.5px;color:var(--text3)}
+.B-foot{flex:0 0 auto;padding:9px 13px calc(10px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;gap:8px}
+.B-save{height:54px;border-radius:14px;background:linear-gradient(135deg,#2ECC71,#1E8449);
+  color:#fff;font-family:var(--jak);font-size:15px;font-weight:700;display:flex;
+  align-items:center;justify-content:center;gap:9px;box-shadow:0 5px 20px rgba(39,174,96,.32)}
+.B-save svg{width:17px;height:17px}
+.B-nf{height:34px;font-size:11.5px;color:var(--text3);display:flex;align-items:center;
+  justify-content:center;gap:6px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--border2)}
+
+/* ════════════════════════════════════════════════════════
+   C — FOTO PRIMEIRO. Você já está com o papel na mão.
+   ════════════════════════════════════════════════════════ */
+.C{background:var(--bg)}
+.C-step{flex:1 1 auto;display:none;flex-direction:column;min-height:0}
+.C-step.on{display:flex}
+.C-prog{flex:0 0 auto;display:flex;gap:5px;padding:12px 14px 2px}
+.C-prog i{height:3px;flex:1;border-radius:2px;background:var(--bg4)}
+.C-prog i.on{background:var(--brand3)}
+
+.C-shoot{flex:1 1 auto;display:flex;flex-direction:column;padding:10px 16px 18px;min-height:0}
+.C-lead{font-family:var(--jak);font-size:21px;font-weight:700;line-height:1.25;margin-bottom:5px}
+.C-sub{font-size:12.5px;color:var(--text2);line-height:1.5;margin-bottom:16px}
+.C-cam{flex:1 1 auto;min-height:236px;border-radius:20px;border:2px dashed rgba(93,173,226,.35);
+  background:radial-gradient(130% 95% at 50% 0%,rgba(41,128,185,.17),rgba(26,30,48,.5));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;
+  color:var(--text);transition:.18s}
+.C-cam:active{border-color:var(--brand3);background:radial-gradient(130% 95% at 50% 0%,rgba(41,128,185,.26),rgba(26,30,48,.6))}
+.C-cam-ring{width:84px;height:84px;border-radius:50%;background:linear-gradient(145deg,#2980B9,#1A3A5C);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 32px rgba(41,128,185,.4),inset 0 1px 0 rgba(255,255,255,.22)}
+.C-cam-ring svg{width:35px;height:35px;color:#fff}
+.C-cam b{font-family:var(--jak);font-size:16px;font-weight:700}
+.C-cam small{font-size:11.5px;color:var(--text2);max-width:200px;text-align:center;line-height:1.5}
+.C-alt{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.C-altb{height:50px;border-radius:13px;background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;color:var(--text2)}
+.C-altb svg{width:16px;height:16px}
+
+.C-conf{flex:1 1 auto;overflow-y:auto;padding:10px 14px 0}
+.C-thumb{display:flex;gap:11px;align-items:center;padding:10px;border-radius:14px;
+  background:var(--bg2);border:1px solid var(--border);margin-bottom:12px}
+.C-thumb-img{width:52px;height:64px;flex:0 0 52px;border-radius:8px;overflow:hidden;
+  background:linear-gradient(170deg,#E8EAF2,#C5CAD8);position:relative}
+.C-thumb-img::before{content:'';position:absolute;left:7px;right:7px;top:9px;height:2px;background:#9099AE;
+  box-shadow:0 7px 0 #B3B9C8,0 14px 0 #B3B9C8,0 26px 0 #9099AE,0 33px 0 #B3B9C8}
+.C-thumb-t{font-family:var(--jak);font-size:13px;font-weight:700;margin-bottom:2px}
+.C-thumb-s{font-size:11px;color:var(--text2);line-height:1.45}
+.C-read{display:flex;flex-direction:column;gap:8px}
+.C-line{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:12px;
+  background:var(--surface);border:1px solid var(--border);text-align:left;width:100%}
+.C-line-l{flex:1;min-width:0}
+.C-line-k{font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);
+  font-family:var(--jak);font-weight:700;margin-bottom:3px}
+.C-line-v{font-family:var(--jak);font-size:15.5px;font-weight:700;color:var(--text);
+  font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.C-line-v.big{font-size:23px;letter-spacing:-.4px}
+.selo{flex:0 0 auto;font-size:9.5px;font-weight:700;padding:4px 8px;border-radius:7px;
+  display:inline-flex;align-items:center;gap:4px;letter-spacing:.2px}
+.selo.lido{background:var(--green-bg);color:#7EE2A8}
+.selo.conf{background:var(--yellow-bg);color:#F3D96B}
+.C-line.pend{border-color:rgba(241,196,15,.32);background:rgba(241,196,15,.05)}
+.C-foot{flex:0 0 auto;padding:11px 14px calc(12px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--border);background:var(--bg2);margin-top:12px}
+.C-back{position:absolute;left:8px;top:8px;width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;color:#fff;z-index:3}
+
+/* ══ TELA CURTA (iPhone SE, Android pequeno) ══
+   A regra é a mesma do resto do app: encolhe até caber, nunca estoura nem corta.
+   Só o que é decoração cede espaço — os alvos de toque continuam em 44px. */
+@media (max-height:740px){
+  .A-val{padding:16px 20px 12px}
+  .A-int{font-size:42px}
+  .A-cents{font-size:25px}
+  .A-cur{font-size:16px;transform:translateY(-8px)}
+  .A-desc{margin-top:11px;height:44px}
+  .A-cats{padding:2px 14px 9px}
+  .A-row2{padding:0 14px 9px}
+  .A-act{height:48px}
+  .A-extra{margin-bottom:8px}
+  .A-pad{min-height:248px;gap:6px;padding:2px 12px 10px}
+  .key{min-height:52px;font-size:21px}
+  .C-lead{font-size:18px;margin-bottom:4px}
+  .C-sub{margin-bottom:11px;font-size:12px}
+  .C-cam{min-height:190px}
+  .C-cam-ring{width:68px;height:68px}
+  .C-cam-ring svg{width:29px;height:29px}
+  .C-shoot{padding:8px 16px 14px}
+}
+
+/* rodapé explicativo */
+.note{max-width:430px;width:100%;margin:0 auto;padding:0 12px 30px}
+.note-in{border-radius:13px;border:1px solid var(--border);background:var(--bg2);padding:13px 14px}
+.note h3{font-family:var(--jak);font-size:12.5px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.note p{font-size:12px;line-height:1.6;color:var(--text2)}
+.note p+p{margin-top:7px}
+.note b{color:var(--text)}
+.kbd{display:inline-block;padding:1px 6px;border-radius:5px;background:var(--bg4);
+  border:1px solid var(--border2);font-size:10.5px;color:var(--text2);font-family:var(--jak)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ══ SELETOR ══ -->
+  <div class="picker">
+    <div class="picker-in">
+      <div class="picker-ttl">Lançamento no celular · 3 ideias</div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true"  onclick="mostra('A',this)"><b>A</b><span>Calculadora</span></button>
+        <button class="tab" role="tab" aria-selected="false" onclick="mostra('B',this)"><b>B</b><span>Recibo</span></button>
+        <button class="tab" role="tab" aria-selected="false" onclick="mostra('C',this)"><b>C</b><span>Foto primeiro</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RÉGUA (mede o conteúdo de verdade) ══ -->
+  <div class="ruler">
+    <div class="ruler-in">
+      <div class="ruler-h"><span class="ruler-n" id="r-num">—</span><span class="ruler-u">px de conteúdo</span></div>
+      <div class="ruler-bar"><div class="ruler-fill" id="r-fill" style="width:0"></div><div class="ruler-lim" id="r-lim"></div></div>
+      <div class="ruler-txt" id="r-txt">medindo…</div>
+    </div>
+  </div>
+
+  <!-- ══ PALCO ══ -->
+  <div class="stage">
+    <div class="phone">
+
+      <!-- ─────────── A · CALCULADORA ─────────── -->
+      <section class="screen A on" id="scr-A">
+        <header class="appbar">
+          <div>
+            <div class="ab-t">Novo gasto</div>
+            <div class="ab-s"><i class="dot"></i> Residencial Vista Mar</div>
+          </div>
+          <button class="ab-x" aria-label="Fechar">✕</button>
+        </header>
+
+        <div class="A-val">
+          <div class="A-num zero" id="A-num">
+            <span class="A-cur">R$</span><span class="A-int" id="A-int">0</span><span class="A-cents" id="A-cents">,00</span>
+          </div>
+          <button class="A-desc" id="A-desc" onclick="Atype()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+            <span id="A-desc-t">O que foi comprado?</span>
+          </button>
+        </div>
+
+        <div class="A-cats" role="group" aria-label="Categoria">
+          <button class="chip" aria-pressed="true" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18M8 7V5h8v2"/></svg>Material</button>
+          <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Funcionário</button>
+          <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Burocracia</button>
+          <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg>Terreno</button>
+          <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Outros</button>
+        </div>
+
+        <div class="A-row2">
+          <button class="A-act" id="A-comp" onclick="Acomp(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>Comprovante</span>
+          </button>
+          <button class="A-act pago" id="A-pag" onclick="Apag(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span id="A-pag-t">Pago</span>
+          </button>
+        </div>
+
+        <button class="A-extra">Hoje, <b>07/11</b> · toque para data, fornecedor e NF</button>
+
+        <div class="A-pad">
+          <button class="key" onclick="dig('1')">1</button>
+          <button class="key" onclick="dig('2')">2</button>
+          <button class="key" onclick="dig('3')">3</button>
+          <button class="A-save" id="A-save" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+            Salvar
+          </button>
+          <button class="key" onclick="dig('4')">4</button>
+          <button class="key" onclick="dig('5')">5</button>
+          <button class="key" onclick="dig('6')">6</button>
+          <button class="key" onclick="dig('7')">7</button>
+          <button class="key" onclick="dig('8')">8</button>
+          <button class="key" onclick="dig('9')">9</button>
+          <button class="key sm" onclick="dig('00')">00</button>
+          <button class="key" onclick="dig('0')">0</button>
+          <button class="key sm" onclick="dig('x')" aria-label="Apagar">⌫</button>
+        </div>
+
+        <div class="A-sugg" id="A-sugg">
+          <div class="A-sugg-h">Repetir um gasto recente</div>
+          <button class="sugg" onclick="Apick('Cimento CP-II 50kg')">Cimento CP-II 50kg <small>3x este mês</small></button>
+          <button class="sugg" onclick="Apick('Diária pedreiro')">Diária pedreiro <small>8x este mês</small></button>
+          <button class="sugg" onclick="Apick('Areia média — 1 m³')">Areia média — 1 m³ <small>2x este mês</small></button>
+          <button class="sugg" onclick="Apick('Aluguel de betoneira')">Aluguel de betoneira <small>1x este mês</small></button>
+          <div class="A-kbnote">Aqui o teclado do celular aparece só para escrever a descrição. Para o valor, nunca — quem digita número é o teclado do próprio app.</div>
+        </div>
+      </section>
+
+      <!-- ─────────── B · RECIBO COMPACTO ─────────── -->
+      <section class="screen B" id="scr-B">
+        <header class="appbar">
+          <div>
+            <div class="ab-t">Novo gasto</div>
+            <div class="ab-s"><i class="dot"></i> Residencial Vista Mar</div>
+          </div>
+          <button class="ab-x" aria-label="Fechar">✕</button>
+        </header>
+
+        <div class="B-body">
+          <label class="fld">
+            <span class="fld-pre">R$</span>
+            <input id="B-val" inputmode="decimal" placeholder="0,00" aria-label="Valor">
+          </label>
+
+          <label class="fld desc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+            <input placeholder="O que foi comprado?" aria-label="Descrição">
+          </label>
+
+          <div class="B-cats" role="group" aria-label="Categoria">
+            <button class="chip" aria-pressed="true" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18M8 7V5h8v2"/></svg>Material</button>
+            <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Funcionário</button>
+            <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Burocracia</button>
+            <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg>Terreno</button>
+            <button class="chip" aria-pressed="false" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Outros</button>
+          </div>
+
+          <div class="B-two">
+            <button class="B-half" onclick="this.classList.toggle('got')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Tirar foto
+            </button>
+            <button class="B-half" onclick="this.classList.toggle('got')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              Galeria ou PDF
+            </button>
+          </div>
+
+          <div class="B-seg" role="group" aria-label="Pagamento">
+            <button aria-pressed="true" onclick="seg(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Pago</button>
+            <button class="ap" aria-pressed="false" onclick="seg(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>A pagar</button>
+          </div>
+
+          <button class="B-more">+ data, fornecedor, NF com vários itens</button>
+
+          <div class="B-recentes" data-opcional="1">
+            <div class="B-rec-h">Últimos nesta obra</div>
+            <button class="B-rec"><span class="B-rec-d">Ferro 10mm — 12 barras</span><span class="B-rec-v">R$ 2.310,75</span></button>
+            <button class="B-rec"><span class="B-rec-d">Diária pedreiro — semana 42</span><span class="B-rec-v">R$ 4.800,00</span></button>
+            <button class="B-rec"><span class="B-rec-d">Aluguel de betoneira</span><span class="B-rec-v">R$ 620,00</span></button>
+            <button class="B-rec"><span class="B-rec-d">Cimento CP-II 50kg</span><span class="B-rec-v">R$ 1.250,50</span></button>
+          </div>
+        </div>
+
+        <div class="B-foot">
+          <button class="B-save">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+            Salvar gasto
+          </button>
+        </div>
+      </section>
+
+      <!-- ─────────── C · FOTO PRIMEIRO ─────────── -->
+      <section class="screen C" id="scr-C">
+        <header class="appbar">
+          <div>
+            <div class="ab-t">Novo gasto</div>
+            <div class="ab-s"><i class="dot"></i> Residencial Vista Mar</div>
+          </div>
+          <button class="ab-x" aria-label="Fechar">✕</button>
+        </header>
+
+        <div class="C-prog"><i class="on" id="cp1"></i><i id="cp2"></i></div>
+
+        <!-- passo 1 -->
+        <div class="C-step on" id="C1">
+          <div class="C-shoot">
+            <div class="C-lead">Está com a nota na mão?</div>
+            <div class="C-sub">Fotografe e o LUPA preenche valor, fornecedor e data. Você só confere.</div>
+            <button class="C-cam" onclick="Cgo(2)">
+              <div class="C-cam-ring">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <b>Fotografar a nota</b>
+              <small>Enquadre o papel inteiro, de cima</small>
+            </button>
+            <div class="C-alt">
+              <button class="C-altb" onclick="Cgo(2)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Galeria ou PDF</button>
+              <button class="C-altb" onclick="Cgo(2)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Digitar à mão</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- passo 2 -->
+        <div class="C-step" id="C2">
+          <div class="C-conf">
+            <div class="C-thumb">
+              <div class="C-thumb-img"></div>
+              <div>
+                <div class="C-thumb-t">Nota lida</div>
+                <div class="C-thumb-s">Confira os 2 campos em amarelo. O resto veio direto do papel.</div>
+              </div>
+            </div>
+
+            <div class="C-read">
+              <button class="C-line">
+                <div class="C-line-l"><div class="C-line-k">Valor</div><div class="C-line-v big">R$ 1.250,50</div></div>
+                <span class="selo lido">✓ da nota</span>
+              </button>
+              <button class="C-line">
+                <div class="C-line-l"><div class="C-line-k">Fornecedor</div><div class="C-line-v">Depósito Macaé Ltda</div></div>
+                <span class="selo lido">✓ da nota</span>
+              </button>
+              <button class="C-line">
+                <div class="C-line-l"><div class="C-line-k">Data</div><div class="C-line-v">06/11/2026</div></div>
+                <span class="selo lido">✓ da nota</span>
+              </button>
+              <button class="C-line pend">
+                <div class="C-line-l"><div class="C-line-k">Categoria</div><div class="C-line-v">Escolher</div></div>
+                <span class="selo conf">confira</span>
+              </button>
+              <button class="C-line pend">
+                <div class="C-line-l"><div class="C-line-k">Descrição</div><div class="C-line-v">Cimento CP-II 50kg</div></div>
+                <span class="selo conf">confira</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="C-foot">
+            <div class="B-seg" role="group" aria-label="Pagamento">
+              <button aria-pressed="true" onclick="seg(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Pago</button>
+              <button class="ap" aria-pressed="false" onclick="seg(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>A pagar</button>
+            </div>
+            <button class="B-save">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+              Salvar gasto
+            </button>
+            <button class="B-nf" onclick="Cgo(1)">Voltar e tirar outra foto</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ══ NOTA ══ -->
+  <div class="note">
+    <div class="note-in" id="nota"></div>
+  </div>
+</div>
+
+<script>
+/* ═══ troca de direção ═══ */
+var atual='A';
+var LIMITE=474; /* altura útil real do app hoje com o teclado do celular aberto (medido) */
+var TEXTOS={
+ A:{t:'A · Calculadora',
+    p:['O valor vira o personagem principal: <b>52px</b>, no topo, impossível de errar. Quem digita número é um teclado <b>desenhado dentro do app</b> — ele ocupa a metade de baixo da tela e <b>nunca cobre nada</b>, porque já faz parte do layout.',
+       'O teclado do celular só aparece quando você toca na descrição, e aí o app troca o teclado numérico por <b>sugestões do seu próprio histórico</b> — um toque em "Cimento CP-II 50kg" e acabou.',
+       'As categorias voltam a ter <b>nome inteiro</b> num trilho que corre com o dedo. Hoje elas aparecem cortadas: <span class="kbd">Mate</span> <span class="kbd">Func</span> <span class="kbd">Buro</span> <span class="kbd">Terr</span> <span class="kbd">Outr</span>.']},
+ B:{t:'B · Recibo compacto',
+    p:['É a mudança mais conservadora: <b>mesmos campos, mesma ordem, mesmo jeito de usar</b> que você já conhece. O que muda é a densidade.',
+       'Os quatro rótulos cinza (VALOR, CATEGORIA, DESCRIÇÃO, PAGAMENTO) somem — cada campo se explica sozinho pelo texto de dentro. Só isso devolve <b>84px</b>. Os dois cabeçalhos empilhados viram <b>um só</b>, devolvendo mais <b>87px</b>. Os ladrilhos de comprovante ficam do <b>mesmo tamanho</b>, em vez de 264px contra 92px.',
+       'A aba "NF Completa", que hoje ocupa uma faixa fixa de 38px na sua frente o tempo todo, vira <b>uma linha discreta no rodapé</b> — porque lançar nota fiscal com vários itens é coisa de mesa, não de obra.']},
+ C:{t:'C · Foto primeiro',
+    p:['Inverte a ordem das coisas. Na obra você está com <b>o papel na mão</b> — então a primeira tela é a câmera, não o formulário.',
+       'O app já sabe ler nota (o OCR existe, está escondido dentro de "NF Completa"). Aqui ele vira o <b>caminho principal</b>: fotografou, o app preenche, você confere e salva. No caso comum, <b>zero digitação</b>.',
+       'O detalhe que faz a diferença: cada campo mostra <b>de onde veio</b>. Verde <span class="kbd">✓ da nota</span> é o que o app leu do papel; amarelo <span class="kbd">confira</span> é o que ele chutou ou não achou. Você sabe exatamente onde olhar em vez de reler tudo.']}
+};
+function mostra(k,btn){
+  atual=k;
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.toggle('on',s.id==='scr-'+k);});
+  document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-selected',t===btn?'true':'false');});
+  mede();
+}
+/* ═══ Régua honesta.
+   Cada direção tem que ser julgada pelo limite que vale PARA ELA:
+   · A nunca abre o teclado do celular para o valor (o teclado é do app),
+     então o espaço dela é a tela inteira — 844px.
+   · B usa o teclado do celular para valor e descrição: sobram 474px.
+   · C só abre teclado se você for corrigir um campo lido errado.
+   Medir as três contra 474 faria a régua mentir a favor de B. ═══ */
+var REGRAS={
+  A:{lim:844,ok:'Cabe na tela inteira, e o teclado do celular <b>nunca abre para o valor</b> — quem digita número é o teclado do próprio app, que já faz parte do layout.'},
+  B:{lim:474,ok:'Cabe nos <b>474px</b> que sobram com o teclado do celular aberto (marca amarela). Dá para preencher tudo <b>sem rolar nada</b>.'},
+  C:{lim:844,ok:'Cabe na tela inteira. Aqui você <b>confere</b> em vez de digitar — o teclado só aparece se algum campo tiver sido lido errado.'}
+};
+function mede(){
+  var scr=document.getElementById('scr-'+atual);
+  /* Medir a tela como ela está na moldura daria a altura da MOLDURA, não a que o
+     conteúdo precisa — os blocos elásticos esticam para preencher. Então clono a
+     tela num espaço de altura livre e meço lá: isso é o quanto ela realmente pede. */
+  var clone=scr.cloneNode(true);
+  /* inset:auto é obrigatório: .screen tem inset:0, e com bottom:0 preso o clone
+     herdaria a altura do corpo da página em vez de medir o próprio conteúdo. */
+  clone.style.cssText='position:absolute;inset:auto;left:-9999px;top:0;width:390px;height:auto;'+
+                      'display:flex;flex-direction:column;visibility:hidden;pointer-events:none';
+  /* Blocos marcados como opcionais só existem quando sobra espaço (e somem
+     quando o teclado abre). Contá-los inflaria a medida sem motivo. */
+  clone.querySelectorAll('[data-opcional]').forEach(function(x){x.remove();});
+  document.body.appendChild(clone);
+  var h=Math.round(clone.getBoundingClientRect().height);
+  clone.remove();
+  var R=REGRAS[atual], cabe=h<=R.lim, esc=Math.max(R.lim,760)*1.08;
+  document.getElementById('r-num').textContent=h;
+  var f=document.getElementById('r-fill');
+  f.style.width=Math.min(100,h/esc*100)+'%';
+  f.style.background=cabe?'linear-gradient(90deg,#27AE60,#2ECC71)':'linear-gradient(90deg,#E67E22,#E74C3C)';
+  document.getElementById('r-lim').style.left=(R.lim/esc*100)+'%';
+  document.getElementById('r-txt').innerHTML= (cabe
+    ? '<span class="ok">✓ '+R.ok+'</span>'
+    : '<span class="bad">Passa '+(h-R.lim)+'px do limite de '+R.lim+'px.</span>')
+    + '<br><span style="opacity:.72">Hoje o app precisa de <b>697px</b> e só tem <b>474px</b> com o teclado aberto — <b>223px de rolagem</b> no meio da digitação.</span>';
+  var T=TEXTOS[atual];
+  document.getElementById('nota').innerHTML='<h3>'+T.t+'</h3>'+T.p.map(function(x){return '<p>'+x+'</p>';}).join('');
+}
+/* ═══ A: teclado ═══ */
+var cents='';
+function dig(d){
+  if(d==='x'){cents=cents.slice(0,-1);}
+  else{ if(cents.length>=9)return; cents=(cents+d).replace(/^0+/,''); }
+  var n=cents||'0'; while(n.length<3)n='0'+n;
+  var i=n.slice(0,-2), c=n.slice(-2);
+  i=i.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  document.getElementById('A-int').textContent=i;
+  document.getElementById('A-cents').textContent=','+c;
+  var zero=!cents;
+  document.getElementById('A-num').classList.toggle('zero',zero);
+  document.getElementById('A-save').disabled=zero;
+}
+function Atype(){ document.getElementById('scr-A').classList.toggle('typing'); mede(); }
+function Apick(t){
+  document.getElementById('A-desc-t').textContent=t;
+  document.getElementById('A-desc').classList.add('filled');
+  document.getElementById('scr-A').classList.remove('typing'); mede();
+}
+function Acomp(b){ b.classList.toggle('got'); b.querySelector('span').textContent=b.classList.contains('got')?'Anexado':'Comprovante'; }
+function Apag(b){
+  var pago=b.classList.toggle('pago'); b.classList.toggle('pend',!pago);
+  document.getElementById('A-pag-t').textContent=pago?'Pago':'A pagar';
+}
+/* ═══ comuns ═══ */
+function pick(b){ b.parentNode.querySelectorAll('.chip').forEach(function(c){c.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true'); }
+function seg(b){ b.parentNode.querySelectorAll('button').forEach(function(c){c.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true'); }
+/* ═══ C: passos ═══ */
+function Cgo(n){
+  document.getElementById('C1').classList.toggle('on',n===1);
+  document.getElementById('C2').classList.toggle('on',n===2);
+  document.getElementById('cp2').classList.toggle('on',n===2);
+  mede();
+}
+window.addEventListener('load',mede);
+window.addEventListener('resize',mede);
+setTimeout(mede,400);
+</script>
+</body>
+</html>
