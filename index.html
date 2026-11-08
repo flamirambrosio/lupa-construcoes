@@ -3169,9 +3169,49 @@ function closeLogoutModal(){document.getElementById('logout-modal').classList.re
 function confirmarLogout(){sessionStorage.removeItem('lupa_user');location.reload();}
 // Atualiza o app buscando a versão mais recente publicada, SEM deslogar (sessionStorage sobrevive ao reload).
 // Limpa o cache do Service Worker + manda o SW checar atualização, depois recarrega.
+/* ORDEM IMPORTA, E ELA ESTAVA ERRADA (consertado em 2026-11-08).
+   Antes: apagava o cache e recarregava. Sem internet isso trancava o app para fora
+   de casa — o Service Worker tentava a rede, falhava, procurava no cache como
+   plano B e encontrava o vazio que este botão tinha acabado de fazer. Tela branca
+   até a internet voltar. Nenhum dado se perdia, mas na obra sem sinal é o pior
+   momento possível para o app morrer.
+   Agora o cache só é apagado DEPOIS de a rede provar que está viva. Enquanto não
+   provar, nada é destruído e o app continua funcionando offline, na versão que
+   você já tem. */
 async function atualizarApp(btn){
+  const soltaBotao=()=>{if(btn){btn.classList.remove('spinning');btn.disabled=false;}};
   if(btn){btn.classList.add('spinning');btn.disabled=true;}
+
+  /* Primeiro filtro, instantâneo: modo avião / Wi-Fi desligado.
+     Usa o mesmo semInternet() do upload de comprovante, para o app ter uma única
+     definição de "offline". A função é declarada mais abaixo no arquivo e isso é
+     seguro: declaração de função sobe no escopo, e aqui só roda no clique. */
+  if(semInternet()){
+    soltaBotao();
+    try{toast('Sem internet. O app continua funcionando com os dados que já estão no aparelho — nada foi apagado.','warn');}catch(e){}
+    return;
+  }
+
   try{toast('Buscando versão nova...','info');}catch(e){}
+
+  /* Segundo filtro, o que realmente importa: navigator.onLine só diz se existe
+     uma rede conectada, não se ela chega na internet. Antena com uma barra,
+     Wi-Fi de portaria que pede login, dados móveis que acabaram — em todos esses
+     o onLine é true e a rede está morta. Então a gente pergunta de verdade.
+     Pede o sw.js (2 KB) e não o index.html (659 KB): é o arquivo que diz se existe
+     versão nova, e é barato no plano de dados. O ?cb= impede qualquer resposta
+     pronta de intermediário. */
+  try{
+    const prova=await fetch('sw.js?cb='+Date.now(),{cache:'no-store'});
+    if(!prova||!prova.ok)throw new Error('HTTP '+(prova&&prova.status));
+  }catch(e){
+    console.warn('atualizarApp: rede não respondeu —',e);
+    soltaBotao();
+    try{toast('Não consegui falar com o servidor. Cache preservado: o app segue funcionando normalmente. Tente de novo quando o sinal voltar.','warn');}catch(e2){}
+    return;
+  }
+
+  /* Rede provada. Daqui para baixo é seguro destruir o cache. */
   try{
     if('caches' in window){
       const keys=await caches.keys();
