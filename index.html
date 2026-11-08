@@ -1541,6 +1541,14 @@ input[type=date].rapido-inline-input{color-scheme:dark}
 #mais-menu{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;z-index:499;padding:12px 20px calc(env(safe-area-inset-bottom) + 20px);transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:none;border-top:1px solid var(--border2)}
 #mais-menu.show{display:block;transform:translateY(0)}
 .mais-pill{width:36px;height:4px;background:rgba(255,255,255,.16);border-radius:2px;margin:0 auto 18px}
+/* As três pílulas do topo (Dias / Gasto / Orçamento) somem abaixo de 900px.
+   Aqui elas voltam, dentro da gaveta, onde não disputam altura com nenhuma
+   página. Mesmo recorte visual das pílulas, só maior para o dedo. */
+.mais-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}
+.mais-kpi{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center;min-width:0}
+.mais-kpi.danger-pill{background:rgba(231,76,60,.18);border-color:rgba(231,76,60,.45)}
+.mais-kpi-v{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mais-kpi-l{font-size:10px;color:var(--text3);margin-top:3px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mais-item{display:flex;align-items:center;gap:16px;width:100%;padding:14px 8px;background:none;border:none;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;cursor:pointer;border-bottom:1px solid var(--border);text-align:left;transition:background .15s;border-radius:8px}
 .mais-item:last-child{border-bottom:none}
 .mais-item:active{background:var(--surface2)}
@@ -1688,7 +1696,94 @@ input[type=date].rapido-inline-input{color-scheme:dark}
 .file-thumb{width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:pointer}
 /* ═══ MOBILE ═══ */
 input,select,textarea{min-height:44px}
+/* Piso de 40px para quem tem ponteiro de mouse. No celular o piso é 44 —
+   ver o bloco "ALVO DE DEDO" logo abaixo. */
 .btn{min-height:40px}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ ALVO DE DEDO — piso de 44px no celular (2026-11-08)
+
+   Medido em 390×844 com 23 lançamentos, 7 pendências e 6 documentos:
+   60 botões abaixo de 44px. Os piores eram os de ação do cartão de
+   lançamento, 33×25px — menor que a ponta do dedo — e com apenas 5px
+   separando "editar" de "apagar", os dois na beirada direita, exatamente
+   onde o polegar cai.
+
+   ESTE BLOCO TEM DE FICAR DEPOIS do `.btn{min-height:40px}` acima.
+   As duas regras têm a mesma especificidade (0,1,0), então quem vence é
+   a última. Se alguém mover este bloco para cima, os botões voltam a 40px
+   sem erro nenhum aparecer — foi exatamente o que aconteceu na primeira
+   tentativa. Nada aqui usa !important sem necessidade: onde aparece, é
+   porque o estilo está inline no elemento.
+
+   No computador nada muda: a consulta é max-width:900px.
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  /* .btn já é inline-flex com align-items:center, então o min-height
+     centraliza o conteúdo sozinho, sem mexer em padding nem fonte. */
+  .btn,.btn-sm{min-height:44px;min-width:44px;box-sizing:border-box}
+  /* .period-bar .btn tem especificidade (0,2,0) e perde para nada abaixo
+     de 900px se não for nomeado aqui junto. */
+  .period-bar .btn{min-height:44px}
+
+  /* Chips, abas e seletores — crescem uma vez por tela, não por linha. */
+  .dtab,.scope-opt,.cat-chip,.doc-chip,.mode-sw-btn,.btn-filtros-toggle,
+  .pag-opt,.rel-btn,.dz-doc-btn{min-height:44px;box-sizing:border-box}
+  .doc-chip{display:inline-flex;align-items:center}
+  .rel-btn{display:flex;align-items:center;justify-content:center}
+
+  /* Barra do topo tem altura fixa (52–56px), então estes passam a 44px
+     sem empurrar uma linha de conteúdo para baixo. */
+  /* flex-shrink:0 e min-width são os dois obrigatórios: o .tb-left aperta
+     os filhos para caber na barra, e sem eles o hambúrguer encolhia de 44
+     para 43px. Um pixel não se vê, mas a regra é 44 — e aqui ela custa zero. */
+  .hamburger{width:44px;min-width:44px;height:44px;padding:0;flex-shrink:0;
+    justify-content:center;align-items:center;box-sizing:border-box}
+  #btn-refresh,.btn-ocr{min-width:44px;min-height:44px;box-sizing:border-box}
+  #btn-sheets{min-height:44px;box-sizing:border-box}
+  /* padding:2px 4px está no atributo style do próprio botão. */
+  #btn-ocultar-val{width:44px!important;height:44px!important;padding:0!important;
+    display:inline-flex!important;align-items:center;justify-content:center}
+
+  /* O botão do calendário é position:absolute dentro do campo de data:
+     crescer aqui não desloca nada, só amplia o alvo. */
+  .cal-btn{width:44px;height:44px}
+
+  /* Ações do cartão de lançamento. Custa altura — é o único lugar onde
+     custa — e é também o lugar onde um toque errado apaga dinheiro. */
+  .lanc-card-actions{min-height:44px;gap:10px}
+  .lanc-act-btn{min-width:44px;min-height:44px;display:inline-flex;
+    align-items:center;justify-content:center;gap:4px;box-sizing:border-box}
+  .lanc-card-actions>div{gap:10px!important}
+  /* O link do comprovante divide essa faixa e também era um alvo de 17px. */
+  a.lanc-card-comp,button.lanc-card-comp{min-height:44px;display:inline-flex;align-items:center}
+
+  /* Pendências: Editar · Concluir · Remover, três botões colados na
+     beirada, e o último apaga. 4px de folga não serve para dedo. */
+  .pend-item>div:last-child{gap:10px!important}
+  /* Com os três botões a 44px sobravam 145px para o texto e cada pendência
+     virava um bloco de cinco linhas quebradas ("Resp:" numa linha, o nome
+     na outra). Aqui os botões descem para uma faixa própria e o texto fica
+     com a largura inteira — medido, a linha encurta de 160px para 125px.
+     O :has() limita isso ao caso de três botões: pendência concluída tem
+     só o "remover" e continua na mesma linha, sem gastar altura à toa.
+     Navegador sem :has() ignora o bloco e fica no layout anterior, que já
+     está nos 44px — degrada sem quebrar. */
+  .pend-item:has(>div:last-child>:nth-child(3))>div:nth-child(2){flex:1 1 calc(100% - 52px)}
+  /* Sem linha divisória aqui. Na primeira tentativa eu pus um border-top
+     para "separar" os botões do texto e o resultado foi pior: a linha ficou
+     igual à que separa uma pendência da outra, e os botões pareciam ser da
+     pendência de baixo. Quem separa os itens é o border-bottom do .pend-item;
+     os botões ficam colados no texto a que pertencem. */
+  .pend-item:has(>div:last-child>:nth-child(3))>div:last-child{flex:1 1 100%;
+    justify-content:flex-end;margin-top:2px}
+
+  /* "configurações avançadas" revela a zona de perigo. É discreto de
+     propósito, mas ainda precisa ser acertável. Não tem classe, então
+     vai pelo onclick. */
+  #page-cadastro button[onclick^="togZonaPerigo"]{min-height:44px;
+    display:inline-flex;align-items:center;justify-content:center}
+}
 @media(max-width:480px){
   input,select{font-size:16px!important}
   .g5{grid-template-columns:repeat(2,minmax(0,1fr))!important}
@@ -4543,6 +4638,15 @@ function showPage(id,el){
   document.getElementById('page-'+id).classList.add('active');
   if(el)el.classList.add('active');
   else document.querySelectorAll('.nav-item').forEach(n=>{if(n.dataset.page===id)n.classList.add('active');});
+  /* A barra de baixo não era sincronizada aqui — cada botão dela se acendia
+     sozinho, no próprio onclick. Quem navegasse pela gaveta lateral ficava com
+     a barra acesa na aba errada: você em Cadastro e a barra dizendo Pendências.
+     Agora quem manda é o showPage. As três telas sem botão próprio (cadastro,
+     relatórios, auditoria) acendem o "Mais", que é de onde elas são abertas. */
+  const NA_BARRA=['dashboard','lancamentos','pendencias','documentos'];
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const bnAlvo=document.querySelector('.bn-item[data-page="'+(NA_BARRA.indexOf(id)>=0?id:'mais')+'"]');
+  if(bnAlvo)bnAlvo.classList.add('active');
   document.getElementById('tb-title').textContent=PN[id]||id;
   const ob=getOA();
   document.getElementById('tb-obra').textContent=ob?ob.nome+' · Macaé/RJ':'Nenhuma obra selecionada';
@@ -5257,6 +5361,18 @@ function applyRapidoChip(cat,desc){
   document.getElementById('rl-val').focus();
 }
 function openMaisMenu(){
+  /* Não recalcula nada: copia o texto que o updKpis() já escreveu nas pílulas do
+     topo. Mesma fonte, mesma formatação, mesmo respeito ao 👁 de ocultar valores
+     — se o número mudar no computador, muda aqui junto, de graça. */
+  try{
+    updKpis();
+    [['mk-dias','tb-dias'],['mk-gasto','tb-gasto'],['mk-pct','tb-pct']].forEach(function(par){
+      const dst=document.getElementById(par[0]),src=document.getElementById(par[1]);
+      if(dst&&src)dst.textContent=src.textContent;
+    });
+    const pct=document.getElementById('pill-pct'),box=document.getElementById('mk-pct');
+    if(pct&&box)box.parentElement.classList.toggle('danger-pill',pct.classList.contains('danger-pill'));
+  }catch(e){}
   document.getElementById('mais-backdrop').classList.add('show');
   document.getElementById('mais-menu').classList.add('show');
   document.body.style.overflow='hidden';
@@ -7401,7 +7517,17 @@ function salvarR(){
   document.getElementById('rf-wrap').style.display='none';document.getElementById('r-nm').value='';
   renderRC();renderCal();
 }
-function delR(id){ST.recorrentes=ST.recorrentes.filter(r=>r.id!==id);save();renderRC();renderCal();}
+function delR(id){
+  /* Era a única ação destrutiva do app sem pergunta: um toque apagava uma
+     periódica JÁ SALVA, e o botão tem 33px de largura — menos que um dedo.
+     Todas as outras confirmam (delL, delP, delDoc, delO) e limparTudo pede
+     até senha. Esta ficou de fora. */
+  const r=ST.recorrentes.find(x=>x.id===id);
+  if(!confirm(r
+    ? 'Remover a periódica "'+r.nome+'"?\n\nEla é lançada todo dia '+r.dia+' do mês.\n\nNão tem como desfazer.'
+    : 'Remover esta periódica? Não tem como desfazer.'))return;
+  ST.recorrentes=ST.recorrentes.filter(x=>x.id!==id);save();renderRC();renderCal();
+}
 function renderRC(){
   const ob=getOA();const items=ob?ST.recorrentes.filter(r=>r.obraId===ob.id):[];
   const card=document.getElementById('rc-card');
@@ -8615,14 +8741,32 @@ if('serviceWorker' in navigator){
 <div id="mais-backdrop" onclick="closeMaisMenu()" aria-hidden="true"></div>
 <div id="mais-menu" role="dialog" aria-modal="true" aria-label="Mais opções">
   <div class="mais-pill" aria-hidden="true"></div>
-  <button class="mais-item" onclick="showPage('cadastro',null);document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));document.querySelector('.bn-item[data-page=mais]').classList.add('active');closeMaisMenu()" aria-label="Obras">
+  <!-- Dias / Gasto / % do Orçamento vivem nas pílulas do topo, que o CSS esconde
+       abaixo de 900px. No computador você vê os três em toda tela; no celular,
+       em nenhuma. Aqui eles voltam, na zona do polegar, sem custar altura em
+       página nenhuma. Os valores são copiados das próprias pílulas, então não
+       têm como divergir do que o computador mostra. -->
+  <div class="mais-kpis" id="mais-kpis">
+    <div class="mais-kpi"><div class="mais-kpi-v" id="mk-dias">—</div><div class="mais-kpi-l">Dias</div></div>
+    <div class="mais-kpi"><div class="mais-kpi-v" id="mk-gasto">—</div><div class="mais-kpi-l">Gasto</div></div>
+    <div class="mais-kpi"><div class="mais-kpi-v" id="mk-pct">—</div><div class="mais-kpi-l">Orçamento</div></div>
+  </div>
+  <!-- O showPage agora sincroniza a barra de baixo sozinho, então estes botões
+       não precisam mais acender o "Mais" na unha. -->
+  <button class="mais-item" onclick="showPage('cadastro',null);closeMaisMenu()" aria-label="Obras">
     <span class="mais-ico" aria-hidden="true">🏠</span><span>Obras / Cadastro</span>
   </button>
-  <button class="mais-item" onclick="showPage('relatorios',null);document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));document.querySelector('.bn-item[data-page=mais]').classList.add('active');closeMaisMenu()" aria-label="Relatórios">
+  <button class="mais-item" onclick="showPage('relatorios',null);closeMaisMenu()" aria-label="Relatórios">
     <span class="mais-ico" aria-hidden="true">📊</span><span>Relatórios</span>
   </button>
-  <button class="mais-item" onclick="showPage('auditoria',null);document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));document.querySelector('.bn-item[data-page=mais]').classList.add('active');closeMaisMenu()" aria-label="Auditoria">
+  <button class="mais-item" onclick="showPage('auditoria',null);closeMaisMenu()" aria-label="Auditoria">
     <span class="mais-ico" aria-hidden="true">🔍</span><span>Auditoria</span>
+  </button>
+  <!-- gerarPDF() tinha um único chamador, dentro de .tb-btns, que some abaixo de
+       900px: no celular esse relatório era inalcançável. É a mesma função do
+       computador, só ganhou uma porta aqui. -->
+  <button class="mais-item" onclick="closeMaisMenu();gerarPDF()" aria-label="Relatório PDF da obra">
+    <span class="mais-ico" aria-hidden="true">📄</span><span>Relatório PDF da obra</span>
   </button>
 </div>
 </body>
