@@ -222,6 +222,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
    ("R$ 10.901.2" numa linha e "34,31" na outra seria ilegível e perigoso).
    Quem garante que cabe é ajustaNumero(), que reduz a fonte o necessário. */
 .kv{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1;white-space:nowrap}
+.num-duas-linhas{white-space:normal!important;line-height:1.12}
 .kv.b{color:var(--blue)}.kv.r{color:var(--red)}.kv.g{color:var(--green)}.kv.y{color:var(--yellow)}.kv.a{color:var(--accent)}
 .kd{font-size:11px;color:var(--text2);margin-top:4px}
 .kd.up{color:var(--green)}
@@ -366,7 +367,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .crc-dest{padding:7px 9px;border-radius:8px}
 .crc-green{background:rgba(39,174,96,.12)}.crc-green .crc-v{color:var(--green)}
 .crc-red{background:rgba(231,76,60,.12)}.crc-red .crc-v{color:var(--red)}
-@media(max-width:600px){.caixa-box{grid-template-columns:minmax(0,1fr);gap:8px}}
+@media(max-width:600px){.caixa-box{grid-template-columns:minmax(0,1fr);gap:7.2px}}
 input,select,textarea{width:100%;padding:8px 11px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;transition:all .2s;outline:none}
 input:focus,select:focus,textarea:focus{border-color:var(--brand2);box-shadow:0 0 0 3px rgba(41,128,185,.42)}
 select option{background:var(--bg2);color:var(--text)}
@@ -845,19 +846,19 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
 
 /* ═══ RESPONSIVE 900px ═══ */
 @media(max-width:900px){
-  .sidebar{transform:translateX(-252px);transition:transform .28s cubic-bezier(.4,0,.2,1);padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+  .sidebar{transform:translateX(-252px);transition:transform .28s cubic-bezier(.4,0,.2,1);padding-bottom:calc(61.2px + env(safe-area-inset-bottom))}
   .sidebar.open{transform:translateX(0)}
   .main-wrap{margin-left:0}.hamburger{display:flex!important}
-  .kpi-pill{display:none}.main-content{padding:12px 12px 76px}
-  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}.topbar{padding:0 10px;height:56px}
+  .kpi-pill{display:none}.main-content{padding:10.8px 10.8px 68.4px}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}.topbar{padding:0 9px;height:56px}
   .tb-btns{display:none}.bottom-nav{display:block}
   .app{padding-bottom:0}
   #btn-sheets{display:flex!important}
-  .modal-box{margin:8px;max-height:calc(100dvh - 16px);border-radius:12px}
+  .modal-box{margin:7.2px;max-height:calc(100dvh - 16px);border-radius:12px}
   .tw table{min-width:560px}
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px}
-  .obra-banner{padding:10px 12px;margin-bottom:12px}
-  .page-hdr{flex-wrap:wrap;gap:8px}
+  .obra-banner{padding:9px 10.8px;margin-bottom:10.8px}
+  .page-hdr{flex-wrap:wrap;gap:7.2px}
 }
 
 /* ═══ OBRAS ADM — CARDS MOBILE ═══ */
@@ -886,62 +887,62 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .doc-grid{grid-template-columns:minmax(0,1fr)}
   .tbl-filters input[type=text]{font-size:14px}
   .filtros-panel select,.filtros-panel input[type=date],.filtros-panel .br-date{font-size:14px}
-  .cat-picker{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
-  .cat-tile{padding:10px 4px 8px!important}
-  .cat-tile-ico{font-size:20px!important}
+  .cat-picker{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5.4px!important}
+  .cat-tile{padding:9px 3.6px 7.2px!important}
+  .cat-tile-ico{font-size:18px!important}
   .cat-tile-ico svg{width:20px!important;height:20px!important}
-  .cat-tile-label{font-size:10px!important}
+  .cat-tile-label{font-size:9px!important}
   .doc-cat-picker{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   /* Banner Google — não vazar */
-  .g-required-banner{flex-wrap:wrap!important;gap:6px!important}
+  .g-required-banner{flex-wrap:wrap!important;gap:5.4px!important}
   /* Banner obra mobile */
-  .obra-banner{padding:14px 16px 12px 16px}
-  .obra-banner-name{font-size:16px;padding-right:40px}
+  .obra-banner{padding:12.6px 14.4px 10.8px 14.4px}
+  .obra-banner-name{font-size:14.4px;padding-right:36px}
   /* CORREÇÃO RAIZ: tabela min-width:560px inflava toda a página como flex item */
   .main-wrap{min-width:0;overflow-x:hidden}
   .main-content{min-width:0!important;overflow-x:hidden!important}
   /* Tabela: scroll horizontal DENTRO do .tw, não vaza para a página */
   .tw{overflow-x:auto!important;max-width:100%}
   #kpi-glob{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .kpi-glob .kc{padding:10px}
-  .kpi-glob .kv{font-size:18px}
-  .card{padding:12px}
-  .login-box{padding:24px 20px}
-  .page-title{font-size:16px}
-  .page-sub{font-size:11px}
+  .kpi-glob .kc{padding:9px}
+  .kpi-glob .kv{font-size:16.2px}
+  .card{padding:10.8px}
+  .login-box{padding:21.6px 18px}
+  .page-title{font-size:14.4px}
+  .page-sub{font-size:9.9px}
   .nf-row{flex-wrap:wrap!important}
   .nf-row>*{min-width:0;flex:1 1 120px}
   .fgg textarea{min-height:60px}
   .rel-grid{grid-template-columns:minmax(0,1fr)}
   .g5{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .obras-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .chart-row{gap:12px}
-  .period-bar{flex-wrap:wrap;gap:4px}
-  .period-bar .btn{font-size:11px;padding:4px 8px}
-  .obra-banner{font-size:12px}
-  .bottom-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
-  .bn-item{padding:9px 8px;min-width:52px}
+  .chart-row{gap:10.8px}
+  .period-bar{flex-wrap:wrap;gap:3.6px}
+  .period-bar .btn{font-size:9.9px;padding:3.6px 7.2px}
+  .obra-banner{font-size:10.8px}
+  .bottom-nav{padding-bottom:max(7.2px,env(safe-area-inset-bottom))}
+  .bn-item{padding:8.1px 7.2px;min-width:52px}
   .bn-item svg{width:22px;height:22px}
-  .bn-item span{font-size:12px}
+  .bn-item span{font-size:10.8px}
   .topbar{height:52px}
-  .tb-title{font-size:13px}
-  .tb-obra{font-size:10px}
+  .tb-title{font-size:11.7px}
+  .tb-obra{font-size:9px}
   /* Obra banner compacto */
-  .obra-banner{padding:8px 10px;gap:8px;font-size:11px}
-  .obra-banner .obra-banner-nome{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+  .obra-banner{padding:7.2px 9px;gap:7.2px;font-size:9.9px}
+  .obra-banner .obra-banner-nome{font-size:11.7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
   /* Data — remover estilo nativo e igualar visualmente aos outros inputs */
-  input[type="date"],.br-date{-webkit-appearance:none!important;appearance:none!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;height:44px!important;min-height:0!important;padding:8px 11px!important;background:var(--bg3)!important;border:1px solid var(--border2)!important;border-radius:7px!important;color:var(--text)!important;font-size:16px!important;font-family:'DM Sans',sans-serif!important}
+  input[type="date"],.br-date{-webkit-appearance:none!important;appearance:none!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;height:44px!important;min-height:0!important;padding:7.2px 9.9px!important;background:var(--bg3)!important;border:1px solid var(--border2)!important;border-radius:7px!important;color:var(--text)!important;font-size:16px!important;font-family:'DM Sans',sans-serif!important}
   /* iOS Safari: força alinhamento à esquerda no valor exibido do date input */
   input[type="date"]::-webkit-date-and-time-value{text-align:left!important;font-size:14px;padding:0;margin:0;min-height:1.4em}
   /* NF form mobile */
-  .nf-cat-row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px}
-  .nf-cat-tile{padding:8px 6px!important;font-size:11px!important}
-  .nf-items-list .nf-item-row{flex-direction:column;gap:4px}
+  .nf-cat-row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5.4px}
+  .nf-cat-tile{padding:7.2px 5.4px!important;font-size:9.9px!important}
+  .nf-items-list .nf-item-row{flex-direction:column;gap:3.6px}
   /* NF add row — material em cima, qty+un+val+btn embaixo */
-  .nf-add-row{flex-direction:column!important;gap:8px!important}
+  .nf-add-row{flex-direction:column!important;gap:7.2px!important}
   .nf-add-row>div[style*="position:relative"]{width:100%!important;flex:none!important;min-width:0!important}
   .nf-add-row>div[style*="position:relative"] input{width:100%!important}
-  .nf-qty-row{display:flex;gap:6px;width:100%;align-items:center}
+  .nf-qty-row{display:flex;gap:5.4px;width:100%;align-items:center}
   #nf-mat-qty{flex:1!important;max-width:none!important;min-width:0}
   #nf-mat-un{flex:1!important;max-width:none!important;min-width:0}
   #nf-mat-val{flex:2!important;max-width:none!important;min-width:0}
@@ -950,58 +951,58 @@ tfoot .tdm .amt{font-size:16px;font-weight:700;color:var(--text)}
   .nf-add-hint{display:none!important}
   /* ── Lançamentos mobile ── */
   /* Pagamento: botões lado a lado largura total */
-  .pag-toggle{gap:6px!important}
-  .pag-opt{padding:10px 8px!important;font-size:12px!important}
+  .pag-toggle{gap:5.4px!important}
+  .pag-opt{padding:9px 7.2px!important;font-size:10.8px!important}
   /* Filtros da tabela */
-  .tbl-filters-actions{flex-wrap:wrap;border-left:none;padding-left:0;border-top:1px solid var(--border2);padding-top:8px;width:100%;gap:6px}
+  .tbl-filters-actions{flex-wrap:wrap;border-left:none;padding-left:0;border-top:1px solid var(--border2);padding-top:7.2px;width:100%;gap:5.4px}
   .tbl-fil-todas{flex:1;justify-content:center}
   .btn-limpar-fil{flex:1;justify-content:center}
   /* Total bar */
-  .nf-total-bar{padding:8px 12px}
+  .nf-total-bar{padding:7.2px 10.8px}
   /* ── Obras/Cadastro mobile ── */
-  .page-hdr{flex-direction:column!important;align-items:center!important;gap:10px!important;text-align:center!important}
+  .page-hdr{flex-direction:column!important;align-items:center!important;gap:9px!important;text-align:center!important}
   .page-hdr>div:first-child{width:100%;text-align:center}
   .page-title{text-align:center!important}
   .page-sub{text-align:center!important}
   .page-hdr>button,.page-hdr .btn{width:100%!important;justify-content:center!important}
-  .pend-top-btns{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:100%}
-  .pend-top-btns .btn{width:100%!important;justify-content:center!important;min-height:44px;font-size:13px}
+  .pend-top-btns{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7.2px;width:100%}
+  .pend-top-btns .btn{width:100%!important;justify-content:center!important;min-height:44px;font-size:11.7px}
   /* Grupos de botões — empilhar em coluna no mobile */
-  .obra-btns-group{flex-direction:column;gap:8px}
-  .obra-btns-group .btn{width:100%!important;justify-content:center;min-height:44px;font-size:14px}
+  .obra-btns-group{flex-direction:column;gap:7.2px}
+  .obra-btns-group .btn{width:100%!important;justify-content:center;min-height:44px;font-size:12.6px}
   .form-footer-bar .btn-salvar-doc{width:100%!important;justify-content:center!important;box-sizing:border-box}
-  .form-btns-row{flex-direction:column;gap:8px}
+  .form-btns-row{flex-direction:column;gap:7.2px}
   .form-btns-row .btn{width:100%!important;justify-content:center;min-height:44px}
   /* Pendências — filtros em grade 2×2 */
-  .pend-filters{flex-wrap:wrap;gap:6px}
-  .pf-btn-grp{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;width:100%}
+  .pend-filters{flex-wrap:wrap;gap:5.4px}
+  .pf-btn-grp{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5.4px;width:100%}
   .pf-btn-grp .btn{justify-content:center;width:100%}
-  .pend-card-hdr{flex-direction:column!important;align-items:flex-start!important;gap:8px!important}
-  .pend-card{padding:10px 12px}
+  .pend-card-hdr{flex-direction:column!important;align-items:flex-start!important;gap:7.2px!important}
+  .pend-card{padding:9px 10.8px}
   /* Formulário — forçar coluna única (resolve data overflow em docs e obras) */
   .fg{grid-template-columns:minmax(0,1fr)!important}
   .fgg{min-width:0}
   .fgg input,.fgg select,.fgg textarea{min-width:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
   /* (ver regra acima para input[type=date] — consolidado) */
   /* Formulário obras */
-  .form-obras .fgg{margin-bottom:10px}
-  .form-obras input,.form-obras select,.form-obras textarea{font-size:15px;padding:10px 12px}
+  .form-obras .fgg{margin-bottom:9px}
+  .form-obras input,.form-obras select,.form-obras textarea{font-size:15px;padding:9px 10.8px}
   /* Documentos */
-  .doc-form-wrap{padding:12px}
+  .doc-form-wrap{padding:10.8px}
   .doc-form-wrap input,.doc-form-wrap select,.doc-form-wrap textarea{font-size:15px}
   /* Google banner */
-  .g-required-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--red-bg);border:1.5px solid rgba(231,76,60,.3);border-radius:10px;margin-bottom:14px;font-size:12px;color:var(--red)}
+  .g-required-banner{display:flex;align-items:center;gap:9px;padding:9px 12.6px;background:var(--red-bg);border:1.5px solid rgba(231,76,60,.3);border-radius:10px;margin-bottom:12.6px;font-size:10.8px;color:var(--red)}
   /* ── Detalhe financeiro — KPI tiles compactos ── */
-  #kpi-obra .kc{padding:10px 11px}
-  #kpi-obra .kv{font-size:16px}
-  #kpi-obra .ki{width:26px;height:26px;font-size:13px;margin-bottom:5px}
-  #kpi-obra .kl{font-size:11px}
-  #kpi-obra .kd{font-size:10px;margin-top:2px}
+  #kpi-obra .kc{padding:9px 9.9px}
+  #kpi-obra .kv{font-size:14.4px}
+  #kpi-obra .ki{width:26px;height:26px;font-size:11.7px;margin-bottom:4.5px}
+  #kpi-obra .kl{font-size:9.9px}
+  #kpi-obra .kd{font-size:9px;margin-top:1.8px}
   /* ── Alertas — compactos no mobile ── */
-  .budget-alert{padding:8px 10px;gap:7px;margin-bottom:10px}
-  .budget-alert-icon{font-size:15px}
-  .budget-alert-text{font-size:11px}
-  .budget-alert-text strong{font-size:11.5px}
+  .budget-alert{padding:7.2px 9px;gap:6.3px;margin-bottom:9px}
+  .budget-alert-icon{font-size:13.5px}
+  .budget-alert-text{font-size:9.9px}
+  .budget-alert-text strong{font-size:10.3px}
 }
 /* ═══════════════════════════════════════════════════════════════
    ★ LANÇAMENTOS DESKTOP — PAINEL SPLIT (approved 2026-09-28)
@@ -1407,37 +1408,37 @@ input[type=date].rapido-inline-input{color-scheme:dark}
   #lanc-form-card.sheet-open .sheet-handle-bar{display:flex}
   /* compact obra banner inside sheet */
   #lanc-form-card.sheet-open .obra-banner{
-    flex-direction:row;align-items:center;gap:8px;
-    padding:8px 0;margin-bottom:10px;
+    flex-direction:row;align-items:center;gap:7.2px;
+    padding:7.2px 0;margin-bottom:9px;
     background:none;border:none;border-bottom:1px solid var(--border);border-radius:0
   }
   #lanc-form-card.sheet-open .obra-banner::before{display:none}
   #lanc-form-card.sheet-open .obra-banner-top{display:none}
   #lanc-form-card.sheet-open .obra-banner-end{display:none}
-  #lanc-form-card.sheet-open .obra-banner-plate{flex:1;padding:4px 10px;border:none;border-left:3px solid var(--brand2);background:none;border-radius:0}
-  #lanc-form-card.sheet-open .obra-banner-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #lanc-form-card.sheet-open .obra-banner-plate{flex:1;padding:3.6px 9px;border:none;border-left:3px solid var(--brand2);background:none;border-radius:0}
+  #lanc-form-card.sheet-open .obra-banner-name{font-size:11.7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #lanc-form-card.sheet-open .obra-banner-warn{display:none}
   /* categoria: 5 em linha, ícones menores — cabe no mobile sem scroll */
   #lanc-form-card.sheet-open .cat-picker{
     display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
     flex-wrap:unset!important;overflow-x:unset!important;
-    gap:6px!important;padding-bottom:6px
+    gap:5.4px!important;padding-bottom:5.4px
   }
   #lanc-form-card.sheet-open .cat-tile{
-    min-width:0;padding:8px 2px 6px!important
+    min-width:0;padding:7.2px 1.8px 5.4px!important
   }
-  #lanc-form-card.sheet-open .cat-tile-ico{font-size:18px!important}
+  #lanc-form-card.sheet-open .cat-tile-ico{font-size:16.2px!important}
   #lanc-form-card.sheet-open .cat-tile-ico svg{width:18px!important;height:18px!important}
   #lanc-form-card.sheet-open .cat-tile-label{font-size:9px!important}
   /* espaço abaixo das categorias para não colar no rodapé do sheet */
   #lanc-form-card.sheet-open .cat-picker{
-    padding-top:4px!important;
-    padding-bottom:8px!important;
-    margin-bottom:calc(env(safe-area-inset-bottom) + 20px)!important
+    padding-top:3.6px!important;
+    padding-bottom:7.2px!important;
+    margin-bottom:calc(env(safe-area-inset-bottom) + 18px)!important
   }
   /* itens NF: espaço antes do footer sticky para conteúdo não sumir atrás */
   #lanc-form-card.sheet-open #nf-items-wrap>.fsec{
-    padding-bottom:calc(env(safe-area-inset-bottom) + 130px)
+    padding-bottom:calc(env(safe-area-inset-bottom) + 117px)
   }
   /* no mobile em sheet, autocomplete abre para CIMA evitando clipping pelo overflow */
   #lanc-form-card.sheet-open #nf-mat-dd,
@@ -1449,9 +1450,9 @@ input[type=date].rapido-inline-input{color-scheme:dark}
     position:sticky;bottom:0;
     background:var(--bg2);
     border-top:1px solid var(--border2);
-    padding:10px 0 calc(12px + env(safe-area-inset-bottom));
-    margin:8px -18px -18px;
-    padding-left:18px;padding-right:18px;
+    padding:9px 0 calc(10.8px + env(safe-area-inset-bottom));
+    margin:7.2px -16.2px -16.2px;
+    padding-left:16.2px;padding-right:16.2px;
     z-index:5;box-shadow:0 -6px 20px rgba(0,0,0,.4)
   }
 }
@@ -1483,36 +1484,36 @@ input[type=date].rapido-inline-input{color-scheme:dark}
   #rl-flow>#rl-mais-wrap{order:7;display:block}
   #rl-flow>.rapido-sticky-spacer{display:none}
   /* categoria 5-em-linha compacta */
-  #lanc-form-card .cat-picker{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important;overflow:visible!important}
-  #lanc-form-card .cat-tile{min-width:0;padding:9px 2px 7px!important}
+  #lanc-form-card .cat-picker{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5.4px!important;overflow:visible!important}
+  #lanc-form-card .cat-tile{min-width:0;padding:8.1px 1.8px 6.3px!important}
   #lanc-form-card .cat-tile-ico svg{width:19px!important;height:19px!important}
-  #lanc-form-card .cat-tile-label{font-size:9.5px!important}
+  #lanc-form-card .cat-tile-label{font-size:9px!important}
   /* valor em destaque */
-  #lanc-form-card .rapido-val-input{font-size:30px;text-align:left;padding-left:48px}
-  #lanc-form-card .rapido-prefix{top:50%;transform:translateY(-50%);font-size:20px}
+  #lanc-form-card .rapido-val-input{font-size:27px;text-align:left;padding-left:43.2px}
+  #lanc-form-card .rapido-prefix{top:50%;transform:translateY(-50%);font-size:18px}
   /* obra-banner + título "Lançamentos" são redundantes com o cabeçalho do topo → ocultos */
   #lanc-form-card .obra-banner{display:none!important}
   #page-lancamentos .page-hdr{display:none!important}
   /* botão grande "Tirar foto" + Galeria (fluxo de foto do comprovante) */
-  .rl-foto-m{display:flex;gap:10px;margin-bottom:16px}
-  .rl-cam-m{flex:1;background:linear-gradient(135deg,rgba(41,128,185,.18),rgba(41,128,185,.08));border:1px solid var(--brand2);border-radius:13px;padding:15px;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--brand3);cursor:pointer;text-align:center}
+  .rl-foto-m{display:flex;gap:9px;margin-bottom:14.4px}
+  .rl-cam-m{flex:1;background:linear-gradient(135deg,rgba(41,128,185,.18),rgba(41,128,185,.08));border:1px solid var(--brand2);border-radius:13px;padding:13.5px;display:flex;flex-direction:column;align-items:center;gap:6.3px;color:var(--brand3);cursor:pointer;text-align:center}
   .rl-cam-m svg{display:block}
   .rl-cam-m.has{background:var(--green-bg);border-color:var(--green);color:var(--green)}
-  .rl-cam-m-t{font-size:13px;font-weight:700}
-  .rl-cam-m-s{font-size:10.5px;color:var(--text3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rl-cam-m-t{font-size:11.7px;font-weight:700}
+  .rl-cam-m-s{font-size:9.5px;color:var(--text3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rl-cam-m.has .rl-cam-m-s{color:var(--green)}
-  .rl-gal-m{width:92px;background:var(--surface);border:1px solid var(--border);border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text2);font-size:10.5px;cursor:pointer}
+  .rl-gal-m{width:92px;background:var(--surface);border:1px solid var(--border);border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5.4px;color:var(--text2);font-size:9.5px;cursor:pointer}
   .rl-gal-m svg{display:block}
   /* "Mais opções" colapsável */
-  #rl-mais-wrap{margin-bottom:14px}
-  #rl-mais-btn{display:flex;align-items:center;gap:7px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px;font-size:13px;font-weight:600;color:var(--text2);font-family:'DM Sans',sans-serif;cursor:pointer;text-align:left}
-  .rl-mais-ico{display:inline-flex;width:16px;justify-content:center;font-size:17px;line-height:1}
-  #rl-mais-body{display:none;padding-top:12px}
+  #rl-mais-wrap{margin-bottom:12.6px}
+  #rl-mais-btn{display:flex;align-items:center;gap:6.3px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11.7px;font-size:11.7px;font-weight:600;color:var(--text2);font-family:'DM Sans',sans-serif;cursor:pointer;text-align:left}
+  .rl-mais-ico{display:inline-flex;width:16px;justify-content:center;font-size:15.3px;line-height:1}
+  #rl-mais-body{display:none;padding-top:10.8px}
   #rl-mais-wrap.open #rl-mais-body{display:block}
   /* footer: só Salvar grande (chip de foto some — já temos o botão grande acima) */
   #rapido-footer-bar label[for="rl-comp"]{display:none!important}
-  #rapido-footer-bar{padding:0!important;border:none!important;background:none!important;margin:4px 0 0!important;box-shadow:none!important}
-  #btn-salvar-rapido{flex:1;height:52px!important;font-size:16px!important;border-radius:14px}
+  #rapido-footer-bar{padding:0!important;border:none!important;background:none!important;margin:3.6px 0 0!important;box-shadow:none!important}
+  #btn-salvar-rapido{flex:1;height:52px!important;font-size:14.4px!important;border-radius:14px}
   /* esconde entulho de desktop no mobile (drop zone Cmd+V, atalhos de teclado) */
   #page-lancamentos .dz-lanc{display:none!important}
   #page-lancamentos .split-shortcuts{display:none!important}
@@ -1718,6 +1719,11 @@ input,select,textarea{min-height:44px}
 
    No computador nada muda: a consulta é max-width:900px.
    ═══════════════════════════════════════════════════════════════ */
+/* Abaixo de 360px o ícone rouba exatamente os pixels que faltam para "Visão
+   Geral" caber inteiro na sub-aba: medido a 320px, o conteúdo pede 89px numa
+   caixa de 79. A palavra é a informação, o ícone é enfeite — sai o ícone. */
+@media(max-width:360px){.dtab svg{display:none}}
+
 @media(max-width:900px){
   /* .btn já é inline-flex com align-items:center, então o min-height
      centraliza o conteúdo sozinho, sem mexer em padding nem fonte. */
@@ -1729,6 +1735,13 @@ input,select,textarea{min-height:44px}
   /* Chips, abas e seletores — crescem uma vez por tela, não por linha. */
   .dtab,.scope-opt,.cat-chip,.doc-chip,.mode-sw-btn,.btn-filtros-toggle,
   .pag-opt,.rel-btn,.dz-doc-btn{min-height:44px;box-sizing:border-box}
+
+  /* As três sub-abas pediam 372px e havia 364: "Gráficos" terminava no pixel
+     381 de 390 e a barra virava uma rolagem lateral que ninguém percebe — no
+     celular a terceira sub-aba simplesmente não existia. Agora as três
+     dividem a largura em partes iguais e as três aparecem inteiras. */
+  .dash-tabs{width:100%}
+  .dtab{flex:1;min-width:0;justify-content:center;padding-left:5.4px;padding-right:5.4px;gap:4.5px}
   .doc-chip{display:inline-flex;align-items:center}
   .rel-btn{display:flex;align-items:center;justify-content:center}
 
@@ -1751,16 +1764,16 @@ input,select,textarea{min-height:44px}
 
   /* Ações do cartão de lançamento. Custa altura — é o único lugar onde
      custa — e é também o lugar onde um toque errado apaga dinheiro. */
-  .lanc-card-actions{min-height:44px;gap:10px}
+  .lanc-card-actions{min-height:44px;gap:9px}
   .lanc-act-btn{min-width:44px;min-height:44px;display:inline-flex;
-    align-items:center;justify-content:center;gap:4px;box-sizing:border-box}
-  .lanc-card-actions>div{gap:10px!important}
+    align-items:center;justify-content:center;gap:3.6px;box-sizing:border-box}
+  .lanc-card-actions>div{gap:9px!important}
   /* O link do comprovante divide essa faixa e também era um alvo de 17px. */
   a.lanc-card-comp,button.lanc-card-comp{min-height:44px;display:inline-flex;align-items:center}
 
   /* Pendências: Editar · Concluir · Remover, três botões colados na
      beirada, e o último apaga. 4px de folga não serve para dedo. */
-  .pend-item>div:last-child{gap:10px!important}
+  .pend-item>div:last-child{gap:9px!important}
   /* Com os três botões a 44px sobravam 145px para o texto e cada pendência
      virava um bloco de cinco linhas quebradas ("Resp:" numa linha, o nome
      na outra). Aqui os botões descem para uma faixa própria e o texto fica
@@ -1776,7 +1789,15 @@ input,select,textarea{min-height:44px}
      pendência de baixo. Quem separa os itens é o border-bottom do .pend-item;
      os botões ficam colados no texto a que pertencem. */
   .pend-item:has(>div:last-child>:nth-child(3))>div:last-child{flex:1 1 100%;
-    justify-content:flex-end;margin-top:2px}
+    justify-content:flex-end;margin-top:1.8px}
+
+  /* O aviso de documento vencido termina com "Ver documentos →" solto no meio
+     da frase: 112×17px, o menor alvo que sobrou no Painel. Vira uma faixa
+     própria, com os mesmos 44px do resto. */
+  .doc-alert{flex-wrap:wrap}
+  .doc-alert-text a{display:flex;min-height:44px;align-items:center;justify-content:center;
+    margin-top:8.1px;border-radius:9px;font-weight:700;text-decoration:none;
+    background:rgba(41,128,185,.12);border:1px solid rgba(41,128,185,.35)}
 
   /* "configurações avançadas" revela a zona de perigo. É discreto de
      propósito, mas ainda precisa ser acertável. Não tem classe, então
@@ -1787,10 +1808,10 @@ input,select,textarea{min-height:44px}
 @media(max-width:480px){
   input,select{font-size:16px!important}
   .g5{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .modal-box{padding:16px;border-radius:10px}
-  .cal-day{min-height:38px;padding:2px}
-  .login-box{padding:24px 16px}
-  .tw{font-size:11px}
+  .modal-box{padding:14.4px;border-radius:10px}
+  .cal-day{min-height:38px;padding:1.8px}
+  .login-box{padding:21.6px 14.4px}
+  .tw{font-size:9.9px}
 }
 /* ══ LANÇAMENTOS — CARDS ══ */
 .lanc-cards{display:flex;flex-direction:column;gap:8px;margin-top:4px}
@@ -1849,6 +1870,694 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
 .apagar-compact{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:9px;background:rgba(241,196,15,.1);border:1.5px solid rgba(241,196,15,.35);margin-bottom:10px;cursor:pointer;text-align:left;width:100%;box-sizing:border-box}
 .apagar-compact-text{flex:1;font-size:12.5px;color:var(--text);line-height:1.4}
 .apagar-compact-action{font-size:11.5px;color:var(--brand2);font-weight:600;white-space:nowrap;flex-shrink:0}
+
+/* ══════════════════════════════════════════════════════════════════════
+   PLANO C — layout de celular das abas Painel · Lançamentos · Pendências
+   · Docs. O HTML é o mesmo do computador; aqui só muda o arranjo.
+   Entra por último de propósito: é a última palavra da cascata.
+   ══════════════════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+
+  /* ── Painel · ordem da tela ────────────────────────────────────────
+     O título "Painel Geral" já está escrito na barra de cima; repetido
+     no corpo ele custava 46px de altura para não dizer nada. Os dois
+     avisos (estouro de orçamento e documento vencendo) sobem para logo
+     abaixo das sub-abas, que é por onde o olho entra na tela. */
+  #page-dashboard.active{display:flex;flex-direction:column}
+  #page-dashboard>.page-hdr{display:none}
+  #page-dashboard>.dash-tabs{order:1}
+  #page-dashboard>#budget-alert-wrap{order:2}
+  #page-dashboard>#doc-alert-wrap{order:3}
+  #page-dashboard>.dash-pane{order:4}
+
+  /* ── Painel · Visão Geral ──────────────────────────────────────────
+     A obra sobe para o topo: é ela que dá contexto aos quatro números
+     que vêm logo abaixo. Antes a tela abria por "Carteira (todas)" e os
+     cartões de obra só apareciam depois de rolar 700px. */
+  #dtp-visao.show{display:flex;flex-direction:column;gap:9px}
+  #dtp-visao>*{margin-bottom:0}
+  #dtp-visao>div:first-child{order:1;gap:7.2px;flex-wrap:nowrap}
+  #dtp-visao>.card{order:2}
+  #dtp-visao>#kpi-glob{order:3}
+  #dtp-visao>#caixa-strip{order:4}
+  #dtp-visao>.dash-pend-banner{order:5}
+  #dtp-visao>#cart-sum{order:6}
+  #dtp-visao>#cmp-card{order:7}
+
+  /* As duas opções de escopo dividem a linha; o olho de ocultar valores
+     fica na ponta, no tamanho de dedo. */
+  #dash-scope-seg{flex:1;min-width:0;margin-bottom:0}
+  #dash-scope-seg .scope-opt{flex:1;min-width:0;max-width:none;justify-content:center;padding:5.4px 7.2px}
+  #btn-ocultar-val{margin-bottom:0!important;min-width:44px;min-height:44px;
+    display:flex;align-items:center;justify-content:center}
+
+  /* O cartão "Empreendimentos" perde a moldura: no celular era uma caixa
+     dentro de outra caixa, duas bordas e 36px de recheio em volta de
+     cartões que já têm borda própria. */
+  #dtp-visao>.card{background:none;border:0;box-shadow:none;padding:0;border-radius:0}
+  #dtp-visao>.card>.card-hdr{margin-bottom:6.3px}
+  #dtp-visao>.card>.card-hdr .card-title{font-size:9.9px;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--text3)}
+  #dtp-visao>.card>.card-hdr .card-title svg{display:none}
+  #obras-grid{gap:9px;margin-bottom:0}
+  /* Endereço e os quatro números miúdos saem do cartão da obra: os mesmos
+     valores estão logo abaixo em corpo grande, e a sub-aba Financeiro traz
+     a conta completa. Fica o que só o cartão sabe dizer — nome, situação,
+     quantas casas e quanto do orçamento já foi. */
+  #obras-grid .oc-addr,#obras-grid .oc-kpis{display:none}
+  #obras-grid .obra-card{padding:10.8px}
+  #obras-grid .oc-hdr{margin-bottom:2.7px}
+  #obras-grid .oc-name{font-size:13.5px}
+  #obras-grid .oc-casas-line{background:none;padding:0;margin:0 0 9.9px;font-size:10.3px;
+    color:var(--text3);font-weight:400}
+  #obras-grid .prog{height:7px;border-radius:4px;margin-top:0;margin-bottom:5.4px}
+  #obras-grid .prog-f{border-radius:4px}
+
+  /* Os quatro indicadores perdem a caixinha de ícone: 34px de altura cada,
+     quatro vezes, por um desenho que não informa nada que o rótulo logo
+     abaixo já não diga. */
+  #kpi-glob{gap:7.2px}
+  #kpi-glob .kc{padding:9px;border-radius:11px}
+  #kpi-glob .ki{display:none}
+  #kpi-glob .kl{font-size:9px;letter-spacing:.7px;margin-bottom:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #kpi-glob .kv{font-size:18px;letter-spacing:-.5px;margin-top:1.8px}
+  #kpi-glob .kd{font-size:9.5px;margin-top:0.9px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* "Investido" na frente: é o número que ele abre o app para ver. Os quatro
+     precisam de ordem escrita — trocar só os dois primeiros deixava os outros
+     dois em order:0, que vem antes de qualquer número, e eles subiam ao topo. */
+  #kpi-glob>.kc:nth-child(2){order:1}
+  #kpi-glob>.kc:nth-child(1){order:2}
+  #kpi-glob>.kc:nth-child(3){order:3}
+  #kpi-glob>.kc:nth-child(4){order:4}
+
+  /* A faixa do caixa vira dois cartões irmãos dos de cima. Mexer no
+     display aqui seria furada: o JS escreve display:flex/none direto no
+     elemento e o inline ganharia de qualquer regra sem !important — e um
+     !important aqui deixaria a faixa visível quando não há venda. */
+  #caixa-strip{gap:7.2px;background:none;border:0;padding:0}
+  #caixa-strip .cxs-item{background:var(--surface);border:1px solid var(--border);
+    border-radius:11px;padding:9px 9.9px}
+  #caixa-strip .cxs-sep{display:none}
+  #caixa-strip .cxs-l{font-size:9px;letter-spacing:.6px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #caixa-strip .cxs-l svg{display:none}
+  #caixa-strip .cxs-v{font-size:14px;margin-top:2.7px}
+
+  /* O aviso de pendências encolhe de 86px para 60px sem perder o número. */
+  .dash-pend-banner{padding:10.8px;border-radius:11px;gap:9.9px}
+  .dash-pend-icon svg{width:22px;height:22px}
+  .dash-pend-title{font-size:12.2px}
+  .dash-pend-sub{font-size:10.3px}
+  .dash-pend-count{font-size:20.7px}
+  .dash-pend-arrow{font-size:15.3px}
+
+  /* ── Painel · Financeiro ───────────────────────────────────────────
+     Nove cartões quadrados de 118px empilhados dois a dois custavam
+     708px só de indicadores. Aqui os dois que mandam — Total gasto e
+     Saldo — ficam grandes lado a lado e os outros viram linhas de uma
+     ficha: rótulo à esquerda, observação no meio, número à direita.
+     A contagem de cartões varia (VGV, dias restantes, gasto por mês,
+     custo por m² e retorno só existem quando há dado), então nada aqui
+     pode depender de "o nono cartão". Os quatro primeiros são fixos;
+     do quinto em diante é cauda variável. */
+  #dtp-fin>div:has(>#detail-title){display:none!important}
+  #dash-period-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4.5px;margin-bottom:9px}
+  #dash-period-bar>span:first-child,#dash-periodo-label{display:none}
+  #dash-period-bar .btn{padding:3.6px 1.8px;font-size:10.3px;justify-content:center}
+
+  #kpi-obra{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:10.8px}
+  #kpi-obra>.kc{box-shadow:none;overflow:visible}
+  #kpi-obra>.kc:hover{transform:none}
+  #kpi-obra .ki{display:none}
+
+  /* a ficha: tudo que não é Total gasto (2º) nem Saldo (4º) */
+  /* Rótulo, observação e número numa linha só funcionava na maquete porque
+     lá as observações eram curtas. Aqui elas são "Lucro est. R$ 1.362.813,33"
+     e "10/02/2026 → 20/12/2026": em linha única alguém tinha de ceder, e o
+     que cedia era ou o rótulo ("Retorno estima…") ou o meio de um valor em
+     reais. Observação desce para a segunda linha; o número fica inteiro à
+     direita, centrado nas duas. Linha sem observação continua com uma só. */
+  #kpi-obra>.kc:not(:nth-child(2)):not(:nth-child(4)){
+    grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;
+    column-gap:9px;align-items:center;min-height:44px;
+    padding:5.4px 10.8px;border-radius:0;border-top:0}
+  #kpi-obra>.kc:not(:nth-child(2)):not(:nth-child(4)) .kl{
+    grid-area:1/1;font-size:11.2px;color:var(--text2);font-weight:400;
+    text-transform:none;letter-spacing:0;margin-bottom:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #kpi-obra>.kc:not(:nth-child(2)):not(:nth-child(4)) .kd{
+    grid-area:2/1;font-size:9.5px;color:var(--text3);margin-top:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #kpi-obra>.kc:not(:nth-child(2)):not(:nth-child(4)) .kv{
+    grid-column:2;grid-row:1/3;align-self:center;text-align:right;
+    font-size:13.1px;letter-spacing:-.2px}
+  /* Orçamento usado abre a ficha e arredonda em cima; Dias em obra vem
+     logo depois e a cauda variável fecha embaixo. */
+  #kpi-obra>.kc:nth-child(3){order:3;border-top:1px solid var(--border);border-radius:12px 12px 0 0}
+  #kpi-obra>.kc:nth-child(1){order:4}
+  #kpi-obra>.kc:nth-child(n+5){order:5}
+  #kpi-obra>.kc:last-child{border-radius:0 0 12px 12px}
+  /* os dois grandes — depois do :last-child de propósito: numa obra nova,
+     sem nenhum cartão da cauda, o Saldo seria o último filho e herdaria o
+     arredondamento de rodapé de ficha. */
+  #kpi-obra>.kc:nth-child(2),#kpi-obra>.kc:nth-child(4){
+    grid-row:1;padding:9px;border-radius:11px;margin-bottom:9px}
+  #kpi-obra>.kc:nth-child(2){grid-column:1;margin-right:3.6px;order:1}
+  #kpi-obra>.kc:nth-child(4){grid-column:2;margin-left:3.6px;order:2}
+  #kpi-obra>.kc:nth-child(2) .kl,#kpi-obra>.kc:nth-child(4) .kl{
+    font-size:9px;letter-spacing:.7px;margin-bottom:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #kpi-obra>.kc:nth-child(2) .kv,#kpi-obra>.kc:nth-child(4) .kv{font-size:18px;margin-top:1.8px;letter-spacing:-.5px}
+  #kpi-obra>.kc:nth-child(2) .kd,#kpi-obra>.kc:nth-child(4) .kd{
+    font-size:9.5px;margin-top:0.9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* Resultado por casa, gastos por categoria e últimos lançamentos perdem
+     a moldura de cartão: no celular era caixa dentro de caixa. O título
+     vira etiqueta de seção. */
+  #dtp-fin #casas-result>.card,#dtp-fin .g2>.card{
+    background:none;border:0;box-shadow:none;padding:0;border-radius:0;margin-bottom:0}
+  #dtp-fin .card-hdr{margin-bottom:6.3px;padding:3.6px 1.8px 0}
+  #dtp-fin .card-title{font-size:9.9px;letter-spacing:1.1px;text-transform:uppercase;color:var(--text3)}
+  #dtp-fin .card-title svg{display:none}
+  #dtp-fin .g2{gap:0}
+  #casas-result{margin-bottom:10.8px!important}
+  #casas-result .casas-result-list{gap:6.3px;margin-bottom:0}
+  #casas-result .casa-result-card{padding:8.1px 9.9px;border-radius:11px;
+    background:var(--surface);border-color:var(--border)}
+  #casas-result .crc-hdr{margin-bottom:6.3px}
+  #casas-result .crc-grid{gap:5.4px}
+  #casas-result .crc-l{font-size:9px}
+  #casas-result .crc-v{font-size:11.7px}
+  /* Abaixo de 600px o app empilhava os três em coluna, 3 cartões de 60px.
+     Lado a lado cabem: o ajuste automático de fonte cuida do valor longo. */
+  #casas-result .caixa-box{grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6.3px;margin-top:9.9px;padding-top:9.9px}
+  #casas-result .cxb-item{padding:7.2px 8.1px;border-radius:10px}
+  #casas-result .cxb-l{font-size:9px;letter-spacing:.5px;margin-bottom:2.7px}
+  #casas-result .cxb-l svg{display:none}
+  #casas-result .cxb-v{font-size:11.2px;letter-spacing:-.4px}
+
+  /* Cada categoria vira uma faixa de 38px com a barra ao fundo, como na
+     maquete: a barra separada roubava 105px de largura do nome. */
+  #cat-bars .cbr{position:relative;display:flex;align-items:center;gap:8.1px;height:38px;
+    padding:0 9.9px;margin-bottom:6.3px;border-radius:9px;overflow:hidden;
+    background:var(--surface);border:1px solid var(--border)}
+  #cat-bars .cbr-lbl{position:relative;flex:1;min-width:0;font-size:11.2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #cat-bars .cbr-trk{position:absolute;left:0;top:0;bottom:0;width:100%;height:auto;
+    background:none;border-radius:0;flex:none}
+  #cat-bars .cbr-fill{height:100%;border-radius:0;opacity:.19}
+  #cat-bars .cbr-val{position:relative;min-width:0;font-size:11.2px;font-weight:600}
+  #cat-bars .cbr-pct{position:relative;width:32px;min-width:32px}
+
+  /* A faixa "2 a pagar · Ver →" é clicável e media 39px de altura — escapou
+     da varredura de alvos de toque de ontem. */
+  .apagar-compact{min-height:44px;box-sizing:border-box}
+
+  /* ── Lançamentos · a tela ──────────────────────────────────────────
+     Hoje a aba abre com o formulário inteiro — 885px — e o primeiro
+     lançamento só aparece depois disso. Aqui a lista vem primeiro e o
+     formulário volta para a gaveta que já existe no código
+     (#lanc-form-card.sheet-open), atrás do botão "+ Lançar". */
+  /* A animação de entrada da página (.page.active) cria bloco de contenção
+     e quebra position:fixed nos filhos — é por isso que openLancSheet()
+     desliga as duas propriedades no style inline. Desligadas aqui, tanto a
+     faixa de ação quanto a própria gaveta passam a se fixar na tela. */
+  #page-lancamentos.active{animation:none;will-change:auto}
+
+  /* Especificidade: #lanc-form-card é (1,0,0) e #lanc-form-card.sheet-open
+     é (1,1,0) — a gaveta continua abrindo por cima deste display:none. */
+  #lanc-form-card{display:none}
+  #page-lancamentos .lanc-split-right{margin-bottom:0}
+
+  /* O "+ Lançar" existe no HTML e estava escondido no celular desde o
+     redesenho de outubro, quando o formulário passou a ficar aberto na
+     página. Volta como faixa de ação, logo acima da navegação de baixo.
+     O display vem de atributo style no próprio botão: sem !important
+     nenhuma regra de folha de estilo o alcança. */
+  #page-lancamentos>.page-hdr{
+    display:block!important;position:fixed;left:0;right:0;
+    bottom:calc(68px + env(safe-area-inset-bottom));
+    z-index:190;margin:0;padding:10.8px 10.8px 12.6px;
+    pointer-events:none;
+    background:linear-gradient(to top,var(--bg) 58%,transparent)}
+  #page-lancamentos>.page-hdr>div:first-child{display:none}
+  #page-lancamentos>.page-hdr>div:last-child{display:block;pointer-events:auto}
+  #page-lancamentos #btn-tog-nf{display:none!important}
+  #page-lancamentos #btn-novo-lanc{
+    display:flex!important;width:100%;height:50px!important;
+    align-items:center;justify-content:center;gap:7.2px;
+    font-size:13.5px!important;border-radius:14px!important}
+  /* a última linha da lista não pode terminar debaixo da faixa */
+  #page-lancamentos .lanc-split-left{padding-bottom:57.6px}
+
+  /* O campo do valor é o maior da folha de propósito — é o único número que
+     se digita. Abaixo de 480px havia uma regra geral `input{font-size:16px
+     !important}` (serve para o iPhone não dar zoom ao focar um campo) que o
+     derrubava de 30px para 16px, do tamanho do "R$" ao lado. 30px já passa
+     dos 16px, então o zoom continua desligado. */
+  #lanc-form-card .rapido-val-input{font-size:27px!important}
+
+  /* "Histórico" perde a moldura e a caixa cinza dos filtros também: eram
+     três bordas aninhadas em volta de cartões que já têm borda própria. */
+  #page-lancamentos .lanc-split-left>.card{
+    background:none;border:0;box-shadow:none;padding:0;border-radius:0;margin-bottom:0}
+  #page-lancamentos .lanc-split-left>.card>.card-hdr{margin-bottom:5.4px}
+  #page-lancamentos .card-title{font-size:9.9px;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--text3)}
+  #page-lancamentos .tbl-filters{background:none;border:0;padding:0;margin-bottom:5.4px}
+  #page-lancamentos .cat-chips-wrap{margin:5.4px 0 0}
+  #tabela .lanc-summary-bar{font-size:11.7px;margin:1.8px 1.8px 7.2px}
+
+  /* ── Lançamentos · a linha ─────────────────────────────────────────
+     185px por cartão: etiqueta de categoria e etiqueta de pagamento numa
+     linha, descrição em outra, data e fornecedor empilhados em coluna,
+     valor, e por fim a faixa de ações. Aqui o cartão vira três faixas —
+     descrição / valor e contexto / ações. A etiqueta de categoria sai: a
+     cor da borda esquerda já diz a mesma coisa, no mesmo código de cor.
+     display:contents sobe os netos a itens da grade; sem isso o cabeçalho
+     e o rodapé do cartão continuariam sendo duas caixas inteiras. */
+  #tabela .lanc-cards{display:flex;flex-direction:column;gap:7.2px}
+  #tabela .lanc-card:not(.nf-card){
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:'desc selo' 'ctx selo' 'acoes acoes';
+    column-gap:7.2px;row-gap:0.9px;
+    padding:8.1px 9.9px;border-radius:11px;align-items:center}
+  #tabela .lanc-card:not(.nf-card)>.lanc-card-top{display:contents}
+  #tabela .lanc-card:not(.nf-card)>.lanc-card-top>.badge:first-child{display:none}
+  #tabela .lanc-card:not(.nf-card)>.lanc-card-top>.badge:nth-child(2){grid-area:selo}
+  #tabela .lanc-card:not(.nf-card)>.lanc-card-desc{
+    grid-area:desc;margin:0;font-size:12.2px;line-height:1.3;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #tabela .lanc-card:not(.nf-card)>.lanc-card-bottom{
+    grid-area:ctx;align-items:center;gap:6.3px}
+  #tabela .lanc-card:not(.nf-card) .lanc-card-valor{order:1;flex:none;font-size:13.5px}
+  /* Data, fornecedor, nº da nota, obra, quantidade e observação eram seis
+     linhas empilhadas. Em fila, separados por ponto, cabem na mesma altura
+     do valor. O que não couber não é cortado no meio da palavra: a máscara
+     apaga os últimos 16px, que é como o olho lê "tem mais coisa aqui". */
+  #tabela .lanc-card:not(.nf-card) .lanc-card-meta{
+    order:2;flex-direction:row;flex-wrap:nowrap;gap:0;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 16px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 16px),transparent)}
+  #tabela .lanc-card:not(.nf-card) .lanc-card-meta span{flex:none}
+  #tabela .lanc-card:not(.nf-card) .lanc-card-meta span+span::before{
+    content:'·';margin:0 4.5px;color:var(--text3)}
+  /* A faixa de ações fica, com os 44px de alvo de toque que ela ganhou na
+     revisão de ontem: é onde um toque errado apaga dinheiro. Perde só a
+     linha divisória e o recheio, que no celular viravam 17px por cartão. */
+  #tabela .lanc-card:not(.nf-card)>.lanc-card-actions{
+    grid-area:acoes;margin-top:1.8px;padding-top:0;border-top:0}
+  /* Nota com vários itens tem desenho próprio (o expansor e a lista de
+     itens dentro). Aqui só acompanha o recheio e o arredondamento. */
+  #tabela .nf-card{padding:8.1px 9.9px;border-radius:11px}
+
+  /* ── Pendências · a tela ──
+     Hoje a aba abre com 856px de cabeçalho, botões e calendário antes da
+     primeira pendência. Aqui o calendário encolhe para o tamanho de um mês
+     de verdade e a lista sobe. "Nova" e "Periódica" viram faixa de ação,
+     pelo mesmo caminho dos Lançamentos. */
+  #page-pendencias.active{animation:none;will-change:auto}
+  #page-pendencias>.page-hdr{
+    display:block!important;position:fixed;left:0;right:0;
+    bottom:calc(68px + env(safe-area-inset-bottom));
+    z-index:190;margin:0;padding:10.8px 10.8px 12.6px;
+    pointer-events:none;
+    background:linear-gradient(to top,var(--bg) 58%,transparent)}
+  #page-pendencias>.page-hdr>div:first-child{display:none}
+  #page-pendencias>.page-hdr>.pend-top-btns{
+    display:grid!important;grid-template-columns:1.35fr 1fr;gap:7.2px;pointer-events:auto}
+  #page-pendencias .pend-top-btns .btn{
+    height:50px!important;font-size:12.6px!important;border-radius:14px!important}
+  #list-p{padding-bottom:63px}
+
+  /* As molduras: o calendário e a lista não têm id, os três formulários que
+     abrem e fecham têm. Só os dois primeiros perdem a caixa — formulário
+     continua sendo um painel com borda, que é o que o distingue da página. */
+  #page-pendencias>.card:not([id]){
+    background:none;border:0;box-shadow:none;padding:0;border-radius:0;margin-bottom:12.6px}
+  #page-pendencias .pend-card-hdr{margin-bottom:5.4px;gap:5.4px!important}
+  #page-pendencias .card-title{font-size:9.9px;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--text3)}
+
+  /* ── Pendências · o calendário ──
+     Cada dia mostrava o título da primeira pendência em letra de 8px
+     ("Pagar fer…"), que ninguém lê e custa uma linha em 42 células. Fora o
+     título, sobram os pontos coloridos — que já existem no código e são a
+     informação que se enxerga de relance: quantos e de que cor. O número no
+     canto dizia a mesma coisa que os pontos e disputava o mesmo espaço. */
+  #page-pendencias .cal-nav{margin-bottom:7.2px;gap:7.2px}
+  #page-pendencias .cal-nav .btn{padding:0 9px;font-size:10.8px}
+  #cal-bd .cal-day{min-height:44px;padding:2.7px 1.8px;border-radius:7px}
+  #cal-bd .cad{font-size:9.9px;margin-bottom:0;text-align:center}
+  #cal-bd .cal-dots{justify-content:center;gap:2.7px;margin-top:2.7px;flex-wrap:nowrap;overflow:hidden}
+  #cal-bd .cal-lbl{display:none}
+  /* O mês sempre vem com 42 células, então sobra uma faixa inteira — às vezes
+     duas — só com dias do mês seguinte. A altura de uma linha da grade é a da
+     maior célula dela: encolhendo as células de fora, a faixa que só tem
+     dias de fora some, e as faixas misturadas continuam nos 44px. */
+  #cal-bd .cal-day.om{min-height:0;padding:0.9px 1.8px;border-color:transparent;background:none}
+  #cal-bd .cal-day.om .cad{font-size:9px}
+  #cal-bd .cal-cnt{display:none}
+  /* A legenda vem com style no próprio elemento — sem !important nenhuma
+     regra de folha a alcança. */
+  #cal-bd+div{gap:6.3px 9.9px!important;margin-top:7.2px!important}
+  #cal-bd+div>span{font-size:9px!important}
+
+  /* ── Pendências · os filtros ──
+     Todas/Abertas/Vencidas/Concluídas estavam em grade de dois por dois:
+     duas faixas de 44px só para filtrar. Em fila única cabem na largura do
+     iPhone; em tela estreita a fila corre para o lado e a máscara de 16px
+     avisa que tem mais. */
+  #page-pendencias .pf-btn-grp{
+    display:flex!important;flex-wrap:nowrap;gap:5.4px;overflow-x:auto;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 16px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 16px),transparent)}
+  #page-pendencias .pf-btn-grp::-webkit-scrollbar{display:none}
+  #page-pendencias .pf-btn-grp .btn{
+    flex:1 1 auto;min-width:0;width:auto;white-space:nowrap;
+    padding:0 9px;font-size:10.8px}
+
+  /* ── Pendências · a linha ──
+     O quadrado de 36px com o ícone do tipo à esquerda vira uma barra de 4px
+     na cor da prioridade, colada na altura inteira do item. É a mesma
+     informação da etiqueta "alta/média/baixa" que vinha ao lado do título —
+     por isso a etiqueta sai e "Vencida"/"Concluída", que dizem outra coisa,
+     ficam. São 45px de largura devolvidos ao texto. */
+  #list-p .pend-item{gap:9px;padding:8.1px 0}
+  #list-p .pend-ico{
+    width:4px;min-width:4px;height:auto;align-self:stretch;
+    border-radius:3px;padding:0;background:var(--text3)}
+  #list-p .pend-ico svg{display:none}
+  #list-p .pend-ico.alta{background:var(--red)}
+  #list-p .pend-ico.media{background:var(--yellow)}
+  #list-p .pend-ico.baixa{background:var(--green)}
+  #list-p .pt+.badge{display:none}
+  #list-p .pt{font-size:12.2px;line-height:1.3}
+  /* Pendência sem descrição deixava uma linha vazia de 15px no meio do item. */
+  #list-p .pm:empty{display:none}
+  #page-pendencias .pend-overdue{padding:8.1px 9px;margin-bottom:5.4px}
+
+  /* ── Docs · a tela ── */
+  /* O título "Documentos Oficiais" repete o que a barra de cima já diz e o
+     subtítulo lista as categorias que os chips logo abaixo mostram. */
+  #page-documentos>.page-hdr{display:none}
+  #page-documentos .doc-split-left>.card{
+    background:none;border:0;box-shadow:none;padding:0;border-radius:0;margin-bottom:0}
+  #page-documentos #doc-saved-title{font-size:9.9px;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--text3)}
+  #page-documentos .doc-split-left .chart-subtitle{margin-bottom:7.2px!important}
+  #page-documentos .doc-filtros input[type=text]{height:44px}
+
+  /* ── Docs · o cartão ──
+     197px por documento: nome, categoria, descrição, o selo de validade numa
+     faixa só dele, o nome do arquivo em outra, e os três botões. O selo e o
+     nome do arquivo passam a dividir a mesma linha — um é curto e o outro é
+     o que sobra. O nome do arquivo quebrava letra a letra e chegava a três
+     linhas; aqui ele ocupa uma e termina em reticências.
+     Os filhos do cartão não têm classe, então vão por posição: o primeiro é
+     o bloco do nome, o último é a faixa de botões, e o que estiver no meio
+     — selo, nome do arquivo, ou só um deles — divide a linha do meio. */
+  #doc-grid .doc-card-new{
+    flex-direction:row;flex-wrap:wrap;align-items:center;
+    padding:9px 10.8px 9px 12.6px;gap:4.5px;border-radius:11px}
+  #doc-grid .doc-card-new>div:first-child{flex:1 1 100%;gap:8.1px!important}
+  #doc-grid .doc-card-new>div:first-child>span:first-child svg{width:22px;height:22px}
+  #doc-grid .doc-card-new>.doc-card-acts{flex:1 1 100%;margin-left:0;margin-top:2.7px!important}
+  #doc-grid .doc-card-new>div:not(:first-child):not(.doc-card-acts){
+    flex:0 1 auto;min-width:0;margin-top:0!important;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ── Docs · o formulário ──
+     Sobraram instruções de computador na tela do celular: no celular não há
+     o que arrastar nem Cmd+V, e o atalho Cmd+↵ não existe no teclado do
+     telefone. Os dois somem — os botões que fazem a mesma coisa ficam. */
+  #page-documentos .dz-doc-sub{display:none}
+  #page-documentos .dz-doc{padding:14.4px 12.6px}
+  #doc-save-btn>span:last-child{display:none}
+  #page-documentos .doc-cat-tile{padding:8.1px 9px;gap:6.3px}
+  /* "Remover" tinha o mesmo peso de "Ver", que é o que se faz em quase toda
+     visita ao documento. Ver fica com a largura toda; editar e remover viram
+     os mesmos quadrados de 44px já usados em Lançamentos e Pendências. O nome
+     do botão continua lá para o leitor de tela (aria-label), só não ocupa
+     mais espaço na tela. */
+  #doc-grid .doc-card-acts>button{
+    font-size:0!important;flex:0 0 44px;width:44px;padding:0;
+    justify-content:center;gap:0}
+  #doc-grid .doc-card-acts>button svg{width:16px;height:16px}
+}
+/* ═══════════════════════════════════════════════════════════════════
+   CELULAR · 2026-11-10 — aprovado por ele depois de ver lado a lado.
+   Três ajustes (gaveta de lançar menor, faixas de ação de 46px, Docs
+   com o botão sempre embaixo) + o menu ⋯ por linha.
+   Tudo dentro de max-width:900px: no computador nada muda.
+   Nenhum alvo de toque fica abaixo de 44px.
+   ═══════════════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+
+
+  /* ── 1 · As faixas de ação ──────────────────────────────────────
+     50px é altura de botão de tela de login, que se aperta uma vez.
+     Estes são de uso diário: 46px continua acima dos 44 de alvo de
+     toque e devolve 4px por faixa. */
+  #page-lancamentos #btn-novo-lanc,
+  #page-pendencias .pend-top-btns .btn,
+  #page-documentos #btn-novo-doc{
+    height:46px!important;font-size:12.2px!important;border-radius:12px!important}
+
+  /* ── 2 · A gaveta de lançar ─────────────────────────────────────
+     737px dos 844 da tela — 87%. A lista sumia inteira atrás dela, e
+     quem lança um gasto quer ver a lista enquanto digita. Abaixo, o
+     que cada pedaço custava e para quanto vai. */
+  #lanc-form-card.sheet-open{padding-left:12.6px;padding-right:12.6px}
+
+  /* cabeçalho da gaveta: 79px.
+     A barra sangra para fora do recheio do cartão por margem negativa, que
+     era de −18px para casar com os 18px de recheio. Com o recheio em 14px
+     ela passava a sobrar 4px de cada lado. */
+  #lanc-form-card.sheet-open .sheet-handle-bar{
+    padding:6.3px 12.6px;margin:-16.2px -12.6px 9px}
+  #lanc-form-card.sheet-open .sheet-drag-pill{margin-bottom:5.4px}
+  #lanc-form-card.sheet-open .sheet-hdr-title{font-size:12.6px}
+
+  /* Rápido / NF Completa: 66px. Os dois continuam com 44 de altura. */
+  #lanc-form-card.sheet-open .mode-switch{margin-bottom:9px}
+
+  /* o valor: 106px. O campo era de 70px com letra de 30 — o maior
+     número da tela inteira, e ninguém digita um valor de longe. 24px
+     ainda passa dos 16 que o iPhone exige para não dar zoom sozinho. */
+  #lanc-form-card.sheet-open .rapido-val-wrap{margin-bottom:10.8px}
+  #lanc-form-card.sheet-open .rapido-val-input{
+    font-size:21.6px!important;height:54px;padding-top:7.2px;padding-bottom:7.2px}
+  /* O "R$" é centralizado com top:50% + translateY(-50%) na caixa que o
+     contém — e essa caixa inclui o rótulo "Valor" acima do campo. Ou seja,
+     ele se centra no conjunto rótulo+campo e sobra alto dentro do campo.
+     Já era assim antes; com o campo menor passou a saltar à vista.
+     Ancorado pela base do campo, acompanha qualquer altura: 14px é metade
+     da sobra de 54−26. O transform tem de ser cancelado junto, senão
+     continua subindo 13px. */
+  #lanc-form-card.sheet-open .rapido-prefix{top:auto;bottom:14px;transform:none}
+
+  /* descrição: 77px */
+  #lanc-form-card.sheet-open .rapido-desc-row{margin-bottom:9px}
+
+  /* as cinco categorias: 87px. O quadrado tinha 55px de altura para um
+     ícone e quatro letras. 44px é o mínimo de toque — fica nele. */
+  #lanc-form-card.sheet-open .cat-picker{
+    margin-bottom:10.8px!important;padding-bottom:3.6px!important}
+  #lanc-form-card.sheet-open .cat-tile{
+    padding:5.4px 1.8px 4.5px!important;gap:2.7px!important;min-height:44px;justify-content:center}
+  #lanc-form-card.sheet-open .cat-tile-ico svg{width:16px!important;height:16px!important}
+
+  /* a foto do comprovante: 119px, o maior bloco da gaveta. A segunda
+     linha dizia "Abre a câmera" — o ícone de câmera já diz. Quando a
+     foto está anexada essa mesma linha passa a mostrar o nome do
+     arquivo, e aí ela volta: é a única confirmação de que anexou. */
+  #lanc-form-card.sheet-open .rl-foto-m{margin-bottom:10.8px}
+  #lanc-form-card.sheet-open .rl-cam-m,
+  #lanc-form-card.sheet-open .rl-gal-m{padding:9px;border-radius:11px;gap:3.6px}
+  #lanc-form-card.sheet-open .rl-cam-m:not(.has) .rl-cam-m-s{display:none}
+  #lanc-form-card.sheet-open .rl-cam-m svg{width:22px;height:22px}
+  #lanc-form-card.sheet-open .rl-gal-m{width:84px}
+
+  /* "+ Mais opções": 59px para uma linha de texto */
+  #lanc-form-card.sheet-open #rl-mais-wrap{margin-bottom:9px}
+  #lanc-form-card.sheet-open #rl-mais-btn{padding:9px 11.7px;min-height:44px}
+
+  /* salvar: 52px */
+  #lanc-form-card.sheet-open #btn-salvar-rapido{
+    height:46px!important;font-size:13.1px!important;border-radius:12px}
+  #lanc-form-card.sheet-open .form-footer-bar{
+    padding-top:7.2px;margin-left:-12.6px;margin-right:-12.6px;
+    padding-left:12.6px;padding-right:12.6px}
+
+  /* ── 3 · Docs: o botão sempre embaixo ───────────────────────────
+     Era a única das quatro abas em que a ação principal ficava no fim
+     da página: para anexar um documento era preciso rolar os seis que
+     já existem. Agora segue o mesmo desenho de Lançamentos e
+     Pendências — faixa fixa acima da navegação, e o formulário vira
+     gaveta, que é o que o celular faz com formulário. */
+  #page-documentos.active{animation:none;will-change:auto}
+  #page-documentos>.page-hdr{
+    display:block!important;position:fixed;left:0;right:0;
+    bottom:calc(68px + env(safe-area-inset-bottom));
+    z-index:190;margin:0;padding:10.8px 10.8px 12.6px;
+    pointer-events:none;
+    background:linear-gradient(to top,var(--bg) 58%,transparent)}
+  #page-documentos>.page-hdr>div:first-child{display:none}
+  #page-documentos #btn-novo-doc{
+    display:flex!important;width:100%;
+    align-items:center;justify-content:center;gap:7.2px;
+    pointer-events:auto;
+    background:linear-gradient(135deg,#27AE60,#1E8449);color:#fff;
+    border:none;font-weight:600}
+  /* o último documento da lista não pode terminar debaixo da faixa */
+  #page-documentos .doc-split-left{padding-bottom:57.6px}
+
+  /* a gaveta — mesmas regras da de Lançamentos */
+  #doc-form-card{display:none}
+  #doc-form-card.sheet-open{
+    display:block;position:fixed;bottom:0;left:0;right:0;
+    max-height:94dvh;overflow-y:auto;z-index:499;
+    border-radius:18px 18px 0 0;border:none;
+    margin:0!important;padding-left:12.6px;padding-right:12.6px;
+    animation:sheetUp .3s cubic-bezier(.4,0,.2,1);
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding-bottom:env(safe-area-inset-bottom)}
+  #doc-form-card.sheet-open .sheet-handle-bar{
+    display:flex;padding:6.3px 12.6px;margin:-10.8px -12.6px 9px}
+  #doc-form-card.sheet-open .sheet-drag-pill{margin-bottom:5.4px}
+  #doc-form-card.sheet-open .sheet-hdr-title{font-size:12.6px}
+  /* o título "Anexar Documento" repetia o da gaveta, logo acima */
+  #doc-form-card.sheet-open>.card-hdr{display:none}
+  /* o aviso de obra encolhe como na gaveta de lançar */
+  #doc-form-card.sheet-open .obra-banner{
+    flex-direction:row;align-items:center;gap:7.2px;
+    padding:5.4px 0;margin-bottom:9px;
+    background:none;border:none;border-bottom:1px solid var(--border);border-radius:0}
+  #doc-form-card.sheet-open .obra-banner::before{display:none}
+  #doc-form-card.sheet-open .obra-banner-top{display:none}
+  #doc-form-card.sheet-open .obra-banner-end{display:none}
+  #doc-form-card.sheet-open .obra-banner-name{
+    font-size:11.7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* "Confirme a obra antes de salvar" ocupava meia linha do aviso para
+     repetir o que o próprio aviso já mostra — o nome da obra. É o mesmo
+     que a gaveta de lançamentos já faz. */
+  /* o display vem por style no próprio elemento, escrito pelo JS —
+     sem !important nenhuma regra de folha o alcança */
+  #doc-form-card.sheet-open .obra-banner-warn{display:none!important}
+  #doc-form-card.sheet-open .obra-banner-plate{padding:6.3px 10.8px}
+
+  /* os títulos de seção: 10 em cima e 12 embaixo, três vezes */
+  #doc-form-card.sheet-open .fsec-title{margin-top:7.2px!important;margin-bottom:5.4px!important}
+  /* a caixa da validade tinha moldura e recheio próprios em volta de
+     um campo de data */
+  #doc-form-card.sheet-open .doc-val-box{padding:8.1px 9px;margin-top:9px}
+  /* a área de anexo: 148px para um ícone e duas linhas */
+  #doc-form-card.sheet-open .dz-doc{padding:9.9px 10.8px;margin-top:5.4px}
+  #doc-form-card.sheet-open .dz-doc-ico{margin-bottom:3.6px}
+  #doc-form-card.sheet-open .dz-doc-ico svg{width:24px;height:24px}
+  #doc-form-card.sheet-open .dz-doc-title{font-size:11.2px;margin-bottom:5.4px}
+  #doc-form-card.sheet-open .dz-doc-req{margin-top:5.4px}
+  /* salvar fica colado embaixo, como em Lançamentos */
+  #doc-form-card.sheet-open #doc-save-btn{
+    position:sticky;bottom:0;height:46px!important;margin-top:10.8px;
+    box-shadow:0 -6px 20px rgba(0,0,0,.4)}
+  /* as seis categorias do documento, duas por linha em vez de uma */
+  #doc-form-card.sheet-open .doc-cat-picker{
+    display:grid!important;grid-template-columns:1fr 1fr;gap:5.4px}
+  #doc-form-card.sheet-open .doc-cat-tile{
+    min-height:44px;padding:7.2px 8.1px;gap:5.4px;font-size:10.8px}
+
+  /* a tela de fundo escurecida da gaveta de documentos */
+  #doc-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:498;
+    display:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+  #doc-backdrop.show{display:block}
+
+
+  /* ── Lançamentos ────────────────────────────────────────────────
+     A grade do plano C é 'desc selo' / 'ctx selo' / 'acoes acoes'.
+     Some a faixa 'acoes' e entra uma terceira coluna com o ⋯, que
+     ocupa as duas linhas.
+     A linha do contexto (valor · data · fornecedor) passa a correr por
+     baixo do selo: o selo só precisa da primeira linha, e assim a linha
+     de baixo recupera 63px — mais do que os 46px que o ⋯ tomou. Sem
+     isso, 'Depósito Macaé' virava 'Dep…' em todo cartão. */
+  #tabela .lanc-card:not(.nf-card){
+    grid-template-columns:minmax(0,1fr) auto auto;
+    grid-template-areas:'desc selo mais' 'ctx ctx mais'}
+  #tabela .lanc-card:not(.nf-card)>.lanc-card-actions{display:none}
+  #tabela .lanc-card:not(.nf-card)>.card-mais{
+    grid-area:mais;align-self:center;margin-left:1.8px}
+
+  /* ── Docs ───────────────────────────────────────────────────────
+     O cartão é uma linha flex que quebra; a faixa de ações ocupava
+     100% da largura, ou seja, uma linha inteira de 44px. */
+  #doc-grid .doc-card-new>.doc-card-acts{display:none}
+  #doc-grid .doc-card-new{position:relative;padding-right:50.4px}
+  #doc-grid .doc-card-new>.card-mais{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+
+  /* ── O clipe do comprovante ─────────────────────────────────────
+     Vai na linha do contexto, antes da data. Não é alvo de toque: é a
+     mesma função do olho correr a coluna e ver onde falta papel. */
+  #tabela .lanc-card .lanc-card-meta .cm-clipe{
+    display:inline-flex;align-items:center;flex:none;
+    color:var(--text3);margin-right:0.9px}
+  #tabela .lanc-card .lanc-card-meta .cm-clipe.cm-clipe-falta{color:#E67E22}
+  /* o separador '·' do app entra entre dois spans; o clipe é o primeiro
+     da fila, então nunca recebe um — mas o span seguinte recebe */
+
+  /* ── O botão ⋯ ──────────────────────────────────────────────────
+     44×44 cheios. O ícone é pequeno de propósito: o alvo é o quadrado
+     inteiro, não o desenho. */
+  .card-mais{
+    width:44px;height:44px;flex:0 0 44px;padding:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:none;border:1px solid var(--border);border-radius:11px;
+    color:var(--text2);cursor:pointer;box-sizing:border-box}
+  .card-mais:active{background:var(--surface2)}
+  .card-mais svg{width:18px;height:18px;pointer-events:none}
+
+  /* ── A folha de ações ───────────────────────────────────────────
+     Mesmo desenho das outras gavetas: sobe de baixo, fundo escurecido,
+     e cada ação é uma linha de 52px com o nome por extenso. Os botões
+     do cartão eram ícones de 44px sem rótulo; aqui a ação tem nome. */
+  #card-menu-bd{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:598;
+    display:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+  #card-menu-bd.show{display:block}
+  #card-menu{position:fixed;left:0;right:0;bottom:0;z-index:599;display:none;
+    background:var(--surface);border-radius:18px 18px 0 0;
+    border-top:1px solid var(--border);
+    padding:7.2px 12.6px calc(9px + env(safe-area-inset-bottom));
+    animation:sheetUp .25s cubic-bezier(.4,0,.2,1)}
+  #card-menu.show{display:block}
+  #card-menu .cm-pill{width:38px;height:4px;border-radius:3px;
+    background:var(--border2,#39435c);margin:1.8px auto 7.2px}
+  /* o título repete a descrição do lançamento: sem ele, aberta a folha,
+     não dá para saber de qual linha são as ações */
+  #card-menu .cm-title{font-size:11.7px;font-weight:600;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    padding:0 1.8px 7.2px;border-bottom:1px solid var(--border);margin-bottom:3.6px}
+  #card-menu .cm-row{
+    display:flex;align-items:center;gap:9.9px;width:100%;
+    min-height:52px;padding:0 3.6px;background:none;border:0;
+    color:var(--text);font:inherit;font-size:12.6px;text-align:left;
+    cursor:pointer;text-decoration:none}
+  #card-menu .cm-row+.cm-row{border-top:1px solid var(--border)}
+  #card-menu .cm-row:active{background:var(--surface2)}
+  #card-menu .cm-row svg{width:17px;height:17px;flex:0 0 17px}
+  #card-menu .cm-row.cm-del{color:#E74C3C}
+  /* "Sem comprovante" não é ação, é informação: fica na folha para não
+     sumir do cartão, mas sem parecer tocável */
+  #card-menu .cm-row.cm-info{color:var(--text3);font-size:11.2px;min-height:38px;
+    cursor:default}
+}
+
 </style>
 </head>
 <body>
@@ -2325,7 +3034,7 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
     <div class="sheet-handle-bar">
       <div class="sheet-drag-pill"></div>
       <div class="sheet-hdr-row">
-        <span class="sheet-hdr-title" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> Nova NF</span>
+        <span class="sheet-hdr-title" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> Novo lançamento</span>
         <button class="sheet-close-btn" onclick="closeLancSheet()" aria-label="Fechar formulário">✕</button>
       </div>
     </div>
@@ -2753,6 +3462,10 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
   </div>
   <div class="page-hdr">
     <div><div class="page-title">Documentos Oficiais</div><div class="page-sub">Contratos, alvarás, certidões e documentos de obras</div></div>
+    <!-- No celular o CSS prega esta faixa logo acima da navegação e este botão
+         abre a gaveta; no computador ele fica escondido, porque lá o formulário
+         já está docado à direita e sempre visível. -->
+    <button id="btn-novo-doc" class="btn" style="display:none" onclick="openDocSheet()" aria-label="Novo documento"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Novo documento</button>
   </div>
 
   <div class="doc-split-wrap">
@@ -2775,6 +3488,14 @@ button.lanc-card-comp,button.hist-comp{background:none;border:0;padding:0;font-f
     <!-- FORMULÁRIO (docado à direita) -->
     <div class="doc-split-right">
       <div class="card" id="doc-form-card">
+        <!-- Só aparece no celular, quando o cartão vira gaveta (ver .sheet-open). -->
+        <div class="sheet-handle-bar">
+          <div class="sheet-drag-pill"></div>
+          <div class="sheet-hdr-row">
+            <span class="sheet-hdr-title" id="doc-sheet-title">Novo documento</span>
+            <button class="sheet-close-btn" onclick="closeDocSheet()" aria-label="Fechar formulário">✕</button>
+          </div>
+        </div>
         <div class="card-hdr" style="margin-bottom:12px">
           <div><div class="card-title" id="doc-anexar-title" style="display:flex;align-items:center;gap:7px">Anexar Documento</div><div class="chart-subtitle">Vinculado à obra selecionada</div></div>
         </div>
@@ -4044,13 +4765,6 @@ function similarExists(campo, valor, existentes){
 }
 const fmt=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function fmtHtml(v){const n=Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});return`<span class="curr">R$</span><span class="amt">${n}</span>`;};
-/* Os limites comparavam o valor COM sinal (n>=1e6), então valor negativo
-   nunca abreviava: lucro de +8,4 milhões virava "R$8.4M", mas o prejuízo
-   do mesmo tamanho saía "-R$ 8.401.234,31" por extenso — justo o número
-   mais importante era o único que estourava o cartão. Agora o limite olha
-   o módulo e o sinal é recolocado na frente. */
-const fmtS=n=>{const v=Number(n||0),a=Math.abs(v),s=v<0?'-':'';
-  return a>=1e6?s+'R$'+(a/1e6).toFixed(1)+'M':a>=1e3?s+'R$'+(a/1e3).toFixed(0)+'k':fmt(v);};
 
 /* ══ AJUSTE AUTOMÁTICO DE NÚMEROS — nada pode ser cortado ══
    O pt-BR formata moeda com espaço INQUEBRÁVEL (U+00A0) entre "R$" e os
@@ -4070,20 +4784,17 @@ const NUM_FONTE_MIN=11;
    em cartão muito estreito com valor muito grande; o normal é a fonte
    encolher e o valor continuar completo e exato. Entre arredondar e cortar,
    arredondar é o único aceitável — cortado engana quem lê. */
-const RE_MOEDA_BR=/^-?R\$\s*\d{1,3}(\.\d{3})*,\d{2}$/;
-function compactaValor(el){
-  const t=(el.textContent||'').trim();
-  if(!RE_MOEDA_BR.test(t))return false;          // não é moeda por extenso
-  const n=parseFloat(t.replace(/[^\d,-]/g,'').replace(',','.'));
-  if(!isFinite(n))return false;
-  const novo=fmtS(n);
-  if(novo===t)return false;                      // já era a forma compacta
-  el.textContent=novo;
+function quebraNoCifrao(el){
+  const t=el.textContent||'';
+  if(!t.includes('\u00A0'))return false;
+  el.textContent=t.replace(/\u00A0/g,' ');
+  el.classList.add('num-duas-linhas');
   return true;
 }
 function ajustaNumero(el){
   if(!el)return;
   tiraFonte(el);                        // relê o tamanho do CSS, sem herdar a redução anterior
+  el.classList.remove('num-duas-linhas');
   const caixa=el.clientWidth;
   if(!caixa)return;                     // escondido: medir não faz sentido
   const base=parseFloat(getComputedStyle(el).fontSize);
@@ -4102,10 +4813,13 @@ function ajustaNumero(el){
     return medir()<=caixa;
   };
   if(encolheAteCaber())return;
-  // nem na fonte mínima couber: compacta e recomeça do tamanho cheio
-  if(compactaValor(el)){tiraFonte(el);encolheAteCaber();}
+  /* Nem na fonte mínima couber. Abreviar está proibido e cortar engana quem
+     lê, então o "R$" desce de linha e os dígitos continuam inteiros: o pt-BR
+     usa espaço inquebrável entre os dois, e é esse espaço que vira comum
+     aqui para autorizar essa quebra — e só ela. */
+  if(quebraNoCifrao(el)){tiraFonte(el);encolheAteCaber();}
 }
-const NUM_SELETORES='.kv,.kpi-pv,.cbr-val,.crc-v,.cxs-v,.cxb-v,.lanc-card-valor';
+const NUM_SELETORES='.kv,.kpi-pv,.cbr-val,.crc-v,.cxs-v,.cxb-v,.lanc-card-valor,.omk-v,.cart-sum-row .cv';
 
 /* ══ RÓTULOS: PALAVRA NUNCA PARTE AO MEIO ══
    Defeito que eu mesmo criei nesta mesma leva de correções. Para fazer o rótulo
@@ -4846,7 +5560,10 @@ function openLancSheet(){
   if(card){card.classList.add('sheet-open');card.scrollTop=0;}
   if(bd)bd.classList.add('show');
   document.body.style.overflow='hidden';
-  setLancMode('nf');
+  /* Rápido, não NF Completa: no celular a gaveta abre para o lançamento de
+     obra do dia a dia. A nota fiscal inteira continua a um toque, no seletor
+     logo abaixo do título. */
+  setLancMode('rapido');
   renderRecentChips();
 }
 function closeLancSheet(){
@@ -4856,6 +5573,31 @@ function closeLancSheet(){
   if(bd)bd.classList.remove('show');
   document.body.style.overflow='';
   const page=document.getElementById('page-lancamentos');
+  if(page){page.style.animation='';page.style.willChange='';}
+}
+/* ── Bottom sheet documento ──
+   Mesmo desenho da gaveta de lançamento, inclusive o conserto do
+   containing block: a animação de entrada da página deixa um transform
+   no .page, e transform quebra position:fixed nos filhos. */
+function ehCelular(){return window.matchMedia('(max-width:900px)').matches;}
+function openDocSheet(titulo){
+  const card=document.getElementById('doc-form-card');
+  const bd=document.getElementById('doc-backdrop');
+  const page=document.getElementById('page-documentos');
+  if(page){page.style.animation='none';page.style.willChange='auto';}
+  const t=document.getElementById('doc-sheet-title');
+  if(t)t.textContent=titulo||'Novo documento';
+  if(card){card.classList.add('sheet-open');card.scrollTop=0;}
+  if(bd)bd.classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeDocSheet(){
+  const card=document.getElementById('doc-form-card');
+  const bd=document.getElementById('doc-backdrop');
+  if(card)card.classList.remove('sheet-open');
+  if(bd)bd.classList.remove('show');
+  document.body.style.overflow='';
+  const page=document.getElementById('page-documentos');
   if(page){page.style.animation='';page.style.willChange='';}
 }
 /* ══ MODO LANÇAMENTO (Rápido / NF Completa) ══ */
@@ -5431,7 +6173,7 @@ function updKpis(){
   const dias=ob.inicio?Math.max(0,dif(ob.inicio,td())):0;
   const pct=ob.orcamento?Math.min(100,Math.round(tot/ob.orcamento*100)):0;
   document.getElementById('tb-dias').textContent=dias;
-  if(!valoresOcultos){document.getElementById('tb-gasto').textContent=fmtS(tot);
+  if(!valoresOcultos){document.getElementById('tb-gasto').textContent=fmt(tot);
   document.getElementById('tb-pct').textContent=pct+'%';}
   document.getElementById('pill-pct').classList.toggle('danger-pill',pct>=80);
   ajustaNumeros();
@@ -5502,7 +6244,7 @@ function updAPagar(){
     const tbr=document.querySelector('.tb-right');if(tbr)tbr.insertBefore(pill,tbr.firstChild);
   }
   pill.style.display=n>0?'':'none';
-  const tbAP=document.getElementById('tb-apagar');if(tbAP&&!valoresOcultos)tbAP.textContent=fmtS(tot);
+  const tbAP=document.getElementById('tb-apagar');if(tbAP&&!valoresOcultos)tbAP.textContent=fmt(tot);
   // Banner compacto na aba Lançamentos
   const wrap=document.getElementById('apagar-alert-wrap');
   if(wrap){
@@ -5656,11 +6398,11 @@ function renderDash(){
       <div><div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${pct}% do orçamento utilizado"><div class="prog-f" style="width:${pct}%;background:${pct>90?'var(--red)':pct>70?'var(--yellow)':'var(--accent)'}"></div></div>
       <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:9.5px;color:var(--text3)">${pct}% do orçamento</span><span style="font-size:9.5px;color:var(--text3)">${fmt(o.orcamento||0)}</span></div></div>
       <div class="oc-kpis">
-        <div class="omk"><div class="omk-l">Investido</div><div class="omk-v">${fmtS(gasto)}</div></div>
-        ${o.tipo==='interna'?'':`<div class="omk"><div class="omk-l">Custo/casa</div><div class="omk-v">${fmtS(cpCasa)}</div></div>`}
-        ${temVenda&&o.tipo!=='interna'?`<div class="omk"><div class="omk-l">VGV</div><div class="omk-v">${fmtS(r.vgvRealizado)}</div></div>
-        <div class="omk"><div class="omk-l">Lucro ${o.status==='concluida'?'':'est.'}</div><div class="omk-v ${r.margemTotal>=0?'su':'da'}">${fmtS(r.margemTotal)}</div></div>`
-        :`<div class="omk"><div class="omk-l">Saldo orç.</div><div class="omk-v ${saldo>=0?'su':'da'}">${fmtS(saldo)}</div></div>
+        <div class="omk"><div class="omk-l">Investido</div><div class="omk-v">${fmt(gasto)}</div></div>
+        ${o.tipo==='interna'?'':`<div class="omk"><div class="omk-l">Custo/casa</div><div class="omk-v">${fmt(cpCasa)}</div></div>`}
+        ${temVenda&&o.tipo!=='interna'?`<div class="omk"><div class="omk-l">VGV</div><div class="omk-v">${fmt(r.vgvRealizado)}</div></div>
+        <div class="omk"><div class="omk-l">Lucro ${o.status==='concluida'?'':'est.'}</div><div class="omk-v ${r.margemTotal>=0?'su':'da'}">${fmt(r.margemTotal)}</div></div>`
+        :`<div class="omk"><div class="omk-l">Saldo orç.</div><div class="omk-v ${saldo>=0?'su':'da'}">${fmt(saldo)}</div></div>
         <div class="omk"><div class="omk-l">Lançamentos</div><div class="omk-v">${ls.length}</div></div>`}
         ${r.aReceber>0?`<div class="omk" style="grid-column:1/-1"><div class="omk-l">${ic('hourglass',11)} A receber (assinatura)</div><div class="omk-v" style="color:var(--yellow)">${fmt(r.aReceber)}</div></div>`:''}
       </div></div>`;
@@ -5697,7 +6439,7 @@ function renderKpiGlob(){
     inv=ST.lancamentos.filter(l=>l.obraId===ob.id).reduce((a,l)=>a+l.valor,0);
     vend=r.vendidas+r.naPlanta;totCasas=r.nCasas;vgv=r.vgvRealizado;lucro=r.margemTotal;temVenda=r.vgvRealizado>0;receb=r.recebido;aReceber=r.aReceber;
     s1=ob.status==='concluida'?'Obra concluída':'Em andamento';
-    s2=ob.orcamento?Math.round(inv/ob.orcamento*100)+'% de '+fmtS(ob.orcamento):'sem orçamento';
+    s2=ob.orcamento?Math.round(inv/ob.orcamento*100)+'% de '+fmt(ob.orcamento):'sem orçamento';
     s3=vend+' unidade'+(vend!==1?'s':'')+' vendida'+(vend!==1?'s':'');
     s4=temVenda?(ob.status==='concluida'?'lucro realizado':'estimado'):'sem vendas';
   }else{
@@ -5709,16 +6451,16 @@ function renderKpiGlob(){
     const orcTot=obrasReais.reduce((a,o)=>a+(o.orcamento||0),0);
     vend=vt;totCasas=tc;vgv=vr;lucro=mt;temVenda=tv;receb=rc;aReceber=ar;
     s1=obrasReais.length+' obra'+(obrasReais.length!==1?'s':'')+' · '+nConcl+' concluída'+(nConcl!==1?'s':'');
-    s2=orcTot?Math.round(inv/orcTot*100)+'% de '+fmtS(orcTot):'';
+    s2=orcTot?Math.round(inv/orcTot*100)+'% de '+fmt(orcTot):'';
     s3=vt+' unidade'+(vt!==1?'s':'')+' vendida'+(vt!==1?'s':'');
     s4='carteira consolidada';
   }
   document.getElementById('k-obras').textContent=totCasas?vend+'/'+totCasas:'0';
   setKd('kd-obras',s1,false);
   if(!valoresOcultos){
-    document.getElementById('k-total').textContent=fmtS(inv);setKd('kd-total',s2,false);
-    document.getElementById('k-vgv').textContent=fmtS(vgv);setKd('kd-vgv',s3,false);
-    document.getElementById('k-lucro').textContent=temVenda?fmtS(lucro):'—';setKd('kd-lucro',s4,temVenda&&lucro>=0);
+    document.getElementById('k-total').textContent=fmt(inv);setKd('kd-total',s2,false);
+    document.getElementById('k-vgv').textContent=fmt(vgv);setKd('kd-vgv',s3,false);
+    document.getElementById('k-lucro').textContent=temVenda?fmt(lucro):'—';setKd('kd-lucro',s4,temVenda&&lucro>=0);
   }
   const cx=document.getElementById('caixa-strip');
   if(cx){cx.style.display=temVenda?'flex':'none';if(!valoresOcultos){document.getElementById('cx-receb').textContent=fmt(receb);document.getElementById('cx-areceber').textContent=fmt(aReceber);}}
@@ -5736,11 +6478,11 @@ function renderCartSum(){
   const nConcl=obrasReais.filter(o=>o.status==='concluida').length;
   box.style.display='block';
   box.innerHTML='<div class="cart-sum-h">'+ic('barchart',16)+' Resumo da carteira · '+obrasReais.length+' obras</div>'
-    +'<div class="cart-sum-row"><span class="cl">Orçamento total</span><span class="cv">'+fmtS(orcTot)+'</span></div>'
-    +'<div class="cart-sum-row"><span class="cl">Investido (realizado)</span><span class="cv">'+fmtS(inv)+(orcTot?' · '+Math.round(inv/orcTot*100)+'%':'')+'</span></div>'
-    +'<div class="cart-sum-row"><span class="cl">VGV realizado ('+vt+'/'+tc+' un.)</span><span class="cv">'+fmtS(vr)+'</span></div>'
-    +'<div class="cart-sum-row"><span class="cl">Lucro estimado</span><span class="cv" style="color:var(--green)">'+fmtS(mt)+'</span></div>'
-    +(nConcl?'<div class="cart-sum-row"><span class="cl">Lucro realizado ('+nConcl+' concluída'+(nConcl!==1?'s':'')+')</span><span class="cv" style="color:var(--green)">'+fmtS(mReal)+'</span></div>':'');
+    +'<div class="cart-sum-row"><span class="cl">Orçamento total</span><span class="cv">'+fmt(orcTot)+'</span></div>'
+    +'<div class="cart-sum-row"><span class="cl">Investido (realizado)</span><span class="cv">'+fmt(inv)+(orcTot?' · '+Math.round(inv/orcTot*100)+'%':'')+'</span></div>'
+    +'<div class="cart-sum-row"><span class="cl">VGV realizado ('+vt+'/'+tc+' un.)</span><span class="cv">'+fmt(vr)+'</span></div>'
+    +'<div class="cart-sum-row"><span class="cl">Lucro estimado</span><span class="cv" style="color:var(--green)">'+fmt(mt)+'</span></div>'
+    +(nConcl?'<div class="cart-sum-row"><span class="cl">Lucro realizado ('+nConcl+' concluída'+(nConcl!==1?'s':'')+')</span><span class="cv" style="color:var(--green)">'+fmt(mReal)+'</span></div>':'');
 }
 function renderComparativo(){
   const card=document.getElementById('cmp-card'),list=document.getElementById('cmp-list');if(!card||!list)return;
@@ -5753,7 +6495,7 @@ function renderComparativo(){
     const pct=o.orcamento?Math.min(100,Math.round(gasto/o.orcamento*100)):0;
     const done=o.status==='concluida';
     const w=Math.max(6,pct);
-    const lucroTxt=r.vgvRealizado?fmtS(r.margemTotal):'—';
+    const lucroTxt=r.vgvRealizado?fmt(r.margemTotal):'—';
     const chip=done?'realizado':(r.vgvRealizado?'est.':(gasto>0?'em obra':'sem vendas'));
     return '<div class="cmp-row2">'
       +'<div class="cmp-nm"><span class="sc" style="background:'+(done?'var(--green)':'var(--brand3)')+'"></span><div style="min-width:0"><span class="nm">'+esc(o.nome)+'</span><small>'+r.nCasas+' un · '+r.vendidas+' vendida'+(r.vendidas!==1?'s':'')+'</small></div></div>'
@@ -5793,26 +6535,26 @@ function renderCasasResult(ob,res){
         ${sitBadge(c)}
       </div>
       <div class="crc-grid">
-        <div class="crc-item"><div class="crc-l">Custo rateado</div><div class="crc-v">${fmtS(custoCasa)}</div></div>
+        <div class="crc-item"><div class="crc-l">Custo rateado</div><div class="crc-v">${fmt(custoCasa)}</div></div>
         ${hasSale?`
-        <div class="crc-item"><div class="crc-l">Valor de venda</div><div class="crc-v">${fmtS(c.valorVenda)}</div></div>
-        <div class="crc-item crc-full crc-dest ${cr.margem>=0?'crc-green':'crc-red'}"><div class="crc-l">Margem ${cr.estimado?'estimada':''}</div><div class="crc-v">${fmtS(cr.margem)}${cr.estimado?'<span style="font-size:9px;font-weight:400;opacity:.7"> est.</span>':''}</div></div>
+        <div class="crc-item"><div class="crc-l">Valor de venda</div><div class="crc-v">${fmt(c.valorVenda)}</div></div>
+        <div class="crc-item crc-full crc-dest ${cr.margem>=0?'crc-green':'crc-red'}"><div class="crc-l">Margem ${cr.estimado?'estimada':''}</div><div class="crc-v">${fmt(cr.margem)}${cr.estimado?'<span style="font-size:9px;font-weight:400;opacity:.7"> est.</span>':''}</div></div>
         `:`<div class="crc-item"><div class="crc-l">Situação</div><div class="crc-v" style="color:var(--text3)">Não vendida</div></div>`}
         ${cr.naPlanta?`
         <div class="crc-item crc-full"><div class="crc-sep"></div></div>
-        <div class="crc-item"><div class="crc-l">${ic('checkcircle',11)} Recebido</div><div class="crc-v" style="color:var(--green)">${fmtS(cr.recebido)}</div></div>
-        <div class="crc-item"><div class="crc-l">${ic('hourglass',11)} A receber</div><div class="crc-v" style="color:var(--yellow)">${fmtS(cr.aReceber)}</div></div>
+        <div class="crc-item"><div class="crc-l">${ic('checkcircle',11)} Recebido</div><div class="crc-v" style="color:var(--green)">${fmt(cr.recebido)}</div></div>
+        <div class="crc-item"><div class="crc-l">${ic('hourglass',11)} A receber</div><div class="crc-v" style="color:var(--yellow)">${fmt(cr.aReceber)}</div></div>
         `:''}
       </div>
     </div>`;
   }).join('');
   box.innerHTML=`<div class="card">
-    <div class="card-hdr"><div class="card-title" style="display:flex;align-items:center;gap:7px">${ic('home',15)} Resultado por casa</div><span style="font-size:10px;color:var(--text3)">Custo/casa: ${fmtS(custoCasa)}</span></div>
+    <div class="card-hdr"><div class="card-title" style="display:flex;align-items:center;gap:7px">${ic('home',15)} Resultado por casa</div><span style="font-size:10px;color:var(--text3)">Custo/casa: ${fmt(custoCasa)}</span></div>
     <div class="casas-result-list">${casaCards}</div>
     ${temVenda?`<div class="caixa-box">
-      <div class="cxb-item"><div class="cxb-l">${ic('checkcircle',11)} Recebido</div><div class="cxb-v g">${fmtS(res.recebido)}</div></div>
-      <div class="cxb-item"><div class="cxb-l">${ic('hourglass',11)} A receber</div><div class="cxb-v y">${fmtS(res.aReceber)}</div></div>
-      <div class="cxb-item"><div class="cxb-l">${ic('trendup',11)} Lucro ${estimando?'est.':'final'}</div><div class="cxb-v ${res.margemTotal>=0?'g':'r'}">${fmtS(res.margemTotal)}</div></div>
+      <div class="cxb-item"><div class="cxb-l">${ic('checkcircle',11)} Recebido</div><div class="cxb-v g">${fmt(res.recebido)}</div></div>
+      <div class="cxb-item"><div class="cxb-l">${ic('hourglass',11)} A receber</div><div class="cxb-v y">${fmt(res.aReceber)}</div></div>
+      <div class="cxb-item"><div class="cxb-l">${ic('trendup',11)} Lucro ${estimando?'est.':'final'}</div><div class="cxb-v ${res.margemTotal>=0?'g':'r'}">${fmt(res.margemTotal)}</div></div>
     </div>${estimando&&res.naPlanta?`<div class="cxb-note">${ic('alert',11)} Vendida na planta — margem estimada. Se ajusta conforme custos entram, fecha quando concluído.</div>`:''}`:'<div class="cxb-note" style="margin-top:12px">Nenhuma casa vendida ainda. Edite o empreendimento para atualizar a situação de cada casa.</div>'}
   </div>`;
   box.style.display='block';
@@ -5832,15 +6574,15 @@ function renderDetail(ob){
   const res=empResumo(ob);
   const roi=res.custoTotal&&res.vgvRealizado?Math.round(res.margemTotal/res.custoTotal*100):null;
   document.getElementById('kpi-obra').innerHTML=`
-    <div class="kc cb"><div class="ki b" aria-hidden="true">${ic('calendar',18)}</div><div class="kl">Dias em Obra</div><div class="kv">${dias}</div><div class="kd">${fD(ob.inicio)} → ${fD(ob.previsao)}</div></div>
-    <div class="kc cr"><div class="ki r" aria-hidden="true">${ic('wallet',18)}</div><div class="kl">Total Gasto</div><div class="kv">${fmt(tot)}</div><div class="kd">${ls.length} lançamentos</div></div>
-    <div class="kc cy"><div class="ki y" aria-hidden="true">${ic('target',18)}</div><div class="kl">Orçamento Usado</div><div class="kv">${pct}%</div><div class="kd">${fmt(ob.orcamento||0)} limite</div></div>
-    <div class="kc cg"><div class="ki g" aria-hidden="true">${ic('dollar',18)}</div><div class="kl">Saldo</div><div class="kv ${saldo>=0?'g':'r'}">${fmtS(saldo)}</div><div class="kd">${saldo>=0?'Dentro do limite':ic('alert',11)+' Estourado'}</div></div>
-    ${res.vgvRealizado?`<div class="kc ca"><div class="ki a" aria-hidden="true">${ic('trendup',18)}</div><div class="kl">VGV Realizado</div><div class="kv">${fmtS(res.vgvRealizado)}</div><div class="kd">Lucro ${ob.status==='concluida'?'':'est. '}${fmtS(res.margemTotal)}</div></div>`:''}
-    ${diasFim!==null?`<div class="kc ${diasFim<0?'cr':diasFim<30?'cy':'cg'}"><div class="ki ${diasFim<0?'r':diasFim<30?'y':'g'}" aria-hidden="true">${ic('clock',18)}</div><div class="kl">Dias Restantes</div><div class="kv ${diasFim<0?'r':diasFim<30?'y':'g'}">${diasFim<0?'Atrasado':diasFim+'d'}</div><div class="kd">Conclusão: ${fD(ob.previsao)}</div></div>`:''}
-    ${burnRate?`<div class="kc ca"><div class="ki a" aria-hidden="true">${ic('flame',18)}</div><div class="kl">Burn Rate Mensal</div><div class="kv">${fmtS(burnRate)}</div><div class="kd">Média últimos meses</div></div>`:''}
+    <div class="kc cb"><div class="ki b" aria-hidden="true">${ic('calendar',18)}</div><div class="kl">Dias em obra</div><div class="kv">${dias}</div><div class="kd">${fD(ob.inicio)} → ${fD(ob.previsao)}</div></div>
+    <div class="kc cr"><div class="ki r" aria-hidden="true">${ic('wallet',18)}</div><div class="kl">Total gasto</div><div class="kv">${fmt(tot)}</div><div class="kd">${ls.length} lançamentos</div></div>
+    <div class="kc cy"><div class="ki y" aria-hidden="true">${ic('target',18)}</div><div class="kl">Orçamento usado</div><div class="kv">${pct}%</div><div class="kd">${fmt(ob.orcamento||0)} limite</div></div>
+    <div class="kc cg"><div class="ki g" aria-hidden="true">${ic('dollar',18)}</div><div class="kl">Saldo</div><div class="kv ${saldo>=0?'g':'r'}">${fmt(saldo)}</div><div class="kd">${saldo>=0?'Dentro do limite':ic('alert',11)+' Estourado'}</div></div>
+    ${res.vgvRealizado?`<div class="kc ca"><div class="ki a" aria-hidden="true">${ic('trendup',18)}</div><div class="kl">VGV Realizado</div><div class="kv">${fmt(res.vgvRealizado)}</div><div class="kd">Lucro ${ob.status==='concluida'?'':'est. '}${fmt(res.margemTotal)}</div></div>`:''}
+    ${diasFim!==null?`<div class="kc ${diasFim<0?'cr':diasFim<30?'cy':'cg'}"><div class="ki ${diasFim<0?'r':diasFim<30?'y':'g'}" aria-hidden="true">${ic('clock',18)}</div><div class="kl">Dias restantes</div><div class="kv ${diasFim<0?'r':diasFim<30?'y':'g'}">${diasFim<0?'Atrasado':diasFim+'d'}</div><div class="kd">Conclusão: ${fD(ob.previsao)}</div></div>`:''}
+    ${burnRate?`<div class="kc ca"><div class="ki a" aria-hidden="true">${ic('flame',18)}</div><div class="kl">Gasto por mês</div><div class="kv">${fmt(burnRate)}</div><div class="kd">Média últimos meses</div></div>`:''}
     ${cpM2?`<div class="kc cb"><div class="ki b" aria-hidden="true">${ic('ruler',18)}</div><div class="kl">Custo por m²</div><div class="kv">${fmt(cpM2)}</div><div class="kd">${ob.area}m² construídos</div></div>`:''}
-    ${roi!==null?`<div class="kc cg"><div class="ki g" aria-hidden="true">${ic('piechart',18)}</div><div class="kl">ROI Estimado</div><div class="kv ${roi>=0?'g':'r'}">${roi}%</div><div class="kd">Sobre o custo das vendidas</div></div>`:''}
+    ${roi!==null?`<div class="kc cg"><div class="ki g" aria-hidden="true">${ic('piechart',18)}</div><div class="kl">Retorno estimado</div><div class="kv ${roi>=0?'g':'r'}">${roi}%</div><div class="kd">Sobre o custo das vendidas</div></div>`:''}
   `;
   renderCasasResult(ob,res);
   ajustaNumeros();  // roda no próximo quadro, já com a grade montada
@@ -7840,6 +8582,9 @@ function editDoc(id){
   docResetFile();
   onDocValidade();
   docEditUI(true,d);
+  /* No celular o formulário é gaveta: editar tem de abri-la, senão o toque
+     em "Editar" não mostra nada e parece que não funcionou. */
+  if(ehCelular())openDocSheet('Editar documento');
   document.getElementById('d-tipo').scrollIntoView({behavior:'smooth',block:'center'});
 }
 function docEditUI(on,d){
@@ -7859,6 +8604,9 @@ function docCancelarEdicao(){
   docEditId=null;
   docLimparForm();
   docEditUI(false);
+  /* salvarDoc() termina chamando esta função, então salvar e desistir
+     fecham a gaveta pelo mesmo caminho. */
+  if(ehCelular())closeDocSheet();
 }
 async function salvarDoc(){
   /* O upload tem await no meio e o botão não era desabilitado: dois cliques
@@ -8777,6 +9525,7 @@ if('serviceWorker' in navigator){
 }
 </script>
 <div id="lanc-backdrop" onclick="closeLancSheet()"></div>
+<div id="doc-backdrop" onclick="closeDocSheet()"></div>
 <!-- MAIS MENU (mobile) -->
 <div id="mais-backdrop" onclick="closeMaisMenu()" aria-hidden="true"></div>
 <div id="mais-menu" role="dialog" aria-modal="true" aria-label="Mais opções">
@@ -8809,5 +9558,187 @@ if('serviceWorker' in navigator){
     <span class="mais-ico" aria-hidden="true">📄</span><span>Relatório PDF da obra</span>
   </button>
 </div>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   MENU "⋯" POR LINHA — celular, 2026-11-10
+
+   Cada cartão de lançamento e de documento tinha uma faixa de três
+   botões no pé. Essa faixa tem 44px e não pode encolher — é o alvo
+   mínimo de toque. Na lateral, os mesmos 44px passam a DIVIDIR a altura
+   com as duas linhas de texto em vez de SOMAR a elas: o cartão de
+   lançamento cai de 103px para 62px, e a aba de 1.263px para 935px.
+
+   Nada aqui recalcula estado. O ⋯ apenas CLONA os controles que o
+   renderLP()/renderDocs() já desenhou e os reapresenta numa folha de
+   ações — é por isso que "Pago" só aparece quando o lançamento está a
+   pagar e "Ver comprovante" só aparece quando existe comprovante: quem
+   decide isso continua sendo o app, intocado.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  var SVG_MAIS = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">' +
+    '<circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>';
+  var SVG_CLIPE = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>';
+
+  function celular() { return window.matchMedia('(max-width:900px)').matches; }
+
+  /* ── a folha ── */
+  function montaFolha() {
+    if (document.getElementById('card-menu')) return;
+    var bd = document.createElement('div');
+    bd.id = 'card-menu-bd';
+    bd.addEventListener('click', fecha);
+    var sh = document.createElement('div');
+    sh.id = 'card-menu';
+    sh.setAttribute('role', 'dialog');
+    sh.setAttribute('aria-label', 'Ações do item');
+    document.body.appendChild(bd);
+    document.body.appendChild(sh);
+  }
+
+  function fecha() {
+    var sh = document.getElementById('card-menu'), bd = document.getElementById('card-menu-bd');
+    if (sh) sh.classList.remove('show');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  window.closeCardMenu = fecha;
+
+  /* ── o nome da ação ──
+     O texto visível vem primeiro porque é o que o app já escolheu dizer:
+     em Docs o botão diz "Ver"/"Editar"/"Remover" (o celular esconde o
+     texto com font-size:0, mas ele continua no elemento). Só quando o
+     botão é só ícone — o caso de Lançamentos — é que se recorre ao
+     title. O aria-label fica por último: ele é frase de leitor de tela
+     ("Ver ART do engenheiro"), não nome de item de menu. */
+  function rotulo(el) {
+    var vis = (el.textContent || '').replace(/\s+/g, ' ').trim();
+    if (vis.length >= 2) return vis;
+    var t = el.getAttribute('title');
+    if (t) return t.trim();
+    var a = el.getAttribute('aria-label');
+    if (a) return a.trim();
+    return 'Ação';
+  }
+
+  function ehDestrutivo(el) {
+    return /(^|\s)(del|btn-d)(\s|$)/.test(el.className || '');
+  }
+
+  /* ── abrir ── */
+  function abre(cartao) {
+    montaFolha();
+    var sh = document.getElementById('card-menu'), bd = document.getElementById('card-menu-bd');
+    var faixa = cartao.querySelector('.lanc-card-actions, .doc-card-acts');
+    if (!faixa) return;
+
+    var tituloEl = cartao.querySelector('.lanc-card-desc') ||
+      cartao.querySelector('div[style*="font-weight:700"]');
+    var titulo = tituloEl ? (tituloEl.textContent || '').trim() : 'Item';
+
+    sh.innerHTML = '<div class="cm-pill"></div><div class="cm-title"></div>';
+    sh.querySelector('.cm-title').textContent = titulo;
+
+    var controles = faixa.querySelectorAll('a,button,span.lanc-card-comp,span.badge');
+    [].forEach.call(controles, function (src) {
+      var clicavel = src.tagName === 'A' || src.tagName === 'BUTTON';
+      var linha = document.createElement(clicavel ? 'button' : 'div');
+      linha.className = 'cm-row' + (clicavel ? (ehDestrutivo(src) ? ' cm-del' : '') : ' cm-info');
+      if (clicavel) linha.type = 'button';
+
+      var svg = src.querySelector('svg');
+      if (svg) linha.appendChild(svg.cloneNode(true));
+      var txt = document.createElement('span');
+      txt.textContent = rotulo(src);
+      linha.appendChild(txt);
+
+      if (clicavel) {
+        linha.addEventListener('click', function () {
+          fecha();
+          /* devolve o clique ao controle original do app: o onclick, o
+             href e o target dele continuam sendo os que o app escreveu */
+          setTimeout(function () { src.click(); }, 10);
+        });
+      }
+      sh.appendChild(linha);
+    });
+
+    bd.classList.add('show');
+    sh.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  /* ── o clipe do comprovante ──
+     Levando a faixa de ações para dentro do ⋯, o cartão perderia a única
+     pista de que existe (ou falta) comprovante — e saber disso de
+     relance é metade da utilidade da lista. Volta como um clipe de 13px
+     na linha do contexto: informação, não alvo de toque. Âmbar quando
+     falta, cinza quando tem. Em Docs não precisa: o cartão já mostra o
+     nome do arquivo. */
+  function marcaComprovante(cartao) {
+    var meta = cartao.querySelector('.lanc-card-meta');
+    if (!meta || meta.querySelector('.cm-clipe')) return;
+    var faixa = cartao.querySelector('.lanc-card-actions');
+    if (!faixa) return;
+    var tem = !!faixa.querySelector('a.lanc-card-comp');
+    var falta = !!faixa.querySelector('.comp-faltando');
+    var s = document.createElement('span');
+    s.className = 'cm-clipe' + (tem ? '' : ' cm-clipe-falta');
+    s.innerHTML = SVG_CLIPE;
+    s.setAttribute('title', tem ? 'Tem comprovante'
+      : falta ? 'O arquivo não ficou guardado' : 'Sem comprovante');
+    meta.insertBefore(s, meta.firstChild);
+  }
+
+  /* ── injeta o ⋯ em cada cartão ── */
+  function injeta(cartao) {
+    marcaComprovante(cartao);
+    if (!cartao || cartao.querySelector(':scope > .card-mais')) return;
+    if (!cartao.querySelector('.lanc-card-actions, .doc-card-acts')) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'card-mais';
+    b.setAttribute('aria-label', 'Mais ações');
+    b.innerHTML = SVG_MAIS;
+    b.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      abre(cartao);
+    });
+    cartao.appendChild(b);
+  }
+
+  /* No computador o cartão mantém a faixa de três botões: o espaço sobra
+     e o mouse não precisa de 44px. Se a janela for estreitada e depois
+     alargada, o que foi injetado sai junto. */
+  function limpa() {
+    document.querySelectorAll('.card-mais,.cm-clipe').forEach(function (el) { el.remove(); });
+    fecha();
+  }
+
+  function varre() {
+    if (!celular()) { if (document.querySelector('.card-mais')) limpa(); return; }
+    document.querySelectorAll('#tabela .lanc-card:not(.nf-card)').forEach(injeta);
+    document.querySelectorAll('#doc-grid .doc-card-new').forEach(injeta);
+  }
+
+  /* O app redesenha as listas em vários momentos (filtro, página, salvar).
+     Observar é mais seguro do que embrulhar cada função de desenho: pega
+     qualquer caminho, inclusive os que eu não mapeei. */
+  function liga() {
+    montaFolha();
+    varre();
+    var obs = new MutationObserver(function () { varre(); });
+    ['tabela', 'doc-grid'].forEach(function (id) {
+      var alvo = document.getElementById(id);
+      if (alvo) obs.observe(alvo, { childList: true, subtree: true });
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecha(); });
+    window.addEventListener('resize', varre);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', liga);
+  else liga();
+  window.addEventListener('load', function () { setTimeout(liga, 160); });
+})();
+</script>
 </body>
 </html>
